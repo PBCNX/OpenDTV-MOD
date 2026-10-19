@@ -1,0 +1,11 @@
+NextLib (nextlib-media3ext) - FFmpeg decoders for Media3
+https://github.com/anilbeesetti/nextlib
+
+Licensed under the GNU General Public License v3.0:
+https://www.gnu.org/licenses/gpl-3.0.html
+
+Bundles FFmpeg (libavcodec, libavutil, libswresample, libswscale), https://ffmpeg.org,
+built with GPL options. Source code for the FFmpeg build is available from the NextLib repository.
+
+Because this library is GPL-3.0, distributing OpenDTV with it means the combined app must be
+made available under GPL-3.0 terms, including its source code.

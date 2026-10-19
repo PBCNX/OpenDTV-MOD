@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>OpenDTV captions</title>
+<style>
+  html, body { margin:0; padding:0; width:100%; height:100%; background:transparent; overflow:hidden; }
+  @font-face { font-family:'Kosugi'; src:url('fonts/Kosugi-Regular.woff2') format('woff2'); }
+  #cc { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  #cc svg { width:100%; height:100%; }
+</style>
+</head>
+<body>
+<div id="cc"></div>
+<script src="captions.js"></script>
+<script>
+(function () {
+  const container = document.getElementById('cc');
+  const coding = new CaptionCoding();
+  let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  container.appendChild(svg);
+  let queue = [];
+  let currentKey = '';
+  let now = 0;
+  let visible = true;
+  let language = 1;
+
+  function bytes(base64) {
+    const raw = atob(base64);
+    const out = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+    return out;
+  }
+
+  function render(item) {
+    const view = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const provider = new Aribb24.SVGProvider(item.pes, 0);
+    provider.render({
+      svg: view,
+      coding: item.coding,
+      avoidMidWordBreak: true,
+      data_identifier: item.superimpose ? 0x81 : 0x80,
+      forceStrokeColor: true,
+      normalFont: 'Kosugi'
+    });
+    svg.replaceChildren();
+    for (const child of Array.from(view.childNodes)) {
+      svg.appendChild(child.cloneNode(true));
+    }
+    const viewBox = view.getAttribute('viewBox');
+    if (viewBox) svg.setAttribute('viewBox', viewBox);
+  }
+
+  function update() {
+    if (!visible) {
+      svg.replaceChildren();
+      currentKey = '';
+      return;
+    }
+    let selected = null;
+    for (const item of queue) {
+      if (item.start <= now) selected = item;
+      else break;
+    }
+    if (selected == null || now >= selected.end) {
+      if (currentKey !== '') {
+        svg.replaceChildren();
+        currentKey = '';
+      }
+      queue = queue.filter(function (item) { return item.end > now - 30000; });
+      return;
+    }
+    const key = selected.id;
+    if (key !== currentKey) {
+      currentKey = key;
+      render(selected);
+    }
+  }
+
+  let serial = 0;
+  window.CaptionHost = {
+    push: function (base64, startMs, streamId) {
+      const pes = bytes(base64);
+      if (coding.observe(pes)) {
+        return;
+      }
+      const groupId = coding.groupIdOf(pes);
+      if (groupId > 0 && (groupId & 31) !== language) return;   // caption language 1 / 2
+      const codingKind = coding.codingFor(groupId);
+      const probe = new Aribb24.SVGProvider(pes, 0);
+      const result = probe.render({
+        coding: codingKind,
+        avoidMidWordBreak: true,
+        data_identifier: (streamId === 0xbf) ? 0x81 : 0x80
+      });
+      if (!result) return;
+      const end = startMs + Math.max(250, (result.endTime || 5) * 1000);
+      queue.push({
+        id: String(++serial),
+        pes: pes,
+        start: startMs,
+        end: end,
+        coding: codingKind,
+        superimpose: streamId === 0xbf
+      });
+      queue.sort(function (a, b) { return a.start - b.start; });
+      update();
+    },
+    setLanguage: function (n) {
+      language = n === 2 ? 2 : 1;
+    },
+    setTime: function (ms) {
+      now = ms;
+      update();
+    },
+    setVisible: function (on) {
+      visible = !!on;
+      container.style.display = visible ? '' : 'none';
+      if (!visible) {
+        svg.replaceChildren();
+        currentKey = '';
+      } else {
+        update();
+      }
+    },
+    clear: function () {
+      queue = [];
+      svg.replaceChildren();
+      currentKey = '';
+    }
+  };
+
+  if (window.CaptionBridge) CaptionBridge.ready();
+})();
+</script>
+</body>
+</html>
