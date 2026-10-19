@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.hardware.usb.host" android:required="true" />
+
+    <!-- Installable on Android TV / TV boxes (no touchscreen, leanback launcher) as well as on phones -->
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.software.live_tv" android:required="false" />
+
+    <!-- Channel / program access of the Live Channels (TV provider) database. A TV input can always read and
+         write its own rows; these are the standard declarations used by TV input samples. -->
+    <uses-permission android:name="com.android.providers.tv.permission.READ_EPG_DATA" />
+    <uses-permission android:name="com.android.providers.tv.permission.WRITE_EPG_DATA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".App"
+        android:allowBackup="false"
+        android:banner="@drawable/banner"
+        android:label="OpenDTV"
+        android:requestLegacyExternalStorage="true"
+        android:theme="@style/Theme.OpenDtv">
+
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|density"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Offer to open the app when the tuner (048d:275a) is plugged in -->
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </activity>
+
+        <activity
+            android:name=".LicensesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AnalyzerActivity"
+            android:exported="false" />
+
+        <!-- Milestone-1 diagnostic: lists interfaces and endpoints of the tuner -->
+        <activity
+            android:name=".UsbProbeActivity"
+            android:exported="false" />
+
+        <!-- Live Channels: channel scan. Launched by the TV app ("Set up" / "Rescan") and from the TV launcher. -->
+        <activity
+            android:name=".tv.SetupActivity"
+            android:exported="true"
+            android:label="OpenDTV channel scan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Live Channels: the tuner input itself -->
+        <service
+            android:name=".tv.OpenDtvInputService"
+            android:exported="true"
+            android:label="OpenDTV ISDB-T"
+            android:permission="android.permission.BIND_TV_INPUT">
+            <intent-filter>
+                <action android:name="android.media.tv.TvInputService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.media.tv.input"
+                android:resource="@xml/tv_input_service" />
+        </service>
+    </application>
+</manifest>
