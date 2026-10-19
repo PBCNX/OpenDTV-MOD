@@ -62,7 +62,7 @@ Your Android device must support **USB Host (OTG)**.
 ## Getting Started
 
 ### Requirements
-- Android 9 (API 28) or newer
+- Android 5.0 (API 21) or newer
 - A device with USB Host (OTG) support and an OTG cable or adapter
 - A compatible ISDB-T dongle (see above)
 - An ISDB-T antenna and signal coverage in your area
