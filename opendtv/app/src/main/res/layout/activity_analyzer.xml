@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/colorSurface">
+
+    <!-- TOP: fixed 16:9 video area -->
+    <androidx.media3.ui.AspectRatioFrameLayout
+        android:id="@+id/player_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000"
+        app:resize_mode="fixed_width">
+
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/player_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000000"
+            app:resize_mode="fill"
+            app:show_buffering="when_playing"
+            app:shutter_background_color="#000000"
+            app:use_controller="false" />
+    </androidx.media3.ui.AspectRatioFrameLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Channel Info & Status Panel -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="?attr/colorSurfaceVariant"
+                android:padding="10dp"
+                android:layout_marginBottom="8dp">
+
+                <!-- Row 1: Virtual Number & Channel name -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="4dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Virtual No: "
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/tv_virtual"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.5"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Channel: "
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/tv_channel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:maxLines="1"
+                            android:ellipsize="end" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Row 2: Program ID & Network Name/Provider -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="4dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Program ID: "
+                            android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/tv_program_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.5"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Network: "
+                            android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/tv_network"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textSize="12sp"
+                            android:maxLines="1"
+                            android:ellipsize="end" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Row 3: Video Id, Audio ID, Codec -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="6dp">
+
+                    <TextView
+                        android:id="@+id/tv_video_id"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Video ID: --"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/tv_audio_id"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Audio ID: --"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/tv_codec"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.2"
+                        android:text="Codec: --"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <!-- Row 4: Signal Strength bar with number & Signal Quality bar with number -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="4dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingEnd="4dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Str: "
+                            android:textSize="10sp" />
+                        <ProgressBar
+                            android:id="@+id/bar_strength"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="8dp"
+                            android:layout_weight="1"
+                            android:max="100" />
+                        <TextView
+                            android:id="@+id/tv_strength_val"
+                            android:layout_width="32dp"
+                            android:layout_height="wrap_content"
+                            android:text="0%"
+                            android:textSize="10sp"
+                            android:gravity="end" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingStart="4dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Qual: "
+                            android:textSize="10sp" />
+                        <ProgressBar
+                            android:id="@+id/bar_quality"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="8dp"
+                            android:layout_weight="1"
+                            android:max="100" />
+                        <TextView
+                            android:id="@+id/tv_quality_val"
+                            android:layout_width="32dp"
+                            android:layout_height="wrap_content"
+                            android:text="0%"
+                            android:textSize="10sp"
+                            android:gravity="end" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_signal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Signal: --"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <!-- Dropdown Menus & Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="6dp">
+                <Spinner
+                    android:id="@+id/sp_mux"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+                <Spinner
+                    android:id="@+id/sp_channels"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="4dp">
+
+                    <Button
+                        android:id="@+id/btn_scan"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="3dp"
+                        android:minWidth="0dp"
+                        android:text="Scan"
+                        android:textSize="12sp" />
+
+                    <Button
+                        android:id="@+id/btn_manual"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginHorizontal="1.5dp"
+                        android:minWidth="0dp"
+                        android:text="Manual"
+                        android:textSize="12sp" />
+
+                    <Button
+                        android:id="@+id/btn_usb"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="3dp"
+                        android:minWidth="0dp"
+                        android:text="USB"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btn_file"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="3dp"
+                        android:minWidth="0dp"
+                        android:text=".ts"
+                        android:textSize="12sp" />
+
+                    <Button
+                        android:id="@+id/btn_probe"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginHorizontal="1.5dp"
+                        android:minWidth="0dp"
+                        android:text="Probe"
+                        android:textSize="12sp" />
+
+                    <Button
+                        android:id="@+id/btn_record_whole"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="3dp"
+                        android:minWidth="0dp"
+                        android:text="Rec Whole"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Tabs: Analyzer, EPG, Datacast, Graph, Logs -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
+
+                <Button
+                    android:id="@+id/tab_analyzer"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:paddingHorizontal="1dp"
+                    android:text="Analyzer"
+                    android:textSize="10sp" />
+
+                <Button
+                    android:id="@+id/tab_epg"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:paddingHorizontal="1dp"
+                    android:text="EPG"
+                    android:textSize="10sp" />
+
+                <Button
+                    android:id="@+id/tab_datacast"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:paddingHorizontal="1dp"
+                    android:text="Datacast"
+                    android:textSize="10sp" />
+
+                <Button
+                    android:id="@+id/tab_graph"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:paddingHorizontal="1dp"
+                    android:text="Graph"
+                    android:textSize="10sp" />
+
+                <Button
+                    android:id="@+id/tab_logs"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:paddingHorizontal="1dp"
+                    android:text="Logs"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <!-- Tab Content View -->
+            <TextView
+                android:id="@+id/tv_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:padding="6dp"
+                android:textIsSelectable="true"
+                android:textSize="11sp"
+                android:background="?attr/colorSurfaceVariant" />
+
+            <!-- Graphical Dashboard Container (Graph Tab) -->
+            <LinearLayout
+                android:id="@+id/layout_graph_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- 1. Data Received Graphical Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="?attr/colorSurfaceVariant"
+                    android:padding="8dp"
+                    android:layout_marginBottom="6dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="📊 Data Received"
+                        android:textStyle="bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp" />
+                    <TextView
+                        android:id="@+id/tv_graph_bitrate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Bitrate: 0.00 Mbps"
+                        android:textSize="12sp" />
+                    <ProgressBar
+                        android:id="@+id/bar_graph_bitrate"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"
+                        android:max="3000"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="4dp" />
+                    <TextView
+                        android:id="@+id/tv_graph_packets"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Packets: 0 | Null: 0"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <!-- 2. Demuxed Graphical Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="?attr/colorSurfaceVariant"
+                    android:padding="8dp"
+                    android:layout_marginBottom="6dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="📡 Demuxed Streams &amp; Services"
+                        android:textStyle="bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp" />
+                    <TextView
+                        android:id="@+id/tv_graph_demux"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Network: -- | TS ID: -- | Services: 0"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- 3. Loss & Errors Graphical Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="?attr/colorSurfaceVariant"
+                    android:padding="8dp"
+                    android:layout_marginBottom="6dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="⚠️ Loss &amp; Error Monitoring"
+                        android:textStyle="bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp" />
+                    <TextView
+                        android:id="@+id/tv_graph_loss"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="CC Errors: 0 | TEI: 0 | Sync Loss: 0 | USB Drops: 0"
+                        android:textSize="12sp" />
+                    <ProgressBar
+                        android:id="@+id/bar_graph_errors"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <!-- 4. Signal Graphical Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="?attr/colorSurfaceVariant"
+                    android:padding="8dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="📶 Signal &amp; Quality Metrics"
+                        android:textStyle="bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp" />
+                    <TextView
+                        android:id="@+id/tv_graph_signal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Status: UNLOCKED | Power: -- dBm | BER: n/a"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/tv_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="6dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="No source. Open a .ts file or plug in the tuner."
+        android:textSize="11sp" />
+</LinearLayout>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 0x048d = 1165, 0x275a = 10074 (ITE Tech, Pad TV / GMA Now tuner) -->
+    <usb-device vendor-id="1165" product-id="10074" />
+</resources>

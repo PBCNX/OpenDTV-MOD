@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_scan"
+        android:icon="@drawable/ic_scan"
+        android:title="Auto Scan"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_manual_scan"
+        android:icon="@drawable/ic_tune"
+        android:title="Manual Scan"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_analyzer"
+        android:icon="@drawable/ic_analytics"
+        android:title="Analyzer / Debug"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_record"
+        android:icon="@drawable/ic_favorite"
+        android:title="Record Channel"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_captions"
+        android:checkable="true"
+        android:checked="true"
+        android:title="Closed captions"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_hardware_decoder"
+        android:checkable="true"
+        android:checked="false"
+        android:title="Hardware decoder (off = FFmpeg)"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_licenses"
+        android:title="Open source licenses"
+        app:showAsAction="never" />
+</menu>
