@@ -5,7 +5,7 @@
 OpenDTV lets you watch free-to-air digital TV on your Android phone, tablet, or TV box by plugging in a USB ISDB-T dongle. It talks to the tuner directly over USB host (OTG), so no vendor app is needed. It also includes a transport stream analyzer, EPG, closed captions, and a full ARIB data broadcast (BML) viewer.
 
 ![Platform](https://img.shields.io/badge/platform-Android%205.0%2B-green)
-![Min SDK](https://img.shields.io/badge/minSdk-26-blue)
+![Min SDK](https://img.shields.io/badge/minSdk-21-blue)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 ---
