@@ -160,4 +160,4 @@ OpenDTV's own code is released under the **MIT License**. See [`LICENSE`](LICENS
 
 ## Disclaimer
 
-OpenDTV is an independent project and is not affiliated with or endorsed by Mygica, GMA Network Inc., ITE Tech, or any broadcaster. All trademarks and station logos belong to their respective owners. Make sure you comply with the laws and broadcast regulations in your country.
+OpenDTV is an independent project and is not affiliated with or endorsed by Mygica, Geniatech, GMA Network Inc., ITE Tech, or any broadcaster. All trademarks and station logos belong to their respective owners. Make sure you comply with the laws and broadcast regulations in your country.
