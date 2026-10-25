@@ -17,6 +17,7 @@ OpenDTV lets you watch free-to-air digital TV on your Android phone, tablet, or 
 | Mygica PadTV PT275 | `048d:275a` | Supported |
 | GMA Now Dongle | `048d:275a` | Supported |
 | IT9175 Tuner (ITE/Afatech) | `048d:275a` | Supported |
+| ABS-CBN TV plus GO (Tolka) | `048d:9308` | Supported |
 
 > All of the above are built around the ITE IT9175 chip. More ISDB-T dongles may be added over time. Contributions are welcome.
 
