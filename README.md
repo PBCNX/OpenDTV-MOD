@@ -151,7 +151,7 @@ See `tools/TsSelfTest.java` for the transport stream parser test.
 ph.opendtv          MainActivity, AnalyzerActivity, UsbProbeActivity
 ph.opendtv.ts       Pure Java: TS demux, section assembler, service filter, carousel decoder, EWBS codes and models
 ph.opendtv.source   Tuner and TS sources: UsbTunerSource, It9175Tuner, It9308TunerSource, FileTsSource
-ph.pbcnx.it9308     IT9308 (ABS-CBN TV Plus GO) device driver layer
+ph.opendtv.it9308   IT9308 (ABS-CBN TV Plus GO) device driver layer
 ph.opendtv.player   TsPipeDataSource (Media3), audio renderers
 ph.opendtv.bml      BML data broadcast controller, remote panel, sound player
 ph.opendtv.tv       Live Channels TV input, session, hub, setup/scan
