@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
+    android:background="@color/odtv_bg">
 
 <LinearLayout
     android:layout_width="match_parent"
@@ -13,12 +13,16 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:title="OpenDTV"
-        app:titleTextColor="?attr/colorOnPrimary"
-        app:menu="@menu/menu_main"
-        app:popupTheme="@style/ThemeOverlay.Material3.Light" />
+        android:layout_height="@dimen/odtv_toolbar_height"
+        android:background="@color/odtv_surface"
+        android:elevation="0dp"
+        app:title="OpenDTV-MOD"
+        app:subtitle="Philippines"
+        app:titleTextColor="@color/odtv_on_surface"
+        app:titleTextAppearance="@style/TextAppearance.OpenDtv.Toolbar"
+        app:subtitleTextColor="@color/odtv_on_surface_variant"
+        app:subtitleTextAppearance="@style/TextAppearance.OpenDtv.ToolbarSubtitle"
+        app:popupTheme="@style/ThemeOverlay.Material3.Dark" />
 
     <!-- TOP: fixed 16:9 video area (the video itself is letter/pillar-boxed inside, never stretched) -->
     <androidx.media3.ui.AspectRatioFrameLayout
@@ -34,7 +38,7 @@
             android:layout_height="match_parent"
             android:background="#000000"
             app:resize_mode="fill"
-            app:show_buffering="when_playing"
+            app:show_buffering="never"
             app:shutter_background_color="#000000"
             app:use_controller="false" />
 
@@ -43,237 +47,183 @@
             android:id="@+id/bml_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+        <!-- Tuning / no-signal card; passive, never takes a tap -->
+        <ph.opendtv.ui.TuningOverlay
+            android:id="@+id/tuning_overlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
     </androidx.media3.ui.AspectRatioFrameLayout>
 
     <!-- Current Playing Channel Banner / Info -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurfaceVariant"
+        android:background="@color/odtv_surface"
         android:orientation="horizontal"
-        android:padding="8dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp"
         android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/tv_current_channel"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="No channel tuned"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:paddingStart="8dp" />
+            android:textSize="15sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/odtv_on_surface"
+            android:paddingStart="0dp" />
+
+        <!-- Record: the key is also the tally light. A quiet ring while it is idle,
+             a filled red disc that pulses while a recording runs (MainActivity owns
+             the pulse). Drawing something is all it can do in portrait - the menu
+             item was the only sign a recording was running. -->
+        <TextView
+            android:id="@+id/btn_record"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_record_button"
+            android:clickable="true"
+            android:contentDescription="Record channel"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.02"
+            android:text="REC"
+            android:textColor="@color/record_text_tint"
+            android:textSize="9sp" />
+
+        <!-- Opens the BML pad. Replaces the floating button the owner called "bad". -->
+        <ImageButton
+            android:id="@+id/btn_remote"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_watch_info_button"
+            android:contentDescription="Remote"
+            android:padding="11dp"
+            android:src="@drawable/ic_remote"
+            app:tint="@color/watch_info_icon_tint" />
+
+        <ImageButton
+            android:id="@+id/btn_watch_info"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_watch_info_button"
+            android:contentDescription="Watch info"
+            android:padding="12dp"
+            android:src="@drawable/ic_info"
+            app:tint="@color/watch_info_icon_tint" />
     </LinearLayout>
 
-    <!-- TabLayout: Channels, EPG, Favorites -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/odtv_divider" />
+
+    <!-- TabLayout: Channels, EPG, Favorites, Settings -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
+        style="@style/Widget.OpenDtv.Tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabMode="fixed"
-        app:tabGravity="fill" />
+        android:background="@color/odtv_surface" />
 
-    <!-- Content RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <!-- Content: list, or the shared empty state when the list has no rows -->
+    <FrameLayout
+        android:id="@+id/list_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingVertical="4dp" />
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="4dp"
+            android:paddingBottom="96dp" />
+
+        <include
+            android:id="@+id/empty_state"
+            layout="@layout/view_empty_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- Footer: what this list is + how many items it holds. Kept below the
+         list so the tab strip stays uncluttered. -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/odtv_divider" />
+
+    <LinearLayout
+        android:id="@+id/list_footer"
+        android:layout_width="match_parent"
+        android:layout_height="26dp"
+        android:background="@color/odtv_surface"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_list_footer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.OpenDtv.ListHeader" />
+
+        <TextView
+            android:id="@+id/tv_list_footer_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:textAppearance="@style/TextAppearance.OpenDtv.ListCount" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/odtv_divider" />
+
+    <ph.opendtv.ui.WatchStatusStrip
+        android:id="@+id/watch_status"
+        android:layout_width="match_parent"
+        android:layout_height="34dp" />
 
 </LinearLayout>
 
-    <!-- BML remote: opened with the floating button. Navigation, 4 colour keys, DATA and BACK. -->
-    <com.google.android.material.card.MaterialCardView
+    <ph.opendtv.ui.WatchInfoView
+        android:id="@+id/watch_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="104dp"
+        android:visibility="gone" />
+
+    <!-- BML remote: one square pad in the shape of the handset (portrait only) -->
+    <ph.opendtv.bml.CornerPad
         android:id="@+id/remote_panel"
-        style="?attr/materialCardViewElevatedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="92dp"
-        app:cardCornerRadius="28dp"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <!-- navigation cross -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/rm_up"
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="64dp"
-                        android:layout_height="52dp"
-                        android:layout_gravity="center_horizontal"
-                        android:insetLeft="0dp"
-                        android:insetRight="0dp"
-                        android:minWidth="0dp"
-                        android:padding="0dp"
-                        android:text="▲"
-                        android:textSize="18sp" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/rm_left"
-                            style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="64dp"
-                            android:layout_height="52dp"
-                            android:insetLeft="0dp"
-                            android:insetRight="0dp"
-                            android:minWidth="0dp"
-                            android:padding="0dp"
-                            android:text="◀"
-                            android:textSize="18sp" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/rm_ok"
-                            android:layout_width="64dp"
-                            android:layout_height="52dp"
-                            android:insetLeft="0dp"
-                            android:insetRight="0dp"
-                            android:minWidth="0dp"
-                            android:padding="0dp"
-                            android:text="OK"
-                            android:textSize="15sp" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/rm_right"
-                            style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="64dp"
-                            android:layout_height="52dp"
-                            android:insetLeft="0dp"
-                            android:insetRight="0dp"
-                            android:minWidth="0dp"
-                            android:padding="0dp"
-                            android:text="▶"
-                            android:textSize="18sp" />
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/rm_down"
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="64dp"
-                        android:layout_height="52dp"
-                        android:layout_gravity="center_horizontal"
-                        android:insetLeft="0dp"
-                        android:insetRight="0dp"
-                        android:minWidth="0dp"
-                        android:padding="0dp"
-                        android:text="▼"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-                <!-- DATA / BACK -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:orientation="vertical">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/rm_data"
-                        android:layout_width="96dp"
-                        android:layout_height="64dp"
-                        android:text="DATA" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/rm_back"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_width="96dp"
-                        android:layout_height="64dp"
-                        android:layout_marginTop="8dp"
-                        android:text="BACK" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- colour keys: blue, red, green, yellow (ARIB order) -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/rm_blue"
-                    android:layout_width="0dp"
-                    android:layout_height="44dp"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:backgroundTint="#1E5BD8"
-                    android:contentDescription="Blue"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:minWidth="0dp"
-                    android:padding="0dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/rm_red"
-                    android:layout_width="0dp"
-                    android:layout_height="44dp"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:backgroundTint="#C62828"
-                    android:contentDescription="Red"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:minWidth="0dp"
-                    android:padding="0dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/rm_green"
-                    android:layout_width="0dp"
-                    android:layout_height="44dp"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:backgroundTint="#2E7D32"
-                    android:contentDescription="Green"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:minWidth="0dp"
-                    android:padding="0dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/rm_yellow"
-                    android:layout_width="0dp"
-                    android:layout_height="44dp"
-                    android:layout_weight="1"
-                    android:backgroundTint="#F9A825"
-                    android:contentDescription="Yellow"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:minWidth="0dp"
-                    android:padding="0dp" />
-            </LinearLayout>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- Material 3 floating button (bottom right): opens / closes the BML remote -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_remote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:contentDescription="Remote"
-        app:srcCompat="@drawable/ic_remote" />
+        android:layout_marginBottom="90dp"
+        android:visibility="gone" />
 
 </FrameLayout>

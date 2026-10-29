@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The project's name, in one place.
+
+     It used to be the literal string "OpenDTV-MOD.ph" in seven places (the manifest's three
+     labels, the About dialog's text and content description, and two lines of MainActivity). The
+     .ph was a flavour marker from when the PH and JP builds shared one applicationId; the id is
+     what separates them now (release com.pbcnx.opendtvmod, debug ...mod.ph, JP ...mod.jp), so the
+     name is simply the project's.
+
+     A build that needs a different name - a rename for a release, a JP flavour - overrides these
+     two strings in its own source set (src/<variant>/res/values/strings.xml). It never edits the
+     literals again.
+-->
+<resources>
+    <string name="app_name">OpenDTV-MOD</string>
+    <string name="app_name_scanner">OpenDTV-MOD channel scan</string>
+    <string name="app_name_tuner">OpenDTV-MOD ISDB-T</string>
+    <string name="about_title">About %1$s</string>
+</resources>

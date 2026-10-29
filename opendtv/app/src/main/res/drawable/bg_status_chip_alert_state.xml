@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- EWBS is the one chip that fills in when it is live; otherwise it wears the same
+     outline as DATA, CC and LOCK. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:state_selected="true"
+        android:drawable="@drawable/bg_status_chip_alert" />
+    <item android:drawable="@drawable/bg_status_chip" />
+</selector>

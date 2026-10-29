@@ -1,5 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.OpenDtv" parent="Theme.Material3.DayNight.NoActionBar">
+    <!-- Dark by design, not by the phone's light/dark setting. A TV skin keeps
+         the watching surface near-black and the chrome low-contrast. Dynamic
+         colours are deliberately not applied (see App.java). -->
+    <style name="Theme.OpenDtv" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/odtv_accent</item>
+        <item name="colorOnPrimary">@color/odtv_on_accent</item>
+        <item name="colorPrimaryContainer">@color/odtv_accent_dim</item>
+        <item name="colorOnPrimaryContainer">@color/odtv_on_surface</item>
+        <item name="colorSecondary">@color/odtv_accent</item>
+        <item name="colorOnSecondary">@color/odtv_on_accent</item>
+        <item name="colorSurface">@color/odtv_surface</item>
+        <item name="colorOnSurface">@color/odtv_on_surface</item>
+        <item name="colorSurfaceVariant">@color/odtv_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/odtv_on_surface_variant</item>
+        <item name="colorOutline">@color/odtv_divider</item>
+        <item name="colorError">@color/odtv_live</item>
+        <!-- AppCompat's accent was never set, so focused stock widgets (the
+             Analyzer tab row) fell back to Material pink. -->
+        <item name="colorAccent">@color/odtv_accent</item>
+        <item name="colorControlActivated">@color/odtv_accent</item>
+        <item name="colorControlHighlight">@color/odtv_selected_bg</item>
+        <!-- Material 3 surfaces in containers (dialogs, menus, sheets) default to
+             the baseline purple-tinted neutrals. Map every role onto ours so a
+             dialog sits on the same charcoal as the rest of the chrome. -->
+        <item name="colorSurfaceContainerLowest">@color/odtv_bg</item>
+        <item name="colorSurfaceContainerLow">@color/odtv_surface</item>
+        <item name="colorSurfaceContainer">@color/odtv_surface_variant</item>
+        <item name="colorSurfaceContainerHigh">@color/odtv_surface_variant</item>
+        <item name="colorSurfaceContainerHighest">@color/odtv_surface_high</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.OpenDtv.MaterialAlertDialog</item>
+        <item name="android:colorBackground">@color/odtv_bg</item>
+        <item name="android:windowBackground">@color/odtv_bg</item>
+        <item name="android:statusBarColor">@color/odtv_bg</item>
+        <item name="android:navigationBarColor">@color/odtv_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!-- Dialogs: our charcoal, our 20 dp corner, our divider for the edge. -->
+    <style name="ThemeOverlay.OpenDtv.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="alertDialogStyle">@style/Widget.OpenDtv.MaterialAlertDialog</item>
+    </style>
+
+    <style name="Widget.OpenDtv.MaterialAlertDialog" parent="MaterialAlertDialog.Material3">
+        <item name="backgroundTint">@color/odtv_surface_variant</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.OpenDtv.Dialog</item>
+    </style>
+
+    <style name="ShapeAppearance.OpenDtv.Dialog" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
     </style>
 </resources>

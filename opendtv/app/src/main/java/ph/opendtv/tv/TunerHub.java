@@ -18,21 +18,26 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 import ph.opendtv.source.SignalStatus;
 import ph.opendtv.source.TsSource;
-import ph.opendtv.source.UsbTunerSource;
+import ph.opendtv.source.TunerProvider;
+import ph.opendtv.source.TunerRegistry;
 import ph.opendtv.ts.TsDemux;
 
 /**
  * Process-wide owner of the one USB tuner. The Live Channels session and the channel-scan screen both go
- * through here, so there is only ever one {@link UsbTunerSource}, one demux and one "current owner".
+ * through here, so there is only ever one tuner source, one demux and one "current owner".
  *
  * Threading: all device operations ({@link #ensureTuned}, {@link #ensurePermission}) block and must be called
  * from a background thread. {@link #acquire}, {@link #release} and the getters never block (safe on the UI thread).
  */
 public final class TunerHub {
+    /** Cancel check that does not require java.util.function (API 24) on minSdk 21. */
+    public interface CancelCheck {
+        boolean isCancelled();
+    }
+
     private static final String TAG = "OpenDTV-TV";
     private static final String ACTION_USB_PERMISSION = "ph.opendtv.tv.USB_PERMISSION";
     /** Keep the dongle powered this long after the last user went away (Live Channels re-opens sessions often). */
@@ -67,7 +72,7 @@ public final class TunerHub {
     private ScheduledFuture<?> idleStop;
 
     // guarded by devLock (source/demux are volatile so getters can read them without blocking)
-    private volatile UsbTunerSource source;
+    private volatile TsSource source;
     private String sourceDeviceName;
     private int currentKhz = -1;
     private boolean locked;
@@ -100,7 +105,7 @@ public final class TunerHub {
 
     public UsbDevice findDevice() {
         for (UsbDevice d : usb.getDeviceList().values()) {
-            if (d.getVendorId() == UsbTunerSource.VID && d.getProductId() == UsbTunerSource.PID) return d;
+            if (TunerRegistry.find(d) != null) return d;
         }
         return null;
     }
@@ -121,7 +126,7 @@ public final class TunerHub {
     public boolean ensurePermission(long timeoutMs) {
         UsbDevice d = findDevice();
         if (d == null) {
-            lastMessage = "Tuner 048d:275a not found (plug it in; OTG adapter on a phone).";
+            lastMessage = "Tuner not found (048d:275a, 048d:9308, 048d:9309, or 187f:0600; plug it in with an OTG adapter).";
             return false;
         }
         if (usb.hasPermission(d)) return true;
@@ -149,6 +154,7 @@ public final class TunerHub {
             try {
                 app.unregisterReceiver(r);
             } catch (RuntimeException ignored) {
+                // receiver already unregistered, e.g. two detach paths ran
             }
         }
         boolean ok = usb.hasPermission(d);
@@ -208,7 +214,7 @@ public final class TunerHub {
     }
 
     public SignalStatus signal() {
-        UsbTunerSource s = source;
+        TsSource s = source;
         return s == null ? null : s.getSignalStatus();
     }
 
@@ -217,7 +223,7 @@ public final class TunerHub {
      * is locked. Staying on the same multiplex is free (no retune, demux kept), so zapping between services of one
      * multiplex is fast. A fresh demux is installed after every real retune.
      */
-    public boolean ensureTuned(int khz, BooleanSupplier cancelled) {
+    public boolean ensureTuned(int khz, CancelCheck cancelled) {
         synchronized (devLock) {
             if (!openLocked(khz)) return false;
             if (locked && currentKhz == khz && source.isReady()) return true;
@@ -232,7 +238,7 @@ public final class TunerHub {
             lastMessage = "Tuner not connected.";
             return false;
         }
-        UsbTunerSource s = source;
+        TsSource s = source;
         if (s != null && (!s.isReady() || !d.getDeviceName().equals(sourceDeviceName))) {
             Log.i(TAG, "tuner restarted (dead source or re-plugged)");
             teardownLocked();
@@ -242,8 +248,12 @@ public final class TunerHub {
             lastMessage = "No USB permission for the tuner.";
             return false;
         }
-        s = new UsbTunerSource(usb, d);
-        s.initialFrequencyKhz = khz;       // start() tunes once right after init
+        TunerProvider provider = TunerRegistry.find(d);
+        if (provider == null) {
+            lastMessage = "No driver for this tuner (" + TunerRegistry.supportedNames() + ").";
+            return false;
+        }
+        s = provider.create(usb, app, d, khz);
         demux = new TsDemux();
         s.start(listener);                 // blocks: firmware download, init, first tune
         if (!s.isReady()) {
@@ -259,10 +269,10 @@ public final class TunerHub {
         return true;
     }
 
-    private boolean tuneLocked(int khz, BooleanSupplier cancelled) {
-        UsbTunerSource s = source;
+    private boolean tuneLocked(int khz, CancelCheck cancelled) {
+        TsSource s = source;
         boolean ok = s.tune(khz);
-        if (!ok && !cancelled.getAsBoolean()) {
+        if (!ok && !cancelled.isCancelled()) {
             sleep(300);   // the first attempt right after a frequency change sometimes misses a weak signal
             ok = s.tune(khz);
         }
@@ -274,12 +284,17 @@ public final class TunerHub {
     }
 
     private void teardownLocked() {
-        UsbTunerSource s = source;
+        TsSource s = source;
         source = null;
         if (s != null) s.stop();
         sourceDeviceName = null;
         currentKhz = -1;
         locked = false;
+    }
+
+    /** True while a tuner source is open. False after shutdown() or a teardown. */
+    public boolean isOpen() {
+        return source != null;
     }
 
     /** Powers the dongle down right now (e.g. app exit). */

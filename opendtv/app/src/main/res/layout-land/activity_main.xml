@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:background="#000000"
         app:resize_mode="fill"
-        app:show_buffering="when_playing"
+        app:show_buffering="never"
         app:shutter_background_color="#000000"
         app:use_controller="false" />
 
@@ -22,6 +22,13 @@
         android:id="@+id/bml_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <!-- Tuning / no-signal card; passive, never takes a tap -->
+    <ph.opendtv.ui.TuningOverlay
+        android:id="@+id/tuning_overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
 
     <!-- LAYER 1: Wide & Centered Bottom Channel Info Banner / HUD Overlay -->
     <LinearLayout
@@ -39,29 +46,59 @@
         android:paddingVertical="16dp"
         android:visibility="visible">
 
-        <!-- Left: Logo & Channel Number -->
+        <!-- Left: Logo, channel number, then status stack -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/hud_iv_logo"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_marginEnd="16dp"
-                android:scaleType="fitCenter" />
-
-            <TextView
-                android:id="@+id/hud_tv_virtual"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
-                android:text="0.0"
-                android:textColor="#FFFFFF"
-                android:textSize="38sp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/hud_iv_logo"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_marginEnd="16dp"
+                    android:scaleType="fitCenter" />
+
+                <TextView
+                    android:id="@+id/hud_tv_virtual"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:text="0.0"
+                    android:textColor="#FFFFFF"
+                    android:textSize="38sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/hud_status_left"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:maxLines="1"
+                android:textColor="@color/odtv_on_surface_variant"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/hud_tv_network_name"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="marquee"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="NIT : —   ·   Provider : —"
+                android:textColor="#B0FFFFFF"
+                android:textSize="10sp" />
         </LinearLayout>
 
         <!-- Vertical Divider -->
@@ -92,19 +129,8 @@
                     android:maxLines="1"
                     android:text="Unknown Channel"
                     android:textColor="#FFFFFF"
-                    android:textSize="22sp"
+                    android:textSize="32sp"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/hud_tv_network_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="No Channel Info"
-                    android:textColor="#B0FFFFFF"
-                    android:textSize="13sp" />
             </LinearLayout>
 
             <TextView
@@ -116,7 +142,7 @@
                 android:maxLines="1"
                 android:text="Now: No current data available."
                 android:textColor="#E0FFFFFF"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/hud_tv_next_event"
@@ -127,21 +153,126 @@
                 android:maxLines="1"
                 android:text="Next: No current data available."
                 android:textColor="#A0FFFFFF"
-                android:textSize="12sp" />
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:id="@+id/hud_status_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/hud_tdt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/odtv_on_surface"
+                    android:textSize="10sp" />
+
+                <LinearLayout
+                    android:id="@+id/hud_chips"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/hud_chip_data"
+                        style="@style/Widget.OpenDtv.StatusChip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="DATA"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/hud_chip_cc"
+                        style="@style/Widget.OpenDtv.StatusChip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CC"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/hud_chip_lock"
+                        style="@style/Widget.OpenDtv.StatusChip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="LOCK"
+                        android:textColor="@color/odtv_warning"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/hud_chip_ewbs"
+                        style="@style/Widget.OpenDtv.StatusChip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_status_chip_alert_state"
+                        android:text="EWBS"
+                        android:textColor="@color/strip_chip_ewbs_text"
+                        android:visibility="visible" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- Right: Live Broadcast Badge -->
-        <TextView
+        <!-- Right: REC, then the small i, with S/Q directly under them -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             android:layout_marginStart="16dp"
-            android:background="@drawable/bg_frosted_panel"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
-            android:text="ISDB-T"
-            android:textColor="#FFD700"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:gravity="end"
+            android:orientation="vertical">
+
+            <!-- The portrait row's REC key, unchanged: ring when idle, filled red and
+                 pulsing while a recording runs, and the tap toggles it. Not focusable: the
+                 set never moves focus into this banner (LEFT/RIGHT open the side panel,
+                 CENTER shows it, BACK hides it), so a focusable key here would only distort
+                 the order for any future path that does. On the TV the door to recording is
+                 Settings > ADVANCED > Record Channel. -->
+            <TextView
+                android:id="@+id/btn_record_land"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_record_button"
+                android:clickable="true"
+                android:contentDescription="Record channel"
+                android:focusable="false"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:letterSpacing="0.02"
+                android:text="REC"
+                android:textColor="@color/record_text_tint"
+                android:textSize="9sp" />
+
+            <ImageButton
+                android:id="@+id/btn_watch_info_land"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:background="@drawable/bg_watch_info_button"
+                android:contentDescription="Watch info"
+                android:padding="12dp"
+                android:src="@drawable/ic_info"
+                app:tint="@color/watch_info_icon_tint" />
+
+            <TextView
+                android:id="@+id/hud_signal"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="6dp"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:maxLines="1"
+                android:textColor="@color/odtv_on_surface_variant"
+                android:textSize="10sp" />
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -180,27 +311,75 @@
         <!-- Tab Layout: Channels, EPG, Favorites, Settings -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
+            style="@style/Widget.OpenDtv.Tabs"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@android:color/transparent"
-            app:tabBackground="@drawable/bg_tab_selector"
-            app:tabGravity="fill"
-            app:tabIndicatorColor="#FFD700"
-            app:tabIndicatorHeight="4dp"
-            app:tabMode="fixed"
-            app:tabRippleColor="#20FFFFFF"
-            app:tabSelectedTextColor="#FFD700"
-            app:tabTextColor="#B0FFFFFF" />
+            android:background="@android:color/transparent" />
 
-        <!-- Content RecyclerView -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <!-- Content: list, or the shared empty state when the list has no rows -->
+        <FrameLayout
+            android:id="@+id/list_content"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipToPadding="false"
-            android:paddingVertical="4dp" />
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingVertical="4dp" />
+
+            <include
+                android:id="@+id/empty_state"
+                layout="@layout/view_empty_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <!-- Footer: what this list is + how many items it holds -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/odtv_divider" />
+
+        <LinearLayout
+            android:id="@+id/list_footer"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tv_list_footer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.OpenDtv.ListHeader" />
+
+            <TextView
+                android:id="@+id/tv_list_footer_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:textAppearance="@style/TextAppearance.OpenDtv.ListCount" />
+        </LinearLayout>
 
     </LinearLayout>
+
+    <ph.opendtv.ui.WatchInfoView
+        android:id="@+id/watch_info"
+        android:layout_width="560dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:visibility="gone" />
 
 </FrameLayout>

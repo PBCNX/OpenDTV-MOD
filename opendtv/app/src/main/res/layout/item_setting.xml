@@ -3,21 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="6dp"
+    android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
+    android:minHeight="64dp"
     android:background="@drawable/bg_item_focusable_selector"
     android:clickable="true"
     android:focusable="true"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="12dp">
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp">
 
     <ImageView
         android:id="@+id/iv_setting_icon"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginEnd="12dp"
-        app:tint="#FFFFFF" />
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginEnd="14dp"
+        app:tint="@color/odtv_on_surface_variant" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -29,16 +31,26 @@
             android:id="@+id/tv_setting_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textColor="@color/odtv_on_surface"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium" />
 
         <TextView
             android:id="@+id/tv_setting_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#B0FFFFFF"
-            android:textSize="12sp" />
+            android:layout_marginTop="2dp"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="13sp" />
     </LinearLayout>
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switch_setting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:visibility="gone" />
 
 </LinearLayout>

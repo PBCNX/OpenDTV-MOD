@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher ground for the light mark: white, so the navy phone reads on both
+     light and dark launchers. JP overrides this value on its own branch. -->
+<resources>
+    <color name="opendtv_icon_background">#ffffff</color>
+</resources>

@@ -3,6 +3,7 @@ package ph.opendtv.bml;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
@@ -15,8 +16,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ph.opendtv.ts.PacketSink;
@@ -190,7 +189,8 @@ public final class BmlController {
             @Override
             public boolean onRenderProcessGone(WebView v, android.webkit.RenderProcessGoneDetail detail) {
                 // The WebView's renderer died (low memory / crash): drop the page, keep the app alive.
-                Log.e(TAG, "WebView render process gone, crashed=" + detail.didCrash());
+                boolean crashed = Build.VERSION.SDK_INT >= 26 && detail.didCrash();
+                Log.e(TAG, "WebView render process gone, crashed=" + crashed);
                 ui.post(new Runnable() {
                     @Override
                     public void run() {
@@ -206,16 +206,18 @@ public final class BmlController {
         frame.addView(web, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT));
         web.loadUrl("file:///android_asset/bml/index.html");
-        host.onStatus("Data broadcast: waiting for the carousel ...");
         return true;
     }
 
     /** "package version" of the WebView implementation in use, for logs / status messages. */
     private String webViewVersion() {
+        if (Build.VERSION.SDK_INT < 26) return "unknown WebView";
         try {
             android.content.pm.PackageInfo pi = WebView.getCurrentWebViewPackage();
             if (pi != null) return pi.packageName + " " + pi.versionName;
-        } catch (Throwable ignored) { }
+        } catch (Throwable ignored) {
+            // no WebView package to read: the caller only logs this
+        }
         return "unknown WebView";
     }
 
@@ -420,7 +422,8 @@ public final class BmlController {
             ui.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (active) host.onStatus("BML: " + json);
+                    if (active) host.onStatus("Data broadcast error");
+                    Log.w(TAG, "BML state error: " + json);
                 }
             });
         }
@@ -487,6 +490,7 @@ public final class BmlController {
                             dispatch(Base64.encodeToString(data, off, n, Base64.NO_WRAP));
                         }
                     } catch (InterruptedException ignored) {
+                        // interrupted: the finally block still clears the replay flag
                     } finally {
                         if (gen == generation) replaying = false;
                     }

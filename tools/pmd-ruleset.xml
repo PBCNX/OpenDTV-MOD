@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The bar OpenDTV holds itself to. Used by tools/pmd-gate.ps1.
+
+     Not PMD's quickstart: on this tree quickstart reports 1419 findings and 1389
+     of them are house style - missing braces, fully qualified names, one
+     declaration per line, the vendor's JNI method names. A gate that is 98%
+     noise gets muted, so each rule below is here because it describes a defect
+     or a bug waiting to happen, not a preference. Add a rule together with the
+     change that makes the tree pass it.
+
+     Run:  pmd.bat -d <src> -R tools/pmd-ruleset.xml -f text
+-->
+<ruleset name="OpenDTV"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+    <description>Defects and latent bugs: no style, no naming.</description>
+
+    <!-- A swallowed failure that nobody documented. PMD honours a comment in the
+         block, so a catch that explains itself passes and a bare one does not. -->
+    <rule ref="category/java/errorprone.xml/EmptyCatchBlock"/>
+
+    <!-- Order-of-evaluation and control-flow surprises. -->
+    <rule ref="category/java/errorprone.xml/AssignmentInOperand"/>
+    <rule ref="category/java/errorprone.xml/ImplicitSwitchFallThrough"/>
+    <rule ref="category/java/errorprone.xml/AvoidBranchingStatementAsLastInLoop"/>
+    <rule ref="category/java/errorprone.xml/CompareObjectsWithEquals"/>
+    <rule ref="category/java/bestpractices.xml/SwitchStmtsShouldHaveDefault"/>
+    <rule ref="category/java/bestpractices.xml/LiteralsFirstInComparisons"/>
+
+    <!-- Failures that lose the evidence of what went wrong. -->
+    <rule ref="category/java/errorprone.xml/AvoidCatchingThrowable"/>
+    <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace"/>
+    <rule ref="category/java/bestpractices.xml/PreserveStackTrace"/>
+
+    <!-- State leaking out of an object by accident. -->
+    <rule ref="category/java/errorprone.xml/ReturnEmptyCollectionRatherThanNull"/>
+    <rule ref="category/java/bestpractices.xml/MethodReturnsInternalArray"/>
+    <rule ref="category/java/bestpractices.xml/ArrayIsStoredDirectly"/>
+
+    <!-- Locale: the EPG and the caption path format text for a Philippine
+         audience, and toUpperCase() without a Locale is a Turkish-i bug. -->
+    <rule ref="category/java/errorprone.xml/UseLocaleWithCaseConversions"/>
+
+    <!-- Dead code: the rules that found the cleanup's own leftovers. -->
+    <rule ref="category/java/bestpractices.xml/UnusedImports"/>
+    <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod"/>
+    <rule ref="category/java/bestpractices.xml/UnusedPrivateField"/>
+    <rule ref="category/java/bestpractices.xml/UnusedLocalVariable"/>
+    <rule ref="category/java/bestpractices.xml/UnusedFormalParameter"/>
+</ruleset>

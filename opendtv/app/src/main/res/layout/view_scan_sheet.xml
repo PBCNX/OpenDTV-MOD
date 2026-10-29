@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scan_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_scan_sheet"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/scan_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:text="Auto Scan"
+        android:textColor="@color/odtv_on_surface"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/scan_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="13sp" />
+
+    <!-- Band scan: sweep bar + what has been found so far. -->
+    <ProgressBar
+        android:id="@+id/scan_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginTop="14dp"
+        android:max="100"
+        android:progress="0"
+        android:progressBackgroundTint="@color/odtv_surface_high"
+        android:progressTint="@color/odtv_accent" />
+
+    <TextView
+        android:id="@+id/scan_found"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="13sp" />
+
+    <!-- Console: six lines of "number | name", scrollable as the list grows. -->
+    <ScrollView
+        android:id="@+id/scan_console_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:layout_marginTop="8dp"
+        android:scrollbars="vertical">
+
+        <TextView
+            android:id="@+id/scan_console"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:lineSpacingExtra="3dp"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="12sp" />
+    </ScrollView>
+
+    <!-- Manual scan: channel picker, lock state and the live meters. -->
+    <LinearLayout
+        android:id="@+id/scan_manual_block"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/scan_pick_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_item_focusable_selector"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="14dp">
+
+            <TextView
+                android:id="@+id/scan_pick"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/odtv_on_surface"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="▾"
+                android:textColor="@color/odtv_on_surface_variant"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/scan_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_scan_chip"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="5dp"
+            android:text="NO LOCK"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="11sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="78dp"
+                android:layout_height="wrap_content"
+                android:text="Strength"
+                android:textColor="@color/odtv_on_surface_variant"
+                android:textSize="12sp" />
+
+            <ProgressBar
+                android:id="@+id/scan_strength_bar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="4dp"
+                android:layout_weight="1"
+                android:max="100"
+                android:progressBackgroundTint="@color/odtv_surface_high"
+                android:progressTint="@color/odtv_accent" />
+
+            <TextView
+                android:id="@+id/scan_strength_value"
+                android:layout_width="58dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="—"
+                android:textColor="@color/odtv_on_surface"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="78dp"
+                android:layout_height="wrap_content"
+                android:text="Quality"
+                android:textColor="@color/odtv_on_surface_variant"
+                android:textSize="12sp" />
+
+            <ProgressBar
+                android:id="@+id/scan_quality_bar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="4dp"
+                android:layout_weight="1"
+                android:max="100"
+                android:progressBackgroundTint="@color/odtv_surface_high"
+                android:progressTint="@color/odtv_accent" />
+
+            <TextView
+                android:id="@+id/scan_quality_value"
+                android:layout_width="58dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="—"
+                android:textColor="@color/odtv_on_surface"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Channel picker: same card, so no second dialog is needed. -->
+    <LinearLayout
+        android:id="@+id/scan_list_block"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ScrollView
+            android:id="@+id/scan_list_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/scan_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/scan_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_empty_action"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:minWidth="132dp"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="12dp"
+            android:text="Stop"
+            android:textColor="@color/odtv_accent"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/scan_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:minWidth="96dp"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="12dp"
+            android:text="Close"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="15sp" />
+    </LinearLayout>
+</LinearLayout>

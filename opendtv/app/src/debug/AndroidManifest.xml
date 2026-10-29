@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds only: the analyzer is a diagnostic screen, so let adb open it
+     directly (adb shell am start -n com.pbcnx.opendtvmod/ph.opendtv.AnalyzerActivity).
+     The release manifest keeps android:exported="false". -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+
+        <activity
+            android:name=".AnalyzerActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
+
+        <activity
+            android:name=".UsbProbeActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
+
+        <!-- The hidden Developers screen has no door until the unlock gesture is decided, so adb
+             is the only way in while it is being built and walked:
+             adb shell am start -n com.pbcnx.opendtvmod/ph.opendtv.DeveloperOptionsActivity -->
+        <activity
+            android:name=".DeveloperOptionsActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
+    </application>
+</manifest>

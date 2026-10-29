@@ -1,4 +1,4 @@
-OpenDTV - open-source ISDB-T analyzer and live viewer for the ITE/Afatech IT9175 USB tuner
+OpenDTV-MOD - ISDB-T analyzer and live viewer for Philippine free-to-air, a fork of OpenDTV
 
 MIT License
 
@@ -22,5 +22,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Note: this app contains no code or data from the vendor drivers (libpt275aDrv, GMA Now, Pad TV).
-The tuner init/tune logic was written from analysis of observable behavior.
+Source: https://github.com/PBCNX/OpenDTV-MOD
+
+Note: this licence covers the OpenDTV-MOD code. The IT9175 tuner logic was written from
+analysis of observable behaviour, with no vendor code. The Sony 9308 path links vendor
+binaries, and the decoders and the SmsRio driver are GPL - the Tuners and Others sections
+carry those terms, and they cover the combination.

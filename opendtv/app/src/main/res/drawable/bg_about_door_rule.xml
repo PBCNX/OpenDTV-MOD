@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The hairline under the About image. 8 % gold at rest - you have to look for it - and solid
+     accent when the D-pad is on the image, which is the only "selected" cue this dialog gets on
+     the set. It follows the parent's state through duplicateParentState. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/odtv_accent" />
+            <corners android:radius="2dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#14FFC857" />
+            <corners android:radius="2dp" />
+        </shape>
+    </item>
+</selector>

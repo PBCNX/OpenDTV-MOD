@@ -76,7 +76,7 @@ final class TunerSession extends TvInputService.Session implements TunerHub.Owne
 
     private volatile long lastEpgHash;
 
-    TunerSession(Context context, String inputId) {
+    TunerSession(Context context) {
         super(context);
         this.context = context;
         this.hub = TunerHub.get(context);
@@ -199,7 +199,7 @@ final class TunerSession extends TvInputService.Session implements TunerHub.Owne
                     tuneTask(uri, g);
                 }
             });
-        } catch (RuntimeException e) {
+        } catch (RuntimeException ignored) {
             // executor already shut down by onRelease
         }
     }
@@ -405,7 +405,7 @@ final class TunerSession extends TvInputService.Session implements TunerHub.Owne
                     lastEpgHash = h;
                 }
             }, 5, 30, TimeUnit.SECONDS);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException ignored) {
             // executor shut down
         }
     }

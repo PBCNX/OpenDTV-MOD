@@ -46,6 +46,7 @@ public final class ServiceFilter implements PacketSink {
 
     private volatile CaptionSink captionSink;
     private volatile RawCaptionSink rawCaptionSink;
+    private volatile boolean splitCaptions;       // auto: 0x80 -> text overlay, 0x81 -> styled EWBS
     private volatile int captionLanguage = 1;     // 1 = first (main) caption language, 2 = second
     private int capPid = -1;
     private final byte[] capBuf = new byte[8192];
@@ -61,7 +62,12 @@ public final class ServiceFilter implements PacketSink {
         for (StreamInfo s : svc.streams) {
             pass.add(s.pid);
             if (s.isVideo() || s.isAudio()) mediaPids.add(s.pid);
-            if (s.dataComponentId == 0x0008 && capPid < 0) capPid = s.pid;
+            // A caption ES is declared either by data_component_id 0x0008 (the usual station) or,
+            // as an EWBS superimposed caption does, by the stream_identifier component tag 0x38
+            // (full-segment) / 0x88 (one-segment) on a private stream.
+            boolean captionEs = s.dataComponentId == 0x0008
+                    || (s.streamType == 0x06 && (s.componentTag == 0x38 || s.componentTag == 0x88));
+            if (captionEs && capPid < 0) capPid = s.pid;
         }
         buildPat(tsId < 0 ? 1 : tsId, svc.serviceId, svc.pmtPid);
     }
@@ -72,6 +78,11 @@ public final class ServiceFilter implements PacketSink {
 
     public void setRawCaptionSink(RawCaptionSink sink) {
         this.rawCaptionSink = sink;
+    }
+
+    /** Auto mode: decoded sink gets 0x80 captions, raw sink gets 0x81 superimpose (EWBS). */
+    public void setSplitCaptions(boolean split) {
+        this.splitCaptions = split;
     }
 
     /** 1 = first (main) caption language, 2 = second language. */
@@ -182,17 +193,18 @@ public final class ServiceFilter implements PacketSink {
             long ms = d / 90;
             if (ms > -5_000 && ms < 120_000) due = Math.max(ms, 0);
         }
-        if (raw != null) {
-            int hdr = 9 + (capBuf[8] & 0xFF);               // PES header: fixed 9 bytes + PES_header_data_length
+        int hdr = 9 + (capBuf[8] & 0xFF);                   // PES header: fixed 9 bytes + PES_header_data_length
+        int dataId = hdr < len ? capBuf[hdr] & 0xFF : -1;   // 0x80 caption, 0x81 superimpose/EWBS
+        if (raw != null && (!splitCaptions || dataId == 0x81)) {
             if (hdr < len) {
                 try {
                     raw.onCaptionPes(due, capBuf[3] & 0xFF, Arrays.copyOfRange(capBuf, hdr, len));
-                } catch (RuntimeException e) {
+                } catch (RuntimeException ignored) {
                     // a caption problem must never disturb the video path
                 }
             }
         }
-        if (sink == null) return;
+        if (sink == null || (splitCaptions && dataId == 0x81)) return;
         AribCaption.Result r;
         try {
             r = AribCaption.decodePes(capBuf, len, captionLanguage);
@@ -222,7 +234,9 @@ public final class ServiceFilter implements PacketSink {
         if (recordFos != null) {
             try {
                 recordFos.write(src, o, 188);
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+                // a failing record file must never disturb the video path
+            }
         }
     }
 

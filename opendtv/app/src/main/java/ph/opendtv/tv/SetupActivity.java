@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import ph.opendtv.AnalyzerActivity;
+import ph.opendtv.MainActivity;
 import ph.opendtv.ts.EpgEvent;
 import ph.opendtv.ts.ServiceInfo;
 import ph.opendtv.ts.TsDemux;
@@ -91,9 +93,13 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
         btnQuick = button("Quick scan");
         btnFull = button("Full scan");
         btnCancel = button("Close");
+        Button btnSkip = button("Skip to app");
+        Button btnAnalyzer = button("Analyzer");
         row.addView(btnQuick);
         row.addView(btnFull);
         row.addView(btnCancel);
+        row.addView(btnSkip);
+        row.addView(btnAnalyzer);
 
         root.addView(title);
         root.addView(statusTv);
@@ -123,6 +129,23 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
                 } else {
                     finish();
                 }
+            }
+        });
+        btnSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scanCancel = true;
+                startActivity(new Intent(SetupActivity.this, MainActivity.class)
+                        .putExtra("tab", "settings"));
+                finish();
+            }
+        });
+        btnAnalyzer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scanCancel = true;
+                startActivity(new Intent(SetupActivity.this, AnalyzerActivity.class));
+                finish();
             }
         });
         btnQuick.requestFocus();
@@ -242,9 +265,9 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
             final int idx = i;
             String head = String.format(Locale.US, "Channel %d of %d:  %s\n", i + 1, freqs.size(), channelLabel(khz));
             setStatus(head + "tuning ... (the first one also loads the tuner firmware)");
-            boolean locked = hub.ensureTuned(khz, new java.util.function.BooleanSupplier() {
+            boolean locked = hub.ensureTuned(khz, new TunerHub.CancelCheck() {
                 @Override
-                public boolean getAsBoolean() {
+                public boolean isCancelled() {
                     return scanCancel;
                 }
             });

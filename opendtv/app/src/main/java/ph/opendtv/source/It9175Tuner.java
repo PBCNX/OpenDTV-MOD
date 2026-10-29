@@ -197,7 +197,7 @@ final class It9175Tuner {
         thr[4] = (x7 >>> 3) & 0xFFFFFFFFL;
         thr[2] = (x7 >>> 4) & 0xFFFFFFFFL;
         // chip 0x9175 rev 1 waits 50 ms; other chips poll OFDM 0xec82 (not ported: this chip is the target)
-        int ver = rd(LINK, 0x1222);
+        rd(LINK, 0x1222);   // version probe; the value is not used here (see the note above)
         byte[] id = io.read(LINK, 0x1223, 2);
         if (id == null) return false;
         io.sleep(50);

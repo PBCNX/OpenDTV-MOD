@@ -79,6 +79,8 @@ public final class TsDemux {
     private long eventSections, pmtEmergencyDescs;
     private boolean bmlEwbs = false;
     private String iipLastHex = "";
+    private boolean testEwbsActive = false, testEwbsSeen = false;
+    private int testEwbsArea = 0;
 
     private void ensureRing(int pid, int max, boolean psi) {
         if (pid >= 0 && pid < rings.length && rings[pid] == null) rings[pid] = new Ring(max, psi);
@@ -265,7 +267,7 @@ public final class TsDemux {
                 default:
                     if (pid == PID_EIT && (tid == 0x4E || (tid >= 0x50 && tid <= 0x5F))) parseEit(s, n);
             }
-        } catch (RuntimeException e) {
+        } catch (RuntimeException ignored) {
             // Malformed table (length fields out of range): ignore it, keep running.
         }
     }
@@ -298,9 +300,16 @@ public final class TsDemux {
         ServiceInfo si = services.get(sid);
         if (si == null || si.pmtPid != pid) return;
         si.pcrPid = u13(s, 8);
+        si.encrypted = false;
         int p = 12 + u12(s, 10);
         int end = n - 4;
-        parseEmergencyDescriptor(si, s, 12, Math.min(p, end));
+        int programEnd = Math.min(p, end);
+        for (int d = 12; d + 2 <= programEnd; ) {
+            int tag = s[d] & 0xFF, dl = s[d + 1] & 0xFF;
+            if (tag == 0x09) si.encrypted = true;   // CA_descriptor at program level
+            d += 2 + dl;
+        }
+        parseEmergencyDescriptor(si, s, 12, programEnd);
         List<StreamInfo> list = new ArrayList<>();
         while (p + 5 <= end) {
             StreamInfo st = new StreamInfo();
@@ -310,7 +319,8 @@ public final class TsDemux {
             int d = p + 5;
             while (d + 2 <= dEnd) {
                 int tag = s[d] & 0xFF, dl = s[d + 1] & 0xFF;
-                if (tag == 0x52 && dl >= 1) st.componentTag = s[d + 2] & 0xFF;
+                if (tag == 0x09) si.encrypted = true;               // CA_descriptor at ES level
+                else if (tag == 0x52 && dl >= 1) st.componentTag = s[d + 2] & 0xFF;
                 else if (tag == 0xFD && dl >= 2) st.dataComponentId = u16(s, d + 2);
                 else if (tag == 0x0A && dl >= 3) st.language = iso639(s, d + 2);            // ISO_639_language_descriptor
                 else if (tag == 0xC4 && dl >= 9) {                                           // audio_component_descriptor
@@ -391,7 +401,13 @@ public final class TsDemux {
     }
 
     private void parseTime(byte[] s, int n) {
-        if (n >= 8) clockMs = TsUtil.mjdToMillis(s, 3);
+        // TDT (0x70): time starts at byte 3.
+        // TOT (0x73): service_id (2) + reserved (1) precede the time, so it
+        // starts at byte 6. Reading TOT as TDT is what makes the clock weird.
+        int tid = s[0] & 0xFF;
+        int timeOffset = tid == 0x73 ? 6 : 3;
+        if (n < timeOffset + 5) return;
+        clockMs = TsUtil.mjdToMillis(s, timeOffset);
     }
 
     private void parseEit(byte[] s, int n) {
@@ -459,6 +475,7 @@ public final class TsDemux {
     private void parseEmergencyDescriptor(ServiceInfo si, byte[] s, int from, int to) {
         boolean active = false;
         StringBuilder info = new StringBuilder();
+        List<Integer> areas = new ArrayList<>();
         for (int d = from; d + 2 <= to; ) {
             int tag = s[d] & 0xFF, dl = s[d + 1] & 0xFF;
             if (tag == 0xFC && d + 2 + dl <= to) {
@@ -474,12 +491,16 @@ public final class TsDemux {
                     if (info.length() > 0) info.append("; ");
                     info.append(String.format(Locale.US, "service 0x%04X %s level %d areas", esid, start ? "START" : "END", level));
                     for (int a = 0; a + 2 <= al && q + a + 2 <= qEnd; a += 2) {
-                        info.append(String.format(Locale.US, " 0x%03X", u16(s, q + a) >> 4));
+                        int area = u16(s, q + a) >> 4;
+                        if (!areas.contains(area)) areas.add(area);
                     }
                     q += al;
                 }
             }
             d += 2 + dl;
+        }
+        if (!areas.isEmpty()) {
+            info.append(" (").append(EwbsAreaTable.format(areas)).append(")");
         }
         String now = info.toString();
         if (active != si.emergencyActive || !now.equals(si.emergencyInfo)) {
@@ -488,6 +509,7 @@ public final class TsDemux {
         }
         si.emergencyActive = active;
         si.emergencyInfo = now;
+        si.emergencyAreas = areas;
     }
 
     /**
@@ -519,27 +541,97 @@ public final class TsDemux {
         }
     }
 
+    /** Debug/test alert: behaves exactly like a PMT 0xFC descriptor with one area code. */
+    public synchronized void setTestEwbs(int area, boolean active) {
+        testEwbsArea = area & 0xFFF;
+        testEwbsActive = active;
+        if (active) testEwbsSeen = true;
+    }
+
+    public synchronized void clearTestEwbs() {
+        testEwbsActive = false;
+        testEwbsSeen = false;
+        testEwbsArea = 0;
+    }
+
     /** true while any EWBS signal (IIP flag or a PMT start descriptor) is active. */
     public synchronized boolean isEwbsActive() {
+        return isEwbsActive(0);
+    }
+
+    /** true when an active alert covers the viewer's Philippine location; 0 = show all. */
+    public synchronized boolean isEwbsActive(int location) {
+        if (testEwbsActive
+                && (location == 0 || testEwbsArea == 0
+                        || EwbsAreaTable.covers(testEwbsArea, location))) {
+            return true;
+        }
+        if (location == 0) {
+            if (iipFlag || bmlEwbs) return true;
+            for (ServiceInfo si : services.values()) if (si.emergencyActive) return true;
+            return false;
+        }
         if (iipFlag || bmlEwbs) return true;
-        for (ServiceInfo si : services.values()) if (si.emergencyActive) return true;
+        for (ServiceInfo si : services.values()) {
+            if (!si.emergencyActive) continue;
+            if (si.emergencyAreas.isEmpty()) return true;
+            for (int area : si.emergencyAreas) {
+                if (EwbsAreaTable.covers(area, location)) return true;
+            }
+        }
         return false;
     }
 
     /** true if any EWBS signal has been seen at all (even if it has ended again): useful for finished recordings. */
     public synchronized boolean ewbsEverSeen() {
-        return !ewbsLog.isEmpty();
+        return !ewbsLog.isEmpty() || testEwbsSeen;
     }
 
     /** Short one-line description of what is signalling EWBS right now / last time (for the on-screen banner). */
     public synchronized String ewbsBannerText() {
+        return ewbsBannerText(0);
+    }
+
+    public synchronized String ewbsBannerText(int location) {
         StringBuilder sb = new StringBuilder();
-        if (iipFlag) sb.append("IIP start flag");
+        if (testEwbsActive
+                && (location == 0 || testEwbsArea == 0
+                        || EwbsAreaTable.covers(testEwbsArea, location))) {
+            sb.append("Test: ").append(EwbsAreaTable.format(java.util.Collections.singletonList(testEwbsArea)));
+        }
+        if (iipFlag) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append("IIP start flag");
+        }
+        List<Integer> areas = new ArrayList<>();
+        int noAreaService = -1;
         for (ServiceInfo si : services.values()) {
-            if (si.emergencyActive) {
-                if (sb.length() > 0) sb.append(", ");
-                sb.append("PMT ").append(si.serviceId);
+            if (!si.emergencyActive) continue;
+            if (location != 0 && !si.emergencyAreas.isEmpty()) {
+                boolean covers = false;
+                for (int area : si.emergencyAreas) {
+                    if (EwbsAreaTable.covers(area, location)) {
+                        covers = true;
+                        break;
+                    }
+                }
+                if (!covers) continue;
             }
+            if (si.emergencyAreas.isEmpty()) {
+                if (noAreaService < 0) noAreaService = si.serviceId;
+            } else {
+                for (int area : si.emergencyAreas) {
+                    if (!areas.contains(area)) areas.add(area);
+                }
+            }
+        }
+        if (!areas.isEmpty()) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(EwbsAreaTable.format(areas));
+        }
+        if (noAreaService >= 0) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append("PMT ").append(noAreaService);
         }
         if (bmlEwbs) {
             if (sb.length() > 0) sb.append(", ");

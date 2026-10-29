@@ -125,7 +125,7 @@ public final class FileTsSource implements TsSource {
 
         byte[] raw = new byte[size * OUT_PACKETS];
         byte[] out = new byte[188 * OUT_PACKETS];
-        int rawLen = 0;
+        int rawLen;
         long start = System.nanoTime();
         long sent = 0;
 

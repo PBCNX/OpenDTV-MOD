@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Analyzer, TV / tall landscape (540 dp and up: the set, not a rotated phone).
+     Same treatment as the rotated phone, minus the one thing the set has room for:
+     the mux chip stays in the header, so the header carries title + tabs + chip and
+     the card column is free of both the tab row and the board.
+
+       header 56 dp   title, nine tabs, mux chip (still the only way to the picker
+                      from the remote path besides the Channels action)
+       row           16:9 preview column (its width is set from the row height in
+                      code, so the frame and the picture agree) and the tab card
+       board 66 dp    full width, under the row - where the numbers have room
+       actions 60 dp  the five actions
+       status 18 dp   transfer state and dBm/BER; the mux lives on the chip here
+
+     The short-landscape phone version lives in layout-land. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/odtv_bg"
+    android:orientation="vertical"
+    android:paddingBottom="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:text="Signal &amp; TS Analyzer"
+            android:textColor="@color/odtv_on_surface"
+            android:textSize="20sp" />
+
+        <!-- weight 1 + gravity end: tabs and chip sit flush right, and the tab row is
+             still capped at the space that is left, so it scrolls rather than clips. -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:gravity="end|center_vertical"
+            android:orientation="horizontal">
+
+            <include
+                layout="@layout/view_analyzer_tabs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp" />
+
+            <!-- The only mux selector on the remote path: focusable, opens the picker. -->
+            <TextView
+                android:id="@+id/analyzer_mux_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_scan_chip_focusable"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:paddingStart="14dp"
+                android:paddingTop="7dp"
+                android:paddingEnd="14dp"
+                android:paddingBottom="7dp"
+                android:text="—"
+                android:textColor="@color/odtv_accent"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="20dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <!-- Width is overwritten in sizePreview(): the column becomes exactly as wide
+             as a 16:9 picture at the row's height, so a 16:9 service fills it. -->
+        <FrameLayout
+            android:id="@+id/preview_box"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.44"
+            android:background="#000000">
+
+            <androidx.media3.ui.AspectRatioFrameLayout
+                android:id="@+id/player_frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center">
+
+                <androidx.media3.ui.PlayerView
+                    android:id="@+id/player_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#000000"
+                    app:show_buffering="never"
+                    app:use_controller="false" />
+            </androidx.media3.ui.AspectRatioFrameLayout>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="12dp"
+            android:layout_weight="0.56"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/content_frame"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_scan_sheet"
+                android:padding="14dp">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scrollbars="none">
+
+                    <TextView
+                        android:id="@+id/tv_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:textColor="@color/odtv_on_surface"
+                        android:textSize="12sp" />
+                </ScrollView>
+
+                <include
+                    layout="@layout/view_analyzer_signal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <include
+                    layout="@layout/view_analyzer_services"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <include
+                    layout="@layout/view_analyzer_pids"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <include
+                    layout="@layout/view_analyzer_tables"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <include
+                    layout="@layout/view_analyzer_graph"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <include
+                    layout="@layout/view_analyzer_logs"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <!-- stays last: the blocking card owns the tab content -->
+                <include
+                    layout="@layout/view_analyzer_empty"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <include
+        layout="@layout/view_analyzer_actions"
+        android:layout_width="match_parent"
+        android:layout_height="60dp" />
+
+    <include
+        layout="@layout/view_analyzer_strip"
+        android:layout_width="match_parent"
+        android:layout_height="18dp" />
+</LinearLayout>

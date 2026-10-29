@@ -10,22 +10,28 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import ph.opendtv.R;
 import ph.opendtv.ts.EpgEvent;
-import ph.opendtv.ts.TsUtil;
 
 public class EpgAdapter extends RecyclerView.Adapter<EpgAdapter.ViewHolder> {
 
     private final Context context;
     private final List<EpgEvent> events;
     private final long clockMs;
+    /** Broadcast wall clock: EIT times arrive as UTC and are shown in the device's zone. */
+    private final SimpleDateFormat eventTime = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
 
     public EpgAdapter(Context context, List<EpgEvent> events, long clockMs) {
         this.context = context;
         this.events = events;
         this.clockMs = clockMs;
+        eventTime.setTimeZone(TimeZone.getDefault());
     }
 
     @NonNull
@@ -39,7 +45,8 @@ public class EpgAdapter extends RecyclerView.Adapter<EpgAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         EpgEvent event = events.get(position);
         holder.tvTitle.setText(event.name.isEmpty() ? "(no title)" : event.name);
-        holder.tvTime.setText(TsUtil.formatTime(event.startMs) + " (" + (event.durationSec / 60) + "m)");
+        holder.tvTime.setText(eventTime.format(new Date(event.startMs))
+                + " (" + (event.durationSec / 60) + "m)");
         holder.tvDescription.setText(event.text);
 
         long now = clockMs > 0 ? clockMs : System.currentTimeMillis();

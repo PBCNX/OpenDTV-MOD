@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shared empty state for the browse surfaces: a quiet badge, a title and one
+     line of guidance. Text only, no action button (a scan must never start by
+     accident). The owner sets icon/title/body and toggles visibility. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <FrameLayout
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="@drawable/bg_empty_badge">
+
+        <ImageView
+            android:id="@+id/empty_icon"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            app:tint="@color/odtv_accent_dim" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/empty_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:textColor="@color/odtv_on_surface"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/empty_body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:lineSpacingExtra="2dp"
+        android:maxWidth="280dp"
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="13sp" />
+
+    <!-- Optional quiet action: a destination, never a scan. -->
+    <TextView
+        android:id="@+id/empty_action"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_empty_action"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:letterSpacing="0.02"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:textColor="@color/odtv_accent"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+</LinearLayout>

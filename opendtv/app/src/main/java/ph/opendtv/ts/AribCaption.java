@@ -11,6 +11,12 @@ package ph.opendtv.ts;
 public final class AribCaption {
     private AribCaption() {}
 
+    /**
+     * Text coding declared by the management group's format byte: 0 = ARIB 8-bit (what the stations
+     * send), 1 = UCS/UTF-8, which is what an EWBS superimposed caption declares.
+     */
+    private static int tcs;
+
     /** Result of decoding one PES. */
     public static final class Result {
         /** true: statement data group (text may be empty = "clear caption"); false: management / unknown. */
@@ -34,15 +40,19 @@ public final class AribCaption {
     /** @param language which caption language to decode: 1 = first (main), 2 = second */
     public static Result decodePes(byte[] pes, int len, int language) {
         if (len < 9 || pes[0] != 0 || pes[1] != 0 || pes[2] != 1) return null;
-        int p = 9 + (pes[8] & 0xFF);
+        // private_stream_2 (0xBF, what an EWBS superimposed caption uses) has no optional header:
+        // the payload starts right after the 6-byte PES header.
+        int p = (pes[3] & 0xFF) == 0xBF ? 6 : 9 + (pes[8] & 0xFF);
         return decodePayload(pes, p, len, language);
     }
 
-    /** @param b data_identifier (0x80) ... */
+    /** @param b data_identifier (0x80 caption, 0x81 superimpose) ... */
     static Result decodePayload(byte[] b, int p, int end) { return decodePayload(b, p, end, 1); }
 
     static Result decodePayload(byte[] b, int p, int end, int language) {
-        if (end - p < 3 || (b[p] & 0xFF) != 0x80 || (b[p + 1] & 0xFF) != 0xFF) return null;
+        if (end - p < 3) return null;
+        int id = b[p] & 0xFF;
+        if ((id != 0x80 && id != 0x81) || (b[p + 1] & 0xFF) != 0xFF) return null;
         p += 3 + (b[p + 2] & 0x0F);                      // data_identifier, private_stream_id, header
         if (end - p < 5) return null;
         int groupId = (b[p] & 0xFF) >> 2;
@@ -66,6 +76,9 @@ public final class AribCaption {
         if (numLang > 0 && end - p >= 4) {
             lang = new String(new char[] {(char) (b[p + 1] & 0x7F), (char) (b[p + 2] & 0x7F), (char) (b[p + 3] & 0x7F)});
         }
+        if (numLang > 0 && end - p >= 5) {
+            tcs = (b[p + 4] & 0x0C) >> 2;                 // 1 = UCS / UTF-8
+        }
         return new Result(false, "", lang);
     }
 
@@ -84,10 +97,51 @@ public final class AribCaption {
             int n = ((b[p + 2] & 0xFF) << 16) | ((b[p + 3] & 0xFF) << 8) | (b[p + 4] & 0xFF);
             p += 5;
             int e = Math.min(p + n, loopEnd);
-            if (param == 0x20) text(b, p, e, sb);        // statement body
+            if (param == 0x20) {                          // statement body
+                // An EWBS caption declares TCS=1 and its control prefix is UTF-8 encoded (C2 9B ...),
+                // so the lead byte is enough to tell it apart even if the management group came late.
+                boolean utf8 = tcs == 1 || hasUtf8Lead(b, p, e);
+                if (utf8) textUtf8(b, p, e, sb);
+                else text(b, p, e, sb);
+            }
             p = e;
         }
         return new Result(true, tidy(sb), null);
+    }
+
+    /**
+     * UCS/UTF-8 statement body. An EWBS superimposed caption declares TCS=1 and sends UTF-8 text
+     * behind a run of C1 control codes, so the controls are dropped and the newline ends the line.
+     */
+    /** True when the body carries a UTF-8 lead byte (C2..F4): the EWBS caption's control prefix does. */
+    private static boolean hasUtf8Lead(byte[] b, int p, int end) {
+        for (int i = p; i < end; i++) {
+            int c = b[i] & 0xFF;
+            if (c >= 0xC2 && c <= 0xF4) return true;
+        }
+        return false;
+    }
+
+    private static void textUtf8(byte[] b, int p, int end, StringBuilder sb) {
+        String s = new String(b, p, Math.max(0, end - p), java.nio.charset.StandardCharsets.UTF_8);
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            if (ch == '\n') { nl(sb); continue; }
+            if (ch >= 0x80 && ch <= 0x9F) {
+                // A C1 control (CSI 0x9B and friends) arrives as its own character, followed by
+                // printable parameter bytes and a final byte in 0x40..0x7F. Consume the whole
+                // sequence, or the parameters read as text ("S620;480 V30;30").
+                i++;
+                while (i < s.length()) {
+                    char f = s.charAt(i);
+                    if (f >= 0x40 && f <= 0x7F) break;
+                    i++;
+                }
+                continue;
+            }
+            if (ch < 0x20 || ch == 0x7F) continue;
+            sb.append(ch);
+        }
     }
 
     /** Collapses blank lines and trims the padding spaces stations use for centering. */
@@ -112,7 +166,6 @@ public final class AribCaption {
 
     private static void text(byte[] b, int p, int end, StringBuilder sb) {
         int row = -1;
-        boolean twoByte = false;                          // GL currently holds a 2-byte set (kanji etc.)
         int[] g = {1, 1, 0, 0};                           // 0 = 2-byte/other, 1 = alphanumeric (ASCII)
         int gl = 0;
         int ss = -1;                                      // single shift target (G2/G3), applies to next char

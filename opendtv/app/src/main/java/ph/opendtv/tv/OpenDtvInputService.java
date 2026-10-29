@@ -10,6 +10,6 @@ import androidx.media3.common.util.UnstableApi;
 public final class OpenDtvInputService extends TvInputService {
     @Override
     public Session onCreateSession(String inputId) {
-        return new TunerSession(this, inputId);
+        return new TunerSession(this);
     }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Services tab: one focusable row per service, filled in code. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/services_panel"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="vertical"
+        android:fadeScrollbars="true"
+        android:scrollbarSize="3dp"
+        android:scrollbarStyle="insideInset"
+        android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
+        android:scrollbarDefaultDelayBeforeFade="700"
+        android:scrollbarFadeDuration="250"
+        android:scrollbarAlwaysDrawVerticalTrack="false"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:id="@+id/services_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+</ScrollView>

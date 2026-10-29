@@ -14,13 +14,16 @@
     <uses-permission android:name="com.android.providers.tv.permission.WRITE_EPG_DATA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".App"
         android:allowBackup="false"
         android:banner="@drawable/banner"
-        android:label="OpenDTV"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.OpenDtv">
 
@@ -47,9 +50,17 @@
             android:name=".LicensesActivity"
             android:exported="false" />
 
+        <!-- The hidden Developers screen. Its door is a row at the bottom of Settings that stays
+             hidden until the unlock gesture is decided, so a normal build reaches it no more than
+             it reaches any other non-exported activity. Debug builds export it for adb. -->
+        <activity
+            android:name=".DeveloperOptionsActivity"
+            android:exported="false" />
+
         <activity
             android:name=".AnalyzerActivity"
             android:exported="false" />
+
 
         <!-- Milestone-1 diagnostic: lists interfaces and endpoints of the tuner -->
         <activity
@@ -60,7 +71,7 @@
         <activity
             android:name=".tv.SetupActivity"
             android:exported="true"
-            android:label="OpenDTV channel scan">
+            android:label="@string/app_name_scanner">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
@@ -71,7 +82,7 @@
         <service
             android:name=".tv.OpenDtvInputService"
             android:exported="true"
-            android:label="OpenDTV ISDB-T"
+            android:label="@string/app_name_tuner"
             android:permission="android.permission.BIND_TV_INPUT">
             <intent-filter>
                 <action android:name="android.media.tv.TvInputService" />

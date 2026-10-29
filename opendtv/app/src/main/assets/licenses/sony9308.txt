@@ -1,0 +1,11 @@
+Sony 9308 / Endeavour - IT9300 USB tuner support
+
+The Sony/IT9300 ("Endeavour") tuner path links three vendor libraries:
+
+    libendeavour-sony-jni.so
+    libendeavour-sonytuner.so
+    libsonytuner.so
+
+They are the vendor's own binaries, redistributed only in the private build so the dongle can be
+driven on the bench and by testers. They are not open source, and the MIT licence of OpenDTV-MOD
+does not cover them. The public source tree contains none of them.

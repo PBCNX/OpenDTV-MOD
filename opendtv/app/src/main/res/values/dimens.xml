@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="odtv_toolbar_height">64dp</dimen>
+    <dimen name="odtv_row_radius">12dp</dimen>
+
+    <!-- Analyzer tab strip. Nine labels need 505 dp at 13 sp / 13 dp, which fits the
+         TV's 920 dp column but not a rotated phone's 454 dp one, so the strip is
+         sized by qualifier: see values-land (12 sp / 8 dp = 434 dp). -->
+    <dimen name="analyzer_tab_text">13sp</dimen>
+    <dimen name="analyzer_tab_gap">13dp</dimen>
+</resources>

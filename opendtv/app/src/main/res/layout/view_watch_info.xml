@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/watch_logo"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/watch_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:textColor="@color/odtv_accent"
+            android:textSize="22sp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/watch_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:textColor="@color/odtv_on_surface"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/watch_provider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/odtv_on_surface_variant"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/watch_close"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Close info"
+            android:padding="8dp"
+            android:src="@drawable/ic_close"
+            app:tint="@color/odtv_on_surface_variant" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/watch_frequency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/watch_now_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/odtv_on_surface"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/watch_signal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="13sp" />
+
+    <!-- NIT and provider on one marquee line: it scrolls instead of wrapping,
+         so a long network name never changes the card's height. -->
+    <TextView
+        android:id="@+id/watch_network"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="marquee"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/watch_chips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/watch_chip_data"
+            style="@style/Widget.OpenDtv.StatusChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DATA" />
+
+        <TextView
+            android:id="@+id/watch_chip_cc"
+            style="@style/Widget.OpenDtv.StatusChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CC" />
+
+        <TextView
+            android:id="@+id/watch_chip_enc"
+            style="@style/Widget.OpenDtv.StatusChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LOCK"
+            android:textColor="@color/odtv_warning" />
+
+        <TextView
+            android:id="@+id/watch_chip_ewbs"
+            style="@style/Widget.OpenDtv.StatusChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_status_chip_alert"
+            android:text="EWBS"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/watch_details_toggle"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="4dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="8dp"
+        android:text="Signal details"
+        android:textColor="@color/odtv_accent"
+        android:textSize="13sp"
+        app:icon="@drawable/ic_chevron_right"
+        app:iconGravity="textEnd"
+        app:iconPadding="2dp"
+        app:iconTint="@color/odtv_accent" />
+
+    <LinearLayout
+        android:id="@+id/watch_details_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="2dp"
+            android:background="@color/odtv_divider" />
+
+        <TextView
+            android:id="@+id/watch_details_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="monospace"
+            android:lineSpacingExtra="4dp"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="12sp" />
+    </LinearLayout>
+</merge>

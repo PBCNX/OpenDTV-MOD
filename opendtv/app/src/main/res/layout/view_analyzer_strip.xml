@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Transient status line: recording, scanning, BML, "saved".
+     One line only: the strip has a fixed height, so a longer right-hand text
+     used to draw over the tab content instead of wrapping. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/analyzer_strip"
+    android:layout_width="match_parent"
+    android:layout_height="34dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp">
+
+    <!-- The rotated phone has no header chip (it needs that width for the tabs), so
+         the mux label lives here instead. GONE everywhere else: updateMuxLabel()
+         shows it only when the chip is absent from the layout. -->
+    <TextView
+        android:id="@+id/strip_mux"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:fontFamily="sans-serif-medium"
+        android:maxLines="1"
+        android:textColor="@color/odtv_accent"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/strip_dot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="●"
+        android:textColor="@color/odtv_accent"
+        android:textSize="11sp" />
+
+    <TextView
+        android:id="@+id/strip_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text=""
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/strip_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text=""
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="12sp" />
+</LinearLayout>

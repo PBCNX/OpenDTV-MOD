@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Blocking state on a landscape phone: no tuner, or a mux with no lock.
+     The card here has roughly 70 dp to work with once the board, tabs, strip and
+     actions have taken their share of a 407 dp screen, so this is the same card
+     with smaller type and no supported-tuner line - the strip already names the
+     tuners on that screen. The TV keeps the roomy version in layout-h500dp-land/.
+     empty_hint stays present but hidden: refresh() sets its text and would NPE. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/empty_panel"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:focusable="false"
+    android:scrollbars="none"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_analyzer_card"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <TextView
+                android:id="@+id/empty_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:maxWidth="320dp"
+                android:text="The analyzer needs a tuner"
+                android:textColor="@color/odtv_on_surface"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/empty_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:maxWidth="340dp"
+                android:text="Connect the USB dongle and the signal board."
+                android:textColor="@color/odtv_on_surface_variant"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/empty_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.04"
+                android:text="IT9175 · Sony 9308 · Siano Rio"
+                android:textColor="@color/odtv_on_surface_variant"
+                android:textSize="10sp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

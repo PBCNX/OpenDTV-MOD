@@ -2,16 +2,36 @@ plugins {
     id 'com.android.application'
 }
 
+// One counter for every build of this app. opendtv/version.properties holds "build=N";
+// a release increments it and commits that change, so no version is ever hand-edited.
+// versionName 0.0.N (the JP build appends -jp), versionCode 1000 + N. See docs/VERSIONING.md.
+//
+// A milestone adds an optional "version=..." line, which then IS the versionName - that is how a
+// pre-release is written (0.1.0-beta) without inventing a second counter: build= keeps ordering,
+// version= keeps the words. Both are written only in the release commit.
+def versionProps = rootProject.file("version.properties").text.readLines()
+def versionValue = { String key ->
+    def line = versionProps.find { it.trim().startsWith(key + "=") }
+    line == null ? null : line.substring(line.indexOf("=") + 1).trim()
+}
+def buildNumber = Integer.parseInt(versionValue("build"))
+def explicitVersion = versionValue("version")   // null on a plain 0.0.N build
+
 android {
     namespace 'ph.opendtv'
     compileSdk 35
 
     defaultConfig {
-        applicationId "ph.opendtv"
+        applicationId "com.pbcnx.opendtvmod"
         minSdk 21
         targetSdk 34
-        versionCode 2
-        versionName "2.1"
+        versionCode 1000 + buildNumber
+        versionName explicitVersion != null ? explicitVersion : ("0.0." + buildNumber)
+        buildConfigField "String", "BUILD_TIME", "\"${new Date().format('yyyy-MM-dd HH:mm:ss')}\""
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     compileOptions {
@@ -19,6 +39,89 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 }
+
+// Build identity for the About box and the Developers screen's Build info row: the short commit
+// this APK was built from. Deliberately outside defaultConfig and below the block, so it does not
+// touch the version fields native owns - and it is empty, not fatal, when git is not there.
+// The UI reads it by name through ph.opendtv.BuildStamp and falls back to no bracket.
+def gitCommit = ""
+try {
+    gitCommit = providers.exec {
+        commandLine "git", "rev-parse", "--short", "HEAD"
+        workingDir rootDir
+    }.standardOutput.asText.get().trim()
+} catch (Exception ignored) {
+    gitCommit = ""
+}
+android.defaultConfig.buildConfigField "String", "GIT_COMMIT", "\"${gitCommit}\""
+
+// Release signing, read from a keystore.properties that lives OUTSIDE the repository:
+// <workspace>\keys\keystore.properties, which is ../../keys from the gradle root, or wherever
+// -Popendtv.keys.dir points. Opt-in on purpose, so the stated rule holds both ways: no key on
+// the machine leaves assembleDebug untouched and assembleRelease unsigned, never a failed build.
+def keysDir = new File(project.findProperty("opendtv.keys.dir") ?: rootProject.file("../../keys").absolutePath)
+def keystorePropsFile = new File(keysDir, "keystore.properties")
+def releaseSigning = null
+if (keystorePropsFile.isFile()) {
+    def kp = new Properties()
+    keystorePropsFile.withInputStream { kp.load(it) }
+    def storeName = kp.getProperty("storeFile", "opendtv-release.jks")
+    def store = new File(storeName).isAbsolute() ? new File(storeName) : new File(keysDir, storeName)
+    if (store.isFile()) {
+        releaseSigning = [
+                storeFile    : store,
+                storePassword: kp.getProperty("storePassword", ""),
+                keyAlias     : kp.getProperty("keyAlias", "opendtv"),
+                keyPassword  : kp.getProperty("keyPassword", kp.getProperty("storePassword", ""))
+        ]
+        // Printed on every build: a keystore.properties is plain java.util.Properties, so a Windows
+        // path written with single backslashes loses them silently - this line is how you see it.
+        logger.lifecycle("release signing: alias '${releaseSigning.keyAlias}' from ${store}")
+    } else {
+        logger.lifecycle("release signing: ${keystorePropsFile} names ${store.name}, which is not there - release stays unsigned")
+    }
+} else {
+    logger.lifecycle("release signing: no ${keystorePropsFile} - release stays unsigned")
+}
+
+android {
+    signingConfigs {
+        if (releaseSigning != null) {
+            release {
+                storeFile releaseSigning.storeFile
+                storePassword releaseSigning.storePassword
+                keyAlias releaseSigning.keyAlias
+                keyPassword releaseSigning.keyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        // The bench build and the beta are different apps on purpose:
+        //   debug    com.pbcnx.opendtvmod.ph   debug-signed, the bench's own state
+        //   release  com.pbcnx.opendtvmod      release-signed, what testers get
+        // Two identities means the beta can be installed next to the bench build instead of
+        // replacing it, and a signature change never costs the channel list again. The guard keeps
+        // the JP branch out of it: its applicationId is already ...mod.jp, and the JP debug build
+        // must stay exactly that rather than becoming ...mod.jp.ph.
+        debug {
+            // This block is evaluated against the BuildType, not the project, so the base id is read
+            // from defaultConfig.
+            if (android.defaultConfig.applicationId == "com.pbcnx.opendtvmod") applicationIdSuffix ".ph"
+        }
+        // Minified: this is the artefact testers get, and R8 is the difference between the beta and
+        // the bench build. The rules in proguard-rules.pro cover the three things a string cannot
+        // survive - BuildStamp's field lookup, the WebView bridges, and the native tuner/decoder
+        // symbols. shrinkResources stays off: the analysed saving is small and it is the setting
+        // most likely to remove a resource that is reached by name at runtime.
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (releaseSigning != null) signingConfig signingConfigs.release
+        }
+    }
+}
+
 
 dependencies {
     implementation platform('org.jetbrains.kotlin:kotlin-bom:2.1.21')

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Chip that can hold the TV's focus: quiet outline at rest, gold ring when focused.
+     bg_scan_chip has no focused state, which made a focused chip look unfocused. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/odtv_selected_bg" />
+            <corners android:radius="100dp" />
+            <stroke
+                android:width="2dp"
+                android:color="@color/odtv_accent" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <corners android:radius="100dp" />
+            <stroke
+                android:width="1dp"
+                android:color="@color/odtv_divider" />
+        </shape>
+    </item>
+</selector>

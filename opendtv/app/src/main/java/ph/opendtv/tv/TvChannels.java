@@ -122,17 +122,12 @@ final class TvChannels {
     // ------------------------------------------------------------------ programs (EPG)
 
     /**
-     * Seconds-exact offset between the broadcast wall clock (ARIB: JST, but Philippine muxes may differ) and UTC,
-     * derived from the TDT/TOT versus this device's clock and rounded to a quarter hour. Falls back to JST.
+     * EIT event times are ARIB JST wall-clock, independent of the TOT field.
+     * PH broadcasters put UTC in TOT (with a +08 descriptor), but EIT remains
+     * JST; deriving this from TOT made every PH programme 9 hours off.
      */
     static long clockOffsetMs(TsDemux d) {
-        final long jst = 9L * 3600_000L;
-        long clock = d.getClockMs();
-        if (clock < 0) return jst;
-        long q = 15L * 60_000L;
-        long off = Math.round((double) (clock - System.currentTimeMillis()) / q) * q;
-        if (off < -12L * 3600_000L || off > 14L * 3600_000L) return jst;
-        return off;
+        return 9L * 3600_000L;
     }
 
     static long hash(List<EpgEvent> events, long offsetMs) {

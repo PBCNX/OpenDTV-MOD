@@ -1,0 +1,51 @@
+# Build output and local Android/Gradle state
+.gradle/
+build/
+local.properties
+*.apk
+*.aab
+*.iml
+.idea/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Signing material and secrets
+*.jks
+*.keystore
+keystore.properties
+*.p12
+*.pem
+.env
+
+# Private tuner work: vendor libraries, firmware, captures, and test data
+private/
+vendor/
+vendor-extract/
+windows-driver/
+sony9308-wrapper/
+test-data/
+recordings/
+*.inp
+*.pcap
+*.trp
+
+# Native vendor libraries must stay in the private repository
+jniLibs/
+app/src/main/jniLibs/
+**/jniLibs/
+*.so
+
+# Local logs and scratch files
+*.log
+*.tmp
+*.bak
+
+# Session evidence (screenshots, UI dumps, logcat), not source
+refactor/test-artifacts/
+
+# desloppify working state
+.desloppify/
+
+# quality gate output (kept local)
+docs/build-logs/

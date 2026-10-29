@@ -6,6 +6,13 @@ import java.util.List;
 /** A service (channel) learned from PAT/PMT/SDT/NIT. Instances returned by TsDemux are snapshots. */
 public final class ServiceInfo {
     public final int serviceId;          // "Program ID" (program_number / service_id)
+    /**
+     * Mux frequency in kHz this copy was learned on, -1 until a ChannelEntry stamps it. A
+     * service_id is only unique inside one mux: ALLTV HD (485143), IBC HD (491143) and INCTV HD
+     * (683143) are all SID 64, and Congress TV HD / INCTV SD are both SID 65. Identity is
+     * (frequency, service_id), never the SID alone.
+     */
+    public int khz = -1;
     public int pmtPid = -1;
     public int pcrPid = -1;
     public int serviceType = -1;         // SDT service_type: 0x01 digital TV, 0xC0 data broadcast, ...
@@ -21,6 +28,10 @@ public final class ServiceInfo {
     public boolean emergencyActive = false;
     /** Human readable contents of the last 0xFC descriptor seen ("" = none). */
     public String emergencyInfo = "";
+    /** Raw 12-bit area codes from the last 0xFC descriptor. */
+    public List<Integer> emergencyAreas = new ArrayList<>();
+    /** PMT or ES CA_descriptor (tag 0x09) present: the service is conditional-access. */
+    public boolean encrypted = false;
 
     public ServiceInfo(int serviceId) {
         this.serviceId = serviceId;
@@ -47,6 +58,7 @@ public final class ServiceInfo {
 
     public ServiceInfo copy() {
         ServiceInfo c = new ServiceInfo(serviceId);
+        c.khz = khz;
         c.pmtPid = pmtPid;
         c.pcrPid = pcrPid;
         c.serviceType = serviceType;
@@ -57,6 +69,8 @@ public final class ServiceInfo {
         c.virtualNumber = virtualNumber;
         c.emergencyActive = emergencyActive;
         c.emergencyInfo = emergencyInfo;
+        c.emergencyAreas.addAll(emergencyAreas);
+        c.encrypted = encrypted;
         for (StreamInfo s : streams) c.streams.add(s.copy());
         return c;
     }
