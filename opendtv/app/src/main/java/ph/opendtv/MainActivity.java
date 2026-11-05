@@ -230,6 +230,12 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
     private final Runnable showTuningCardRunnable = this::showTuningCard;
     /** No frame after the grace period: same card becomes "No signal". */
     private final Runnable showNoSignalCardRunnable = this::showNoSignalCard;
+    /**
+     * The show call behind the card on screen, or null when none is up. A rotation inflates a new,
+     * hidden overlay, and nothing else asks for "Tuner not found" or "No Signal" again, so
+     * onConfigurationChanged replays it.
+     */
+    private Runnable tuningCardShown;
 
     private volatile TsDemux demux = new TsDemux();
     private int currentTab = 0; // 0: Channels, 1: EPG, 2: Favorites
@@ -407,8 +413,11 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         ui.removeCallbacks(hideHudRunnable);
         ui.removeCallbacks(hideSidePanelRunnable);
         if (playerView != null) playerView.setPlayer(null);   // release the old surface before the views go
+        // The card goes with the old views. Without this, no dongle + rotate left a black video area.
+        Runnable card = tuningCardShown;
         bindLayout();
         showCurrentChannel();
+        if (card != null) card.run();
     }
 
     /** Makes room for the EWBS strip on the side panel; its tab row is what the strip covers. */
@@ -2068,7 +2077,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         pipe.clear();
         resetCaptions();
         if (bml != null) bml.close();        // background: no data-broadcast page kept alive unseen
-        if (tuning != null) tuning.hide();
+        hideTuningCard();                    // and forgotten: onStart / onResume ask for a card again
     }
 
     /**
@@ -2484,6 +2493,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 ? String.valueOf(service.serviceId) : service.virtualNumber;
         tuning.showTuning(number, ph.opendtv.ui.ChannelAdapter.displayName(service),
                 frequencyText());
+        tuningCardShown = showTuningCardRunnable;
     }
 
     /** "UHF 18 · 497.143 MHz", or empty when there is no frequency. */
@@ -2524,6 +2534,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         } else {
             tuning.showNoSignal(name, frequencyText());
         }
+        tuningCardShown = showNoSignalCardRunnable;
     }
 
     private void showNoTunerCard() {
@@ -2531,12 +2542,18 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         ui.removeCallbacks(showTuningCardRunnable);
         ui.removeCallbacks(showNoSignalCardRunnable);
         tuning.showNoTuner();
+        // Replayed only while the dongle is still missing: a rotation just after it is plugged in
+        // must not cancel the cards the new tune has queued.
+        tuningCardShown = () -> {
+            if (!hub.isTunerPresent()) showNoTunerCard();
+        };
     }
 
     private void hideTuningCard() {
         ui.removeCallbacks(showTuningCardRunnable);
         ui.removeCallbacks(showNoSignalCardRunnable);
         if (tuning != null) tuning.hide();
+        tuningCardShown = null;
     }
 
     private void updateWatchInfo(TsDemux d) {
@@ -2681,6 +2698,9 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             if (tvCurrentChannel != null) tvCurrentChannel.setText("No channel tuned");
             if (watchInfo != null) watchInfo.hide();
             hideTuningCard();
+            // Nothing tuned: the landscape banner has nothing to say, and until it is filled it shows
+            // the layout's sample text ("0.0 Unknown Channel", "Tuning…").
+            hideInfoBanner();
             updateChannelSelection();
             updateWatchInfo(hub != null ? hub.demux() : demux);
             return;
@@ -3260,7 +3280,10 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 params.setMarginEnd(marginEndPx);
                 btnOpenSidePanel.setLayoutParams(params);
             }
-            if (infoBanner != null && infoBanner.getVisibility() == View.VISIBLE) {
+            // Nothing tuned: no banner will come back to bring '<' with it, and the list is the
+            // only way forward (scan, pick a channel), so keep it up.
+            if ((infoBanner != null && infoBanner.getVisibility() == View.VISIBLE)
+                    || currentChannelEntry == null) {
                 btnOpenSidePanel.setVisibility(View.VISIBLE);
             } else {
                 btnOpenSidePanel.setVisibility(View.GONE);
