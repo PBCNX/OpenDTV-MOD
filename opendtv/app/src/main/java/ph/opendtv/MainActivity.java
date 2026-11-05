@@ -635,7 +635,9 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
 
         AspectRatioFrameLayout frame = findViewById(R.id.player_frame);
         if (frame != null) {
-            frame.setAspectRatio(16f / 9f);   // fixed 16:9 display area in portrait
+            // The 16:9 display area: always in portrait; in landscape only with Forced 16:9
+            // (applyAspectMode, just below, picks fit or fill).
+            frame.setAspectRatio(16f / 9f);
         }
 
         playerView.setUseController(false);
@@ -2421,12 +2423,17 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         return allChannels.get(0);
     }
 
-    /** 0 = Stretch (fill 16:9), 1 = Fit (keeps ratio, black bars), 2 = Zoom (keeps ratio, crops). */
+    /**
+     * 0 = Stretch (fill 16:9), 1 = Fit (keeps ratio, black bars), 2 = Zoom (keeps ratio, crops),
+     * 3 = Forced 16:9 (stretched into a 16:9 box; bars where the screen is not 16:9, at the sides of
+     * a 20:9 phone, top and bottom of a 16:10 tablet).
+     */
     /** Aspect ratio as a pick-one list, matching the audio language row. */
     private void showAspectRatioDialog() {
         final int current = getSharedPreferences(PREFS, MODE_PRIVATE).getInt(PREF_ASPECT, 0);
         final String[] labels = {
-                "Stretch (full 16:9)", "Fit (original ratio)", "Zoom (crop to 16:9)"};
+                "Stretch (full 16:9)", "Fit (original ratio)", "Zoom (crop to 16:9)",
+                "Forced 16:9 (black bars)"};
         new MaterialAlertDialogBuilder(this)
                 .setTitle("Video aspect ratio")
                 .setSingleChoiceItems(labels, current, (dlg, which) -> {
@@ -2442,6 +2449,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         switch (mode) {
             case 1: return "Fit (original ratio)";
             case 2: return "Zoom (crop to 16:9)";
+            case 3: return "Forced 16:9 (black bars)";
             default: return "Stretch (full 16:9)";
         }
     }
@@ -2452,9 +2460,18 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         switch (mode) {
             case 1: rm = AspectRatioFrameLayout.RESIZE_MODE_FIT; name = "Fit (original ratio)"; break;
             case 2: rm = AspectRatioFrameLayout.RESIZE_MODE_ZOOM; name = "Zoom (crop to 16:9)"; break;
+            case 3: rm = AspectRatioFrameLayout.RESIZE_MODE_FILL; name = "Forced 16:9 (black bars)"; break;
             default: mode = 0; rm = AspectRatioFrameLayout.RESIZE_MODE_FILL; name = "Stretch (full 16:9)";
         }
         playerView.setResizeMode(rm);
+        // Landscape fills the screen, and most phones are wider than 16:9 (around 20:9), so Stretch
+        // widens the picture past 16:9 there. Forced 16:9 stretches it into a centred 16:9 box
+        // instead. Portrait's frame is 16:9 already, so it keeps fitting.
+        AspectRatioFrameLayout frame = findViewById(R.id.player_frame);
+        if (frame != null && (layoutKey & 1) != 0) {
+            frame.setResizeMode(mode == 3 ? AspectRatioFrameLayout.RESIZE_MODE_FIT
+                    : AspectRatioFrameLayout.RESIZE_MODE_FILL);
+        }
         getSharedPreferences(PREFS, MODE_PRIVATE).edit().putInt(PREF_ASPECT, mode).apply();
         if (announce) Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
     }
