@@ -3598,6 +3598,13 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
 
     /** A full scan rebuilds the channel list, so ask before it starts. */
     private void confirmFullScan() {
+        // Same order as the manual scan: no dongle, no question. Asking first had the viewer agree to
+        // replace the channel list, only to hear "Tuner not found" after. startFullScan() keeps its
+        // own check for a dongle pulled while the box is open.
+        if (hub == null || !hub.isTunerPresent()) {
+            Toast.makeText(this, "Tuner not found · plug in the USB dongle", Toast.LENGTH_LONG).show();
+            return;
+        }
         int count = allChannels.size();
         String message = "Scans UHF 14 – 51 and replaces the current channel list"
                 + (count > 0 ? " (" + count + (count == 1 ? " channel)" : " channels)") : "")
