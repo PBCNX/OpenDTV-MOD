@@ -25,7 +25,7 @@
         android:layout_weight="1"
         android:ellipsize="end"
         android:maxLines="1"
-        android:text="CHANNELS"
+        android:text="@string/channels_label"
         android:textAppearance="@style/TextAppearance.OpenDtv.ListHeader" />
 
     <ProgressBar

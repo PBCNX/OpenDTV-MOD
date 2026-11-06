@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.function.Supplier;
 
+import com.pbcnx.opendtvmod.R;
 import com.pbcnx.opendtvmod.tuner.ChannelStore;
 import com.pbcnx.opendtvmod.ui.ChannelAdapter;
 
@@ -84,7 +85,7 @@ public final class FavoritesReorder {
         int position = recyclerView.getChildAdapterPosition(focused);
         if (position == RecyclerView.NO_POSITION) return;
         movingPosition = position;
-        Toast.makeText(recyclerView.getContext(), "Move with up/down - OK when done",
+        Toast.makeText(recyclerView.getContext(), R.string.toast_move_favorite,
                 Toast.LENGTH_SHORT).show();
     }
 

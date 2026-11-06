@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.function.IntConsumer;
 
 import com.pbcnx.opendtvmod.R;
@@ -71,13 +70,13 @@ final class EwbsLocationDialog {
         regionValue = regionRow.findViewById(R.id.picker_value);
         cityValue = cityRow.findViewById(R.id.picker_value);
         auto = content.findViewById(R.id.ewbs_auto);
-        ((TextView) zoneRow.findViewById(R.id.picker_label)).setText("Zone");
-        ((TextView) regionRow.findViewById(R.id.picker_label)).setText("Region");
-        ((TextView) cityRow.findViewById(R.id.picker_label)).setText("City");
+        ((TextView) zoneRow.findViewById(R.id.picker_label)).setText(R.string.ewbs_zone);
+        ((TextView) regionRow.findViewById(R.id.picker_label)).setText(R.string.ewbs_region);
+        ((TextView) cityRow.findViewById(R.id.picker_label)).setText(R.string.ewbs_city);
 
         content.findViewById(R.id.ewbs_list_back).setOnClickListener(v -> showFields(zoneRow));
 
-        zoneRow.setOnClickListener(v -> openList(v, "Zone", ewbsZones(), pick[0], which -> {
+        zoneRow.setOnClickListener(v -> openList(v, activity.getString(R.string.ewbs_zone), ewbsZones(), pick[0], which -> {
             int[] zones = ewbsZones();
             pick[0] = zones[which];
             int[] regions = pick[0] == 0 ? new int[0] : EwbsAreaTable.regionsInZone(pick[0]);
@@ -89,7 +88,7 @@ final class EwbsLocationDialog {
         regionRow.setOnClickListener(v -> {
             if (pick[0] == 0) return;
             final int[] regions = EwbsAreaTable.regionsInZone(pick[0]);
-            openList(v, "Region", regions, pick[1], which -> {
+            openList(v, activity.getString(R.string.ewbs_region), regions, pick[1], which -> {
                 pick[1] = regions[which];
                 int[] cities = EwbsAreaTable.citiesInRegion(pick[1]);
                 pick[2] = cities.length == 0 ? 0 : cities[0];
@@ -99,14 +98,14 @@ final class EwbsLocationDialog {
         cityRow.setOnClickListener(v -> {
             if (pick[1] == 0) return;
             final int[] cities = EwbsAreaTable.citiesInRegion(pick[1]);
-            openList(v, "City", cities, pick[2], which -> pick[2] = cities[which]);
+            openList(v, activity.getString(R.string.ewbs_city), cities, pick[2], which -> pick[2] = cities[which]);
         });
 
         dialog = new MaterialAlertDialogBuilder(activity)
-                .setTitle("Emergency Alerts")
+                .setTitle(R.string.settings_ewbs_alerts)
                 .setView(content)
-                .setPositiveButton("Apply", (d, which) -> screen.saveEwbsLocation(selectedCode()))
-                .setNegativeButton("Cancel", null)
+                .setPositiveButton(R.string.apply, (d, which) -> screen.saveEwbsLocation(selectedCode()))
+                .setNegativeButton(R.string.cancel, null)
                 .create();
         dialog.setOnKeyListener((d, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK
@@ -122,13 +121,13 @@ final class EwbsLocationDialog {
             @Override public void onLocation(int code) {
                 if (code == 0) {
                     Toast.makeText(activity,
-                            "Location not matched · pick the area manually",
+                            R.string.toast_location_not_matched,
                             Toast.LENGTH_LONG).show();
                     return;
                 }
                 applyDetected(code);
                 Toast.makeText(activity,
-                        "Current location: " + EwbsAreaTable.name(code), Toast.LENGTH_SHORT).show();
+                        activity.getString(R.string.toast_current_location, EwbsAreaTable.name(code)), Toast.LENGTH_SHORT).show();
             }
         }));
     }
@@ -153,7 +152,7 @@ final class EwbsLocationDialog {
         cityValue.setText(pick[1] == 0 || pick[2] == 0 ? "—" : EwbsAreaTable.name(pick[2]));
         setEwbsRowEnabled(regionRow, pick[0] != 0);
         setEwbsRowEnabled(cityRow, pick[1] != 0);
-        codeText.setText(String.format(Locale.US, "Code: 0x%03X", selectedCode()));
+        codeText.setText(activity.getString(R.string.ewbs_code, selectedCode()));
         if (dialog.isShowing()) {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(
                     pick[0] != original[0] || pick[1] != original[1] || pick[2] != original[2]);
@@ -257,8 +256,8 @@ final class EwbsLocationDialog {
         return zones;
     }
 
-    private static String ewbsLabel(int code) {
-        return code == 0 ? "Show all alerts" : EwbsAreaTable.name(code);
+    private String ewbsLabel(int code) {
+        return code == 0 ? activity.getString(R.string.ewbs_show_all) : EwbsAreaTable.name(code);
     }
 
     /** The zones have a fixed order: Luzon, Visayas, Mindanao. It is the table's order, not names. */

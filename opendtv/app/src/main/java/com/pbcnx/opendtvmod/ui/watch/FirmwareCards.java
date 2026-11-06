@@ -69,8 +69,7 @@ final class FirmwareCards {
 
         View content = activity.getLayoutInflater().inflate(R.layout.dialog_tuner_setup, null);
         LinearLayout list = content.findViewById(R.id.tuner_content);
-        list.addView(note(activity, "Vendor images. A stick is blank until one is uploaded. "
-                + "Plugged sticks are listed first."));
+        list.addView(note(activity, activity.getString(R.string.tuner_setup_note)));
 
         final AlertDialog[] dialogRef = new AlertDialog[1];
         List<FirmwareStore.Image> plugged = new ArrayList<>();
@@ -80,12 +79,12 @@ final class FirmwareCards {
             else rest.add(image);
         }
         if (!plugged.isEmpty()) {
-            list.addView(header(activity, "PLUGGED IN"));
+            list.addView(header(activity, activity.getString(R.string.tuner_header_plugged)));
             for (FirmwareStore.Image image : plugged) {
                 list.addView(tunerCard(image, true, dialogRef));
             }
         }
-        list.addView(header(activity, "SUPPORTED TUNERS"));
+        list.addView(header(activity, activity.getString(R.string.tuner_header_supported)));
         for (FirmwareStore.Image image : rest) {
             list.addView(tunerCard(image, false, dialogRef));
         }
@@ -93,20 +92,20 @@ final class FirmwareCards {
         // It gets its own section and the NO DRIVER pill so it cannot read like the four sticks
         // above (owner, 2026-11-06). No image exists, so there is nothing to import.
         if (lmeCore) {
-            list.addView(header(activity, "IN DEVELOPMENT"));
+            list.addView(header(activity, activity.getString(R.string.tuner_header_development)));
             list.addView(developmentCard("LME2510", "3344:1120", lmePlugged));
         }
         if (!others.isEmpty()) {
-            list.addView(header(activity, "OTHER DEVICES"));
+            list.addView(header(activity, activity.getString(R.string.tuner_header_other)));
             for (UsbDevice device : others) {
                 list.addView(otherDeviceCard(device));
             }
         }
-        list.addView(header(activity, "LEGEND"));
+        list.addView(header(activity, activity.getString(R.string.tuner_header_legend)));
         addTunerLegend(list);
 
         AlertDialog dialog = new MaterialAlertDialogBuilder(activity)
-                .setTitle("Tuner setup")
+                .setTitle(R.string.settings_tuner_setup)
                 .setView(content)
                 .create();
         dialogRef[0] = dialog;
@@ -191,7 +190,8 @@ final class FirmwareCards {
         name.setLayoutParams(new LinearLayout.LayoutParams(0,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
         TextView status = new TextView(activity);
-        status.setText(plugged ? (screen.canTune() ? "● READY" : "● PLUGGED") : "○ NOT PLUGGED");
+        status.setText(plugged ? (screen.canTune() ? R.string.tuner_ready : R.string.tuner_plugged)
+                : R.string.tuner_not_plugged);
         status.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 11);
         status.setLetterSpacing(0.06f);
         status.setTextColor(ContextCompat.getColor(activity,
@@ -213,16 +213,16 @@ final class FirmwareCards {
         meta.setOrientation(LinearLayout.HORIZONTAL);
         meta.setGravity(android.view.Gravity.CENTER_VERTICAL);
         if (imported) {
-            meta.addView(tunerPill("AVAILABLE", R.drawable.bg_pill_available, R.color.odtv_ok));
+            meta.addView(tunerPill(activity.getString(R.string.tuner_pill_available), R.drawable.bg_pill_available, R.color.odtv_ok));
         } else if (available) {
-            meta.addView(tunerPill("VENDOR IMAGE", R.drawable.bg_pill_vendor, R.color.odtv_key_blue));
+            meta.addView(tunerPill(activity.getString(R.string.tuner_pill_vendor), R.drawable.bg_pill_vendor, R.color.odtv_key_blue));
         } else {
-            meta.addView(tunerPill("MISSING", R.drawable.bg_pill_missing, R.color.odtv_live));
+            meta.addView(tunerPill(activity.getString(R.string.tuner_pill_missing), R.drawable.bg_pill_missing, R.color.odtv_live));
         }
         TextView detail = new TextView(activity);
         detail.setText(imported || available
                 ? String.format(Locale.US, "%,d B · %s", image.size, shortHash(image.sha256))
-                : String.format(Locale.US, "tap to import · %,d B", image.size));
+                : activity.getString(R.string.tuner_tap_to_import, String.format(Locale.US, "%,d", image.size)));
         detail.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12);
         detail.setTextColor(ContextCompat.getColor(activity, R.color.odtv_on_surface_variant));
         detail.setPadding(Dims.dp(activity, 10), 0, 0, 0);
@@ -234,7 +234,7 @@ final class FirmwareCards {
                 if (dialogRef[0] != null) dialogRef[0].dismiss();
                 confirmForgetFirmware(image);
             } else if (available) {
-                Toast.makeText(activity, image.device + " is already in this build · nothing to import.",
+                Toast.makeText(activity, activity.getString(R.string.toast_tuner_in_build, image.device),
                         Toast.LENGTH_SHORT).show();
             } else {
                 if (dialogRef[0] != null) dialogRef[0].dismiss();
@@ -288,7 +288,7 @@ final class FirmwareCards {
         nameView.setLayoutParams(new LinearLayout.LayoutParams(0,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
         TextView status = new TextView(activity);
-        status.setText(plugged ? "● PLUGGED" : "○ NOT PLUGGED");
+        status.setText(plugged ? R.string.tuner_plugged : R.string.tuner_not_plugged);
         status.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 11);
         status.setLetterSpacing(0.06f);
         status.setTextColor(ContextCompat.getColor(activity,
@@ -307,11 +307,10 @@ final class FirmwareCards {
         LinearLayout meta = new LinearLayout(activity);
         meta.setOrientation(LinearLayout.HORIZONTAL);
         meta.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        meta.addView(tunerPill("NO DRIVER", R.drawable.bg_pill_nodriver,
+        meta.addView(tunerPill(activity.getString(R.string.tuner_pill_no_driver), R.drawable.bg_pill_nodriver,
                 R.color.odtv_on_surface_variant));
         TextView detailView = new TextView(activity);
-        detailView.setText(plugged ? "driver in development · stick detected"
-                : "driver in development · waiting for a stick");
+        detailView.setText(plugged ? R.string.tuner_dev_detected : R.string.tuner_dev_waiting);
         detailView.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12);
         detailView.setTextColor(ContextCompat.getColor(activity, R.color.odtv_on_surface_variant));
         detailView.setPadding(Dims.dp(activity, 10), 0, 0, 0);
@@ -330,7 +329,7 @@ final class FirmwareCards {
         card.setLayoutParams(params);
 
         TextView name = new TextView(activity);
-        name.setText("Unknown stick");
+        name.setText(R.string.tuner_unknown_stick);
         name.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 16);
         name.setTextColor(ContextCompat.getColor(activity, R.color.odtv_on_surface));
         name.setTypeface(android.graphics.Typeface.create("sans-serif-medium",
@@ -348,10 +347,10 @@ final class FirmwareCards {
         LinearLayout meta = new LinearLayout(activity);
         meta.setOrientation(LinearLayout.HORIZONTAL);
         meta.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        meta.addView(tunerPill("NO DRIVER", R.drawable.bg_pill_nodriver,
+        meta.addView(tunerPill(activity.getString(R.string.tuner_pill_no_driver), R.drawable.bg_pill_nodriver,
                 R.color.odtv_on_surface_variant));
         TextView detail = new TextView(activity);
-        detail.setText("plugged, this build cannot drive it");
+        detail.setText(R.string.tuner_no_driver_detail);
         detail.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12);
         detail.setTextColor(ContextCompat.getColor(activity, R.color.odtv_on_surface_variant));
         detail.setPadding(Dims.dp(activity, 10), 0, 0, 0);
@@ -360,17 +359,18 @@ final class FirmwareCards {
         return card;
     }
     private void addTunerLegend(LinearLayout list) {
-        legendRow(list, "VENDOR IMAGE", R.drawable.bg_pill_vendor, R.color.odtv_key_blue,
-                "carried by this build");
-        legendRow(list, "AVAILABLE", R.drawable.bg_pill_available, R.color.odtv_ok,
-                "imported on this device");
-        legendRow(list, "MISSING", R.drawable.bg_pill_missing, R.color.odtv_live,
-                "no image yet - tap to add");
-        legendRow(list, "NO DRIVER", R.drawable.bg_pill_nodriver, R.color.odtv_on_surface_variant,
-                "no driver in this build");
-        presenceRow(list, "● READY", R.color.odtv_ok, "plugged and running");
-        presenceRow(list, "● PLUGGED", R.color.odtv_ok, "plugged, not started");
-        presenceRow(list, "○ NOT PLUGGED", R.color.odtv_on_surface_variant, "not on the bus");
+        legendRow(list, activity.getString(R.string.tuner_pill_vendor), R.drawable.bg_pill_vendor, R.color.odtv_key_blue,
+                activity.getString(R.string.tuner_legend_vendor));
+        legendRow(list, activity.getString(R.string.tuner_pill_available), R.drawable.bg_pill_available, R.color.odtv_ok,
+                activity.getString(R.string.tuner_legend_available));
+        legendRow(list, activity.getString(R.string.tuner_pill_missing), R.drawable.bg_pill_missing, R.color.odtv_live,
+                activity.getString(R.string.tuner_legend_missing));
+        legendRow(list, activity.getString(R.string.tuner_pill_no_driver), R.drawable.bg_pill_nodriver, R.color.odtv_on_surface_variant,
+                activity.getString(R.string.tuner_legend_no_driver));
+        presenceRow(list, activity.getString(R.string.tuner_ready), R.color.odtv_ok, activity.getString(R.string.tuner_legend_ready));
+        presenceRow(list, activity.getString(R.string.tuner_plugged), R.color.odtv_ok, activity.getString(R.string.tuner_legend_plugged));
+        presenceRow(list, activity.getString(R.string.tuner_not_plugged), R.color.odtv_on_surface_variant,
+                activity.getString(R.string.tuner_legend_not_plugged));
     }
     private LinearLayout legendLine() {
         LinearLayout row = new LinearLayout(activity);
@@ -419,19 +419,19 @@ final class FirmwareCards {
     }
     private void confirmForgetFirmware(final FirmwareStore.Image image) {
         new MaterialAlertDialogBuilder(activity)
-                .setTitle("Remove the imported image?")
-                .setMessage(image.name + "\n\n" + (FirmwareStore.available(activity, image)
-                        ? "This build also carries a copy, so the tuner keeps working."
-                        : "This build carries no copy: the tuner will not start until you import it again."))
-                .setPositiveButton("Remove", (d, w) -> {
+                .setTitle(R.string.tuner_remove_title)
+                .setMessage(image.name + "\n\n" + activity.getString(FirmwareStore.available(activity, image)
+                        ? R.string.tuner_remove_has_copy
+                        : R.string.tuner_remove_no_copy))
+                .setPositiveButton(R.string.tuner_remove, (d, w) -> {
                     boolean gone = FirmwareStore.forget(activity, image);
                     Toast.makeText(activity, gone
-                                    ? "Removed " + image.name + " · this build's copy is used again"
-                                    : "Nothing to remove · that image was not imported here.",
+                                    ? activity.getString(R.string.toast_tuner_removed, image.name)
+                                    : activity.getString(R.string.toast_tuner_nothing_removed),
                             Toast.LENGTH_SHORT).show();
                     screen.firmwareImagesChanged();
                 })
-                .setNegativeButton("Keep", null)
+                .setNegativeButton(R.string.tuner_keep, null)
                 .show();
     }
 }

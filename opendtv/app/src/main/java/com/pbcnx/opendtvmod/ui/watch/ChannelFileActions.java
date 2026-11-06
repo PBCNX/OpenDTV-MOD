@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.pbcnx.opendtvmod.R;
 import com.pbcnx.opendtvmod.tuner.ChannelEntry;
 import com.pbcnx.opendtvmod.tuner.ChannelFile;
 import com.pbcnx.opendtvmod.tuner.ChannelStore;
@@ -52,7 +53,7 @@ public final class ChannelFileActions {
         String json;
         try {
             if (store.channels().isEmpty()) {
-                Toast.makeText(activity, "No channels to export", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, R.string.toast_no_channels_export, Toast.LENGTH_SHORT).show();
                 return;
             }
             String name = "";
@@ -66,7 +67,7 @@ public final class ChannelFileActions {
                     {"applicationId", activity.getPackageName()},
                     {"versionCode", String.valueOf(com.pbcnx.opendtvmod.BuildConfig.VERSION_CODE)}});
         } catch (org.json.JSONException e) {
-            Toast.makeText(activity, "Could not build the file: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, activity.getString(R.string.toast_file_build_failed, e.getMessage()), Toast.LENGTH_LONG).show();
             return;
         }
         pendingExportJson = json;
@@ -79,7 +80,7 @@ public final class ChannelFileActions {
             activity.startActivityForResult(i, REQ_EXPORT);
         } catch (ActivityNotFoundException e) {
             // Some TV boxes ship no document picker at all. Say so rather than dying silently.
-            Toast.makeText(activity, "No file picker on this device", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, R.string.toast_no_file_picker, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -92,7 +93,7 @@ public final class ChannelFileActions {
         try {
             activity.startActivityForResult(i, REQ_IMPORT);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(activity, "No file picker on this device", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, R.string.toast_no_file_picker, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -103,7 +104,7 @@ public final class ChannelFileActions {
             if (out == null) throw new java.io.IOException("cannot open the destination");
             out.write(pendingExportJson.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         } catch (java.io.IOException e) {
-            Toast.makeText(activity, "Could not write the file: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, activity.getString(R.string.toast_file_write_failed, e.getMessage()), Toast.LENGTH_LONG).show();
         } finally {
             pendingExportJson = null;
         }
@@ -115,26 +116,31 @@ public final class ChannelFileActions {
         try {
             result = ChannelFile.parse(readFile(uri));
         } catch (java.io.IOException e) {
-            Toast.makeText(activity, "Could not read the file: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, activity.getString(R.string.toast_file_read_failed, e.getMessage()), Toast.LENGTH_LONG).show();
             return;
         }
         if (!result.ok()) {
             new MaterialAlertDialogBuilder(activity)
-                    .setTitle("Nothing imported")
+                    .setTitle(R.string.import_nothing_title)
                     .setMessage(result.error)
-                    .setPositiveButton("OK", null)
+                    .setPositiveButton(R.string.ok, null)
                     .show();
             return;
         }
-        String summary = result.entries.size() + " channels - " + result.favorites.size() + " favourites";
-        if (result.skipped > 0) summary += " - " + result.skipped + " rows skipped";
+        android.content.res.Resources res = activity.getResources();
+        String summary = activity.getString(R.string.import_summary,
+                res.getQuantityString(R.plurals.import_channels, result.entries.size(), result.entries.size()),
+                res.getQuantityString(R.plurals.import_favourites, result.favorites.size(), result.favorites.size()));
+        if (result.skipped > 0) {
+            summary = activity.getString(R.string.import_summary_skipped, summary,
+                    res.getQuantityString(R.plurals.import_rows_skipped, result.skipped, result.skipped));
+        }
         new MaterialAlertDialogBuilder(activity)
-                .setTitle("Import " + result.entries.size() + " channels?")
-                .setMessage(summary + "\n\nMerge keeps the channels you already have and adds these.\n"
-                        + "Replace deletes every channel that is not in the file.")
-                .setPositiveButton("Merge", (d, w) -> applyImport(result, false))
-                .setNeutralButton("Replace", (d, w) -> applyImport(result, true))
-                .setNegativeButton("Cancel", null)
+                .setTitle(res.getQuantityString(R.plurals.import_title, result.entries.size(), result.entries.size()))
+                .setMessage(activity.getString(R.string.import_message, summary))
+                .setPositiveButton(R.string.scan_merge, (d, w) -> applyImport(result, false))
+                .setNeutralButton(R.string.scan_replace, (d, w) -> applyImport(result, true))
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
@@ -179,8 +185,8 @@ public final class ChannelFileActions {
         store.saveOrder(p);
         store.loadAll(p);
         afterChange.run();
-        Toast.makeText(activity, added + " added - " + updated + " updated - "
-                + result.favorites.size() + " favourites", Toast.LENGTH_LONG).show();
+        Toast.makeText(activity, activity.getString(R.string.toast_import_done, added, updated, result.favorites.size()),
+                Toast.LENGTH_LONG).show();
     }
 
     private String readFile(Uri uri) throws java.io.IOException {

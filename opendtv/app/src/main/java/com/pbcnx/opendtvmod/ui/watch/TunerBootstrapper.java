@@ -35,7 +35,8 @@ public final class TunerBootstrapper {
         boolean isScanning();
         boolean hasChannel();
         void tuneAndPlayCurrent();
-        void toast(String message);
+        /** @param message a string resource */
+        void toast(int message);
     }
 
     private TunerBootstrapper() {
@@ -76,7 +77,7 @@ public final class TunerBootstrapper {
                 // Tuning here would re-open the dongle underneath the analyzer (two native devices).
                 if (host.handingOver()) return;
                 if (!ok) {
-                    host.toast("USB permission needed");
+                    host.toast(com.pbcnx.opendtvmod.R.string.toast_usb_permission);
                     return;
                 }
                 if (host.debugTuneKhz() > 0) {

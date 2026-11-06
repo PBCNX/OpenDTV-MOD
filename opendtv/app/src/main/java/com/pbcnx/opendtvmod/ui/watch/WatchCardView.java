@@ -129,20 +129,20 @@ public final class WatchCardView extends LinearLayout {
         String networkName = s.networkName;
         if (service == null) {
             number.setText("--");
-            name.setText("No channel tuned");
+            name.setText(R.string.no_channel_tuned);
             provider.setText("");
-            frequency.setText("Tune a channel to see signal details");
+            frequency.setText(R.string.watch_tune_for_details);
             nowNext.setVisibility(GONE);
             signal.setText("");
             network.setVisibility(GONE);
             setChips(false, false, false, false);
-            detailsText.setText("No channel tuned.");
+            detailsText.setText(R.string.watch_no_channel_tuned);
             return;
         }
 
         number.setText(service.displayNumber());
         name.setText(ChannelAdapter.displayName(service));
-        provider.setText(service.provider.isEmpty() ? "ISDB-T Broadcast" : service.provider);
+        provider.setText(service.provider.isEmpty() ? getContext().getString(R.string.watch_isdbt_broadcast) : service.provider);
 
         Drawable logoDrawable = LogoHelper.getLogo(getContext(), service.name, service.provider);
         if (logoDrawable != null) logo.setImageDrawable(logoDrawable);
@@ -170,28 +170,27 @@ public final class WatchCardView extends LinearLayout {
                 signalStatus != null && signalStatus.locked)) {
             case PLAYING:
                 // A capture is a source of its own: it is playing, not waiting on a tuner.
-                signal.setText("Playing");
+                signal.setText(R.string.watch_playing);
                 break;
             case NO_TUNER:
                 signal.setText(WatchSignalText.NO_TUNER);
                 break;
             case TUNING:
                 signal.setText(signalStatus == null
-                        ? "Tuning…"
-                        : "Tuning… · Strength " + percent(signalStatus.strengthPercent));
+                        ? getContext().getString(R.string.tuning)
+                        : getContext().getString(R.string.watch_tuning_strength, percent(signalStatus.strengthPercent)));
                 break;
             default:
-                signal.setText("Locked"
-                        + " · Strength " + percent(signalStatus.strengthPercent)
-                        + " · Quality " + percent(signalStatus.qualityPercent));
+                signal.setText(getContext().getString(R.string.watch_locked_signal,
+                        percent(signalStatus.strengthPercent), percent(signalStatus.qualityPercent)));
                 break;
         }
 
         // Long NIT/provider names scroll instead of wrapping, and the text is
         // only replaced when it changes so the marquee does not restart.
         String nit = networkName == null || networkName.trim().isEmpty() ? "—" : networkName.trim();
-        String networkLine = "NIT : " + nit
-                + "   ·   Provider : " + (service.provider.isEmpty() ? "—" : service.provider);
+        String networkLine = getContext().getString(R.string.network_line, nit,
+                service.provider.isEmpty() ? "—" : service.provider);
         if (!networkLine.contentEquals(network.getText())) {
             network.setText(networkLine);
         }
@@ -205,7 +204,7 @@ public final class WatchCardView extends LinearLayout {
     public void showCompact() {
         expanded = false;
         detailsContainer.setVisibility(GONE);
-        detailsToggle.setText("Signal details");
+        detailsToggle.setText(R.string.watch_signal_details);
         setVisibility(VISIBLE);
         notifyVisibility();
         scheduleHide(COMPACT_HIDE_MS);
@@ -214,7 +213,7 @@ public final class WatchCardView extends LinearLayout {
     public void showDetails() {
         expanded = true;
         detailsContainer.setVisibility(VISIBLE);
-        detailsToggle.setText("Hide details");
+        detailsToggle.setText(R.string.watch_hide_details);
         setVisibility(VISIBLE);
         notifyVisibility();
         scheduleHide(DETAILS_HIDE_MS);
@@ -224,7 +223,7 @@ public final class WatchCardView extends LinearLayout {
         if (expanded) {
             expanded = false;
             detailsContainer.setVisibility(GONE);
-            detailsToggle.setText("Signal details");
+            detailsToggle.setText(R.string.watch_signal_details);
             scheduleHide(COMPACT_HIDE_MS);
         } else {
             showDetails();
@@ -277,15 +276,16 @@ public final class WatchCardView extends LinearLayout {
         if (uhf >= 0) frequencyText += " · UHF " + uhf;
 
         StringBuilder text = new StringBuilder();
-        appendRow(text, "Frequency", frequencyText);
+        appendRow(text, getContext().getString(R.string.watch_row_frequency), frequencyText);
         appendRow(text, "TOT", formatTime(clockMs, true));
         if (signalStatus == null) {
-            appendRow(text, "Signal", live ? "Playing (no RF)" : "--");
+            appendRow(text, getContext().getString(R.string.watch_row_signal), live ? getContext().getString(R.string.watch_playing_no_rf) : "--");
         } else {
-            StringBuilder signalText = new StringBuilder(signalStatus.locked ? "Locked" : "Unlocked");
+            StringBuilder signalText = new StringBuilder(getContext().getString(signalStatus.locked
+                    ? R.string.watch_locked : R.string.watch_unlocked));
             signalText.append(" · ").append(percent(signalStatus.strengthPercent));
             signalText.append(" / ").append(percent(signalStatus.qualityPercent));
-            appendRow(text, "Signal", signalText.toString());
+            appendRow(text, getContext().getString(R.string.watch_row_signal), signalText.toString());
 
             StringBuilder rf = new StringBuilder();
             if (signalStatus.dbm != Integer.MIN_VALUE) {
@@ -299,13 +299,13 @@ public final class WatchCardView extends LinearLayout {
         }
 
         StreamInfo video = service.firstVideo();
-        appendRow(text, "Video", video == null ? "--"
+        appendRow(text, getContext().getString(R.string.watch_row_video), video == null ? "--"
                 : video.shortCodec() + " · PID " + hex(video.pid));
         StreamInfo audio = service.firstAudio();
-        appendRow(text, "Audio", audio == null ? "--"
+        appendRow(text, getContext().getString(R.string.watch_row_audio), audio == null ? "--"
                 : audio.shortCodec() + " · PID " + hex(audio.pid));
         String pmt = service.pmtPid > 0 ? hex(service.pmtPid) : "--";
-        appendRow(text, "Service", "SID " + service.serviceId + " · PMT " + pmt);
+        appendRow(text, getContext().getString(R.string.watch_row_service), "SID " + service.serviceId + " · PMT " + pmt);
         return text.toString().trim();
     }
 
@@ -313,12 +313,12 @@ public final class WatchCardView extends LinearLayout {
         text.append(String.format(Locale.US, "%-9s %s", label, value)).append('\n');
     }
 
-    private static String nowNextText(String now, String next) {
+    private String nowNextText(String now, String next) {
         StringBuilder text = new StringBuilder();
-        if (now != null && !now.isEmpty()) text.append("Now: ").append(now);
+        if (now != null && !now.isEmpty()) text.append(getContext().getString(R.string.now_program, now));
         if (next != null && !next.isEmpty()) {
             if (text.length() > 0) text.append(" · ");
-            text.append("Next: ").append(next);
+            text.append(getContext().getString(R.string.next_program, next));
         }
         return text.toString();
     }

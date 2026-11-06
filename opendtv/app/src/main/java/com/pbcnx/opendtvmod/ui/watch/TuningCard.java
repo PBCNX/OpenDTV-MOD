@@ -81,7 +81,7 @@ public final class TuningCard extends LinearLayout {
 
     /** A tune is starting: "7.1 GMA" on one line, then the sweep and the frequency. */
     public void showTuning(String channelNumber, String channelName, String frequency) {
-        showOpening(channelNumber, channelName, frequency, "Tuning in…");
+        showOpening(channelNumber, channelName, frequency, getContext().getString(R.string.tuning_in));
     }
 
     /**
@@ -89,7 +89,7 @@ public final class TuningCard extends LinearLayout {
      * Same card, honest word - "Tuning in" over a file names a step that never happens.
      */
     public void showLoading(String channelNumber, String channelName, String frequency) {
-        showOpening(channelNumber, channelName, frequency, "Opening…");
+        showOpening(channelNumber, channelName, frequency, getContext().getString(R.string.tuning_opening));
     }
 
     private void showOpening(String channelNumber, String channelName, String frequency,
@@ -126,7 +126,8 @@ public final class TuningCard extends LinearLayout {
 
     /** No frame arrived: bigger "No Signal", guidance, then the service/frequency in grey. */
     public void showNoSignal(String channelName, String frequency) {
-        showFailure("No Signal", "Check the antenna or run a scan in Settings", join(channelName, frequency));
+        showFailure(getContext().getString(R.string.tuning_no_signal), getContext().getString(R.string.tuning_no_signal_hint),
+                join(channelName, frequency));
     }
 
     /**
@@ -134,7 +135,8 @@ public final class TuningCard extends LinearLayout {
      * no frame will ever arrive. "No Signal" is a lie here: nothing is wrong with the aerial.
      */
     public void showEncrypted(String channelName, String frequency) {
-        showFailure("Scrambled", "The signal is fine - this service is encrypted", join(channelName, frequency));
+        showFailure(getContext().getString(R.string.tuning_scrambled), getContext().getString(R.string.tuning_scrambled_hint),
+                join(channelName, frequency));
     }
 
     /**
@@ -142,7 +144,8 @@ public final class TuningCard extends LinearLayout {
      * job and the decoder is waiting for keyframes, so this is not a fault and must not read as one.
      */
     public void showLockedNoFrame(String channelName, String frequency) {
-        showFailure("No picture", "The signal is locked but too weak to decode", join(channelName, frequency));
+        showFailure(getContext().getString(R.string.tuning_no_picture), getContext().getString(R.string.tuning_weak_hint),
+                join(channelName, frequency));
     }
 
     /**
@@ -150,7 +153,8 @@ public final class TuningCard extends LinearLayout {
      * (an audio or data service). Same rule as scrambled: never blame the aerial for it.
      */
     public void showNoVideo(String channelName, String frequency) {
-        showFailure("No picture", "The signal is fine - this service carries no video", join(channelName, frequency));
+        showFailure(getContext().getString(R.string.tuning_no_picture), getContext().getString(R.string.tuning_no_video_hint),
+                join(channelName, frequency));
     }
 
     /**
@@ -159,7 +163,8 @@ public final class TuningCard extends LinearLayout {
      * reader after a fault that cannot exist.
      */
     public void showNoPictureFromSource(String channelName, String sourceName) {
-        showFailure("No picture", "This source has no video for that service", join(channelName, sourceName));
+        showFailure(getContext().getString(R.string.tuning_no_picture), getContext().getString(R.string.tuning_source_no_video_hint),
+                join(channelName, sourceName));
     }
 
     /** No USB tuner at all. */
@@ -167,9 +172,9 @@ public final class TuningCard extends LinearLayout {
         number.setVisibility(GONE);
         titleParams.setMarginStart(0);
         title.setLayoutParams(titleParams);
-        title.setText("Tuner not found");
+        title.setText(R.string.tuning_no_tuner);
         status.setVisibility(VISIBLE);
-        status.setText("Plug in the USB dongle");
+        status.setText(R.string.tuning_plug_in);
         line.setVisibility(GONE);
         detail.setVisibility(GONE);
         hint.setVisibility(GONE);

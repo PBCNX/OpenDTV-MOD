@@ -44,14 +44,24 @@ public final class BuildStamp {
     }
 
     /**
-     * "Version 2.1 build [b2365db]", or "Version 2.1" when the build carries no commit. Both the
-     * About box and the Settings row under it read this, so the same fact cannot drift into two
-     * shapes.
+     * "Version 2.1 build [b2365db]", or "Version 2.1" when the build carries no commit. The session
+     * log reads this English line, so a diagnostics bundle reads the same in every language.
      */
     public static String versionLine(String version) {
         String commit = commit();
         return commit.isEmpty()
                 ? "Version " + version
                 : "Version " + version + " build [" + commit + "]";
+    }
+
+    /**
+     * The same line in the app language. Both the About box and the Settings row under it read
+     * this, so the same fact cannot drift into two shapes.
+     */
+    public static String versionLine(android.content.Context context, String version) {
+        String commit = commit();
+        return commit.isEmpty()
+                ? context.getString(R.string.version_line, version)
+                : context.getString(R.string.version_line_build, version, commit);
     }
 }
