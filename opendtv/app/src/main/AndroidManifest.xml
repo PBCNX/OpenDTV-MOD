@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
 
@@ -17,14 +18,19 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
+    <!-- locales_config lists Tagalog as "fil" while its strings are in values-tl, on purpose: a "tl"
+         entry never matches and the app would stay in English (TRANSLATING.md). Lint's
+         UnusedTranslation does not know that tl and fil are one language, so it is silenced here. -->
     <application
         android:name=".App"
         android:allowBackup="false"
         android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/Theme.OpenDtv">
+        android:theme="@style/Theme.OpenDtv"
+        tools:ignore="UnusedTranslation">
 
         <activity
             android:name=".MainActivity"
