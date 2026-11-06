@@ -45,13 +45,7 @@ public final class StorageAccess {
         }
         pending = retry;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            try {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                intent.setData(Uri.parse("package:" + activity.getPackageName()));
-                activity.startActivity(intent);
-            } catch (Exception e) {
-                Log.w(TAG, "no all-files access screen on this device", e);
-            }
+            openAllFilesScreen(activity);
             Toast.makeText(activity, "Allow storage access in Android settings so recordings can be saved.", Toast.LENGTH_LONG).show();
         } else {
             ActivityCompat.requestPermissions(activity, new String[] {
@@ -61,6 +55,27 @@ public final class StorageAccess {
             Toast.makeText(activity, "Allow storage access in Android settings so recordings can be saved.", Toast.LENGTH_LONG).show();
         }
         return false;
+    }
+
+    /**
+     * The app's own All files access switch, or the list of apps where a system has no per-app page.
+     * The list action takes no package: with one, no screen matches it and nothing opens, which left
+     * the viewer with the toast and no switch (seen on the Android 16 emulator).
+     */
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.R)
+    private static void openAllFilesScreen(Activity activity) {
+        try {
+            activity.startActivity(new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                    Uri.parse("package:" + activity.getPackageName())));
+            return;
+        } catch (Exception e) {
+            Log.w(TAG, "no per-app all-files access screen on this device", e);
+        }
+        try {
+            activity.startActivity(new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
+        } catch (Exception e) {
+            Log.w(TAG, "no all-files access screen on this device", e);
+        }
     }
 
     /** True when the app may write its recordings folder right now. */
