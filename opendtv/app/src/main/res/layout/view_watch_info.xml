@@ -56,7 +56,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Close info"
+            android:contentDescription="@string/cd_close_info"
             android:padding="8dp"
             android:src="@drawable/ic_close"
             app:tint="@color/odtv_on_surface_variant" />
@@ -159,7 +159,7 @@
         android:minHeight="0dp"
         android:paddingStart="4dp"
         android:paddingEnd="8dp"
-        android:text="Signal details"
+        android:text="@string/watch_signal_details"
         android:textColor="@color/odtv_accent"
         android:textSize="13sp"
         app:icon="@drawable/ic_chevron_right"

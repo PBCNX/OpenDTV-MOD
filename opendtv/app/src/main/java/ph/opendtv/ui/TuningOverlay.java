@@ -85,7 +85,7 @@ public final class TuningOverlay extends LinearLayout {
         title.setLayoutParams(titleParams);
         title.setText("— " + channelName);
         status.setVisibility(VISIBLE);
-        status.setText("Tuning in…");
+        status.setText(R.string.tuning_in);
         line.setVisibility(VISIBLE);
         detail.setText(join(channelName, frequency));
         detail.setVisibility(detail.getText().length() == 0 ? GONE : VISIBLE);
@@ -98,10 +98,10 @@ public final class TuningOverlay extends LinearLayout {
         number.setVisibility(GONE);
         titleParams.setMarginStart(0);   // alone on the line: centre it exactly
         title.setLayoutParams(titleParams);
-        title.setText("No Signal");
+        title.setText(R.string.tuning_no_signal);
         status.setVisibility(GONE);
         line.setVisibility(GONE);
-        hint.setText("Check the antenna or run a scan in Settings");
+        hint.setText(R.string.tuning_no_signal_hint);
         hint.setVisibility(VISIBLE);
         detail.setText(join(channelName, frequency));
         detail.setVisibility(detail.getText().length() == 0 ? GONE : VISIBLE);
@@ -116,10 +116,10 @@ public final class TuningOverlay extends LinearLayout {
         number.setVisibility(GONE);
         titleParams.setMarginStart(0);
         title.setLayoutParams(titleParams);
-        title.setText("Scrambled");
+        title.setText(R.string.tuning_scrambled);
         status.setVisibility(GONE);
         line.setVisibility(GONE);
-        hint.setText("The signal is fine - this service is encrypted");
+        hint.setText(R.string.tuning_scrambled_hint);
         hint.setVisibility(VISIBLE);
         detail.setText(join(channelName, frequency));
         detail.setVisibility(detail.getText().length() == 0 ? GONE : VISIBLE);
@@ -134,10 +134,10 @@ public final class TuningOverlay extends LinearLayout {
         number.setVisibility(GONE);
         titleParams.setMarginStart(0);
         title.setLayoutParams(titleParams);
-        title.setText("No picture");
+        title.setText(R.string.tuning_no_picture);
         status.setVisibility(GONE);
         line.setVisibility(GONE);
-        hint.setText("The signal is locked but too weak to decode");
+        hint.setText(R.string.tuning_weak_hint);
         hint.setVisibility(VISIBLE);
         detail.setText(join(channelName, frequency));
         detail.setVisibility(detail.getText().length() == 0 ? GONE : VISIBLE);
@@ -152,10 +152,10 @@ public final class TuningOverlay extends LinearLayout {
         number.setVisibility(GONE);
         titleParams.setMarginStart(0);
         title.setLayoutParams(titleParams);
-        title.setText("No picture");
+        title.setText(R.string.tuning_no_picture);
         status.setVisibility(GONE);
         line.setVisibility(GONE);
-        hint.setText("The signal is fine - this service carries no video");
+        hint.setText(R.string.tuning_no_video_hint);
         hint.setVisibility(VISIBLE);
         detail.setText(join(channelName, frequency));
         detail.setVisibility(detail.getText().length() == 0 ? GONE : VISIBLE);
@@ -166,9 +166,9 @@ public final class TuningOverlay extends LinearLayout {
         number.setVisibility(GONE);
         titleParams.setMarginStart(0);
         title.setLayoutParams(titleParams);
-        title.setText("Tuner not found");
+        title.setText(R.string.tuning_no_tuner);
         status.setVisibility(VISIBLE);
-        status.setText("Plug in the USB dongle");
+        status.setText(R.string.tuning_plug_in);
         line.setVisibility(GONE);
         detail.setVisibility(GONE);
         hint.setVisibility(GONE);

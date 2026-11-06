@@ -1,5 +1,7 @@
 package ph.opendtv;
 
+import android.content.Context;
+
 
 /**
  * What the build actually stamped, read by name so that a new {@code buildConfigField} shows up
@@ -48,10 +50,10 @@ public final class BuildStamp {
      * About box and the Settings row under it read this, so the same fact cannot drift into two
      * shapes.
      */
-    public static String versionLine(String version) {
+    public static String versionLine(Context context, String version) {
         String commit = commit();
         return commit.isEmpty()
-                ? "Version " + version
-                : "Version " + version + " build [" + commit + "]";
+                ? context.getString(R.string.version_line, version)
+                : context.getString(R.string.version_line_build, version, commit);
     }
 }

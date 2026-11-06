@@ -75,11 +75,11 @@ public final class WatchStatusStrip extends LinearLayout {
     public void bind(ServiceInfo service, int khz, SignalStatus signalStatus,
                      boolean data, boolean caption, boolean encrypted, boolean emergency) {
         if (service == null) {
-            details.setText("No channel");
+            details.setText(R.string.no_channel);
             signal.setText("--");
-            setChip(chipData, false, R.color.odtv_ok, "Data broadcast");
-            setChip(chipCc, false, R.color.odtv_ok, "Closed captions");
-            setChip(chipLock, false, R.color.odtv_warning, "Encrypted");
+            setChip(chipData, false, R.color.odtv_ok, getContext().getString(R.string.cd_data_broadcast));
+            setChip(chipCc, false, R.color.odtv_ok, getContext().getString(R.string.cd_closed_captions));
+            setChip(chipLock, false, R.color.odtv_warning, getContext().getString(R.string.cd_encrypted));
             setAlertChip(false);
             return;
         }
@@ -91,18 +91,18 @@ public final class WatchStatusStrip extends LinearLayout {
             if (!line.isEmpty()) line += " · ";
             line += String.format(Locale.US, "%.3f MHz", khz / 1000.0);
         }
-        details.setText(line.isEmpty() ? "No channel" : line);
+        details.setText(line.isEmpty() ? getContext().getString(R.string.no_channel) : line);
 
         if (signalStatus == null || !signalStatus.locked) {
-            signal.setText("Tuning…");
+            signal.setText(R.string.tuning);
         } else {
             signal.setText("S " + percent(signalStatus.strengthPercent)
                     + "  Q " + percent(signalStatus.qualityPercent));
         }
 
-        setChip(chipData, data, R.color.odtv_ok, "Data broadcast");
-        setChip(chipCc, caption, R.color.odtv_ok, "Closed captions");
-        setChip(chipLock, encrypted, R.color.odtv_warning, "Encrypted");
+        setChip(chipData, data, R.color.odtv_ok, getContext().getString(R.string.cd_data_broadcast));
+        setChip(chipCc, caption, R.color.odtv_ok, getContext().getString(R.string.cd_closed_captions));
+        setChip(chipLock, encrypted, R.color.odtv_warning, getContext().getString(R.string.cd_encrypted));
         setAlertChip(emergency);
     }
 
@@ -114,7 +114,8 @@ public final class WatchStatusStrip extends LinearLayout {
     private void setAlertChip(boolean active) {
         chipEwbs.setSelected(active);
         chipEwbs.setAlpha(active ? 1f : 0.28f);
-        chipEwbs.setContentDescription("Emergency broadcast" + (active ? " active" : " inactive"));
+        chipEwbs.setContentDescription(getContext().getString(active ? R.string.cd_chip_active : R.string.cd_chip_inactive,
+                getContext().getString(R.string.cd_emergency_broadcast)));
     }
 
     private void setChip(TextView chip, boolean active, int activeColorRes, String description) {
@@ -122,7 +123,8 @@ public final class WatchStatusStrip extends LinearLayout {
                 active ? activeColorRes : R.color.odtv_on_surface_variant);
         chip.setTextColor(color);
         chip.setAlpha(active ? 1f : 0.28f);
-        chip.setContentDescription(description + (active ? " active" : " inactive"));
+        chip.setContentDescription(getContext().getString(
+                active ? R.string.cd_chip_active : R.string.cd_chip_inactive, description));
     }
 
     private static String percent(int value) {

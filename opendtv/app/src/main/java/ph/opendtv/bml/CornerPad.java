@@ -136,7 +136,7 @@ public final class CornerPad extends FrameLayout {
 
         dataKey = textKey("d", 20);
         dataKey.setBackground(cornerKey());
-        dataKey.setContentDescription("Data broadcast");
+        dataKey.setContentDescription(getContext().getString(R.string.cd_data_broadcast));
         dataKey.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,7 +147,7 @@ public final class CornerPad extends FrameLayout {
 
         Button exit = textKey("\u00D7", 22);
         exit.setBackground(cornerKey());
-        exit.setContentDescription("Close the data broadcast");
+        exit.setContentDescription(getContext().getString(R.string.cd_bml_close));
         exit.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,7 +158,7 @@ public final class CornerPad extends FrameLayout {
 
         Button back = textKey("\u2190", 20);
         back.setBackground(cornerKey());
-        back.setContentDescription("Back inside the page");
+        back.setContentDescription(getContext().getString(R.string.cd_bml_back));
         back.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) { send(BmlController.BACK); }
@@ -266,8 +266,8 @@ public final class CornerPad extends FrameLayout {
     private Button digitKey(String text, final int code, android.graphics.drawable.Drawable plate) {
         Button b = textKey(text, code < 0 ? 17 : 15);
         b.setBackground(plate);
-        if (code == KEY_PAD) b.setContentDescription("Back to the arrow pad");
-        if (code == KEY_EXIT) b.setContentDescription("Close the data broadcast");
+        if (code == KEY_PAD) b.setContentDescription(getContext().getString(R.string.cd_bml_arrow_pad));
+        if (code == KEY_EXIT) b.setContentDescription(getContext().getString(R.string.cd_bml_close));
         b.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -326,10 +326,10 @@ public final class CornerPad extends FrameLayout {
 
     private String colourName(int code) {
         switch (code) {
-            case BmlController.RED: return "Red";
-            case BmlController.GREEN: return "Green";
-            case BmlController.YELLOW: return "Yellow";
-            default: return "Blue";
+            case BmlController.RED: return getContext().getString(R.string.cd_bml_red);
+            case BmlController.GREEN: return getContext().getString(R.string.cd_bml_green);
+            case BmlController.YELLOW: return getContext().getString(R.string.cd_bml_yellow);
+            default: return getContext().getString(R.string.cd_bml_blue);
         }
     }
 

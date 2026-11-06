@@ -28,7 +28,8 @@ public final class BmlKeyPad extends LinearLayout {
         void onData();
     }
 
-    private static final String[] COLOURS = {"RED", "GREEN", "YELLOW", "BLUE"};
+    private static final int[] COLOURS = {
+            R.string.bml_key_red, R.string.bml_key_green, R.string.bml_key_yellow, R.string.bml_key_blue};
     private static final int[] COLOUR_CODES = {
             BmlController.RED, BmlController.GREEN, BmlController.YELLOW, BmlController.BLUE};
     private static final int[] COLOUR_FILL = {0xFFC62828, 0xFF2E7D32, 0xFFF9A825, 0xFF1E5BD8};
@@ -56,7 +57,7 @@ public final class BmlKeyPad extends LinearLayout {
         LinearLayout actionRow = row(0);
         rows[0] = new TextView[COLOURS.length + 2];
         rows[0][0] = chip("DATA", 0xFF2A333D, 0xFFFFC857, 10);
-        rows[0][0].setContentDescription("Data broadcast");
+        rows[0][0].setContentDescription(getContext().getString(R.string.cd_data_broadcast));
         rows[0][0].setOnClickListener(v -> {
             if (listener != null) listener.onData();
         });
@@ -65,7 +66,7 @@ public final class BmlKeyPad extends LinearLayout {
         for (int i = 0; i < COLOURS.length; i++) {
             final int code = COLOUR_CODES[i];
             boolean yellow = i == 2;
-            rows[0][i + 1] = chip(COLOURS[i], COLOUR_FILL[i],
+            rows[0][i + 1] = chip(getContext().getString(COLOURS[i]), COLOUR_FILL[i],
                     yellow ? 0xFF1A1200 : Color.WHITE, 10);
             rows[0][i + 1].setOnClickListener(v -> send(code));
             actionRow.addView(rows[0][i + 1], chipParams(COLOUR_WIDTH[i + 1], false));
@@ -148,7 +149,7 @@ public final class BmlKeyPad extends LinearLayout {
         chip.setBackground(chipBackground(fill));
         chip.setFocusable(true);
         chip.setClickable(true);
-        chip.setContentDescription(label + " key");
+        chip.setContentDescription(getContext().getString(R.string.cd_bml_key, label));
         return chip;
     }
 

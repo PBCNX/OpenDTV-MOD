@@ -44,9 +44,9 @@ public class EpgAdapter extends RecyclerView.Adapter<EpgAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         EpgEvent event = events.get(position);
-        holder.tvTitle.setText(event.name.isEmpty() ? "(no title)" : event.name);
-        holder.tvTime.setText(eventTime.format(new Date(event.startMs))
-                + " (" + (event.durationSec / 60) + "m)");
+        holder.tvTitle.setText(event.name.isEmpty() ? context.getString(R.string.epg_no_title) : event.name);
+        holder.tvTime.setText(context.getString(R.string.epg_time_length,
+                eventTime.format(new Date(event.startMs)), event.durationSec / 60));
         holder.tvDescription.setText(event.text);
 
         long now = clockMs > 0 ? clockMs : System.currentTimeMillis();

@@ -25,6 +25,7 @@ import java.util.Map;
 
 import ph.opendtv.AnalyzerActivity;
 import ph.opendtv.MainActivity;
+import ph.opendtv.R;
 import ph.opendtv.ts.EpgEvent;
 import ph.opendtv.ts.ServiceInfo;
 import ph.opendtv.ts.TsDemux;
@@ -68,8 +69,8 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
         if (inputId == null) inputId = TvChannels.inputId(this);
         buildUi();
         setResult(Activity.RESULT_CANCELED);
-        if (!hub.isTunerPresent()) setStatus("Tuner not found. Plug in the dongle (048d:275a), then choose a scan.");
-        else setStatus("Choose Quick scan (known channels) or Full scan (all UHF channels).");
+        if (!hub.isTunerPresent()) setStatus(getString(R.string.setup_no_tuner));
+        else setStatus(getString(R.string.setup_choose));
     }
 
     private void buildUi() {
@@ -80,7 +81,7 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
         root.setPadding(pad, pad, pad, pad);
         root.setBackgroundColor(Color.parseColor("#14181F"));
 
-        TextView title = text("OpenDTV  -  ISDB-T channel scan", 28, "#FFFFFF");
+        TextView title = text(getString(R.string.setup_title), 28, "#FFFFFF");
         statusTv = text("", 18, "#D0D6E0");
         statusTv.setPadding(0, dp(16), 0, dp(16));
         bar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
@@ -90,11 +91,11 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
 
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        btnQuick = button("Quick scan");
-        btnFull = button("Full scan");
-        btnCancel = button("Close");
-        Button btnSkip = button("Skip to app");
-        Button btnAnalyzer = button("Analyzer");
+        btnQuick = button(getString(R.string.setup_quick));
+        btnFull = button(getString(R.string.setup_full));
+        btnCancel = button(getString(R.string.close));
+        Button btnSkip = button(getString(R.string.setup_skip));
+        Button btnAnalyzer = button(getString(R.string.setup_analyzer));
         row.addView(btnQuick);
         row.addView(btnFull);
         row.addView(btnCancel);
@@ -125,7 +126,7 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
             public void onClick(View v) {
                 if (scanning) {
                     scanCancel = true;
-                    setStatus("Stopping after this channel ...");
+                    setStatus(getString(R.string.setup_stopping));
                 } else {
                     finish();
                 }
@@ -194,7 +195,7 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
     public void onBackPressed() {
         if (scanning) {
             scanCancel = true;
-            setStatus("Stopping after this channel ...");
+            setStatus(getString(R.string.setup_stopping));
         } else {
             super.onBackPressed();
         }
@@ -229,7 +230,7 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
         scanError = null;
         btnQuick.setEnabled(false);
         btnFull.setEnabled(false);
-        btnCancel.setText("Stop");
+        btnCancel.setText(R.string.stop);
         btnCancel.requestFocus();
         bar.setMax(freqs.size());
         bar.setProgress(0);
@@ -243,7 +244,7 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
                     channels = scan(freqs, found);
                 } catch (RuntimeException e) {
                     Log.e(TAG, "scan failed", e);
-                    scanError = "Scan failed: " + e;
+                    scanError = getString(R.string.setup_failed, e);
                 } finally {
                     hub.release(SetupActivity.this);
                 }
@@ -254,7 +255,7 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
 
     /** @return number of channels written */
     private int scan(List<Integer> freqs, List<Found> found) {
-        setStatus("Waiting for USB permission ...");
+        setStatus(getString(R.string.setup_waiting_usb));
         if (!hub.ensurePermission(120_000)) {
             scanError = hub.lastMessage();
             return 0;
@@ -263,8 +264,8 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
         for (int i = 0; i < freqs.size() && !scanCancel; i++) {
             final int khz = freqs.get(i);
             final int idx = i;
-            String head = String.format(Locale.US, "Channel %d of %d:  %s\n", i + 1, freqs.size(), channelLabel(khz));
-            setStatus(head + "tuning ... (the first one also loads the tuner firmware)");
+            String head = String.format(Locale.US, getString(R.string.setup_channel_head), i + 1, freqs.size(), channelLabel(khz));
+            setStatus(head + getString(R.string.setup_tuning));
             boolean locked = hub.ensureTuned(khz, new TunerHub.CancelCheck() {
                 @Override
                 public boolean isCancelled() {
@@ -273,13 +274,13 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
             });
             if (!locked) {
                 if (!hub.isTunerPresent() || hub.lastMessage().startsWith("Tuner init failed")) {
-                    scanError = "Tuner problem: " + hub.lastMessage();
+                    scanError = getString(R.string.setup_tuner_problem, hub.lastMessage());
                     break;
                 }
                 progress(idx + 1);
                 continue;
             }
-            setStatus(head + "LOCKED, reading channel list ...");
+            setStatus(head + getString(R.string.setup_reading));
             TsDemux d = hub.demux();
             long start = System.currentTimeMillis();
             long firstSeen = 0;
@@ -289,7 +290,7 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
                 if (n > 0 && firstSeen == 0) firstSeen = now;
                 // done when every TV service has its name, or 6 s after the first service appeared
                 if (firstSeen != 0 && ((allNamed(d) && d.hasRemoteKey() && now - firstSeen > 1500) || now - firstSeen > 12000)) break;
-                setStatus(head + String.format(Locale.US, "LOCKED, reading channel list ... %d service(s)", n));
+                setStatus(head + String.format(Locale.US, getString(R.string.setup_reading_count), n));
                 sleep(250);
             }
             Found f = new Found();
@@ -320,7 +321,7 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
     }
 
     private int writeChannels(List<Found> found) {
-        setStatus("Saving channels ...");
+        setStatus(getString(R.string.setup_saving));
         List<TvChannels.Spec> specs = new ArrayList<>();
         Map<String, Found> byKey = new HashMap<>();
         for (Found f : found) {
@@ -375,14 +376,14 @@ public final class SetupActivity extends AppCompatActivity implements TunerHub.O
                 btnFull.setEnabled(true);
                 if (channels > 0) {
                     setResult(Activity.RESULT_OK, new Intent());
-                    statusTv.setText((cancelled ? "Scan stopped: " : "Scan done: ") + channels + " channel(s) in "
-                            + muxes + " multiplex(es) added to Live Channels.");
-                    btnCancel.setText("Finish");
+                    statusTv.setText(getString(cancelled ? R.string.setup_stopped_partial : R.string.setup_done,
+                            channels, muxes));
+                    btnCancel.setText(R.string.setup_finish);
                 } else {
-                    btnCancel.setText("Close");
+                    btnCancel.setText(R.string.close);
                     String err = scanError;
-                    statusTv.setText(err != null ? err : cancelled ? "Scan stopped, nothing saved."
-                            : "No channels found. Check the antenna and try a Full scan.");
+                    statusTv.setText(err != null ? err : getString(cancelled ? R.string.setup_stopped_nothing
+                            : R.string.setup_no_channels));
                 }
                 btnCancel.requestFocus();
             }

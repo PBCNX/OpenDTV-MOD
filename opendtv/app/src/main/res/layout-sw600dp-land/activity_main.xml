@@ -96,7 +96,7 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="NIT : —   ·   Provider : —"
+                android:text="@string/network_line_placeholder"
                 android:textColor="#B0FFFFFF"
                 android:textSize="11sp" />
         </LinearLayout>
@@ -127,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="Unknown Channel"
+                    android:text="@string/unknown_channel"
                     android:textColor="#FFFFFF"
                     android:textSize="36sp"
                     android:textStyle="bold" />
@@ -140,7 +140,7 @@
                 android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="Now: No current data available."
+                android:text="@string/now_placeholder"
                 android:textColor="#E0FFFFFF"
                 android:textSize="15sp" />
 
@@ -151,7 +151,7 @@
                 android:layout_marginTop="3dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="Next: No current data available."
+                android:text="@string/next_placeholder"
                 android:textColor="#A0FFFFFF"
                 android:textSize="13sp" />
 
@@ -237,7 +237,7 @@
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/bg_record_button"
                 android:clickable="true"
-                android:contentDescription="Record channel"
+                android:contentDescription="@string/cd_record_channel"
                 android:focusable="false"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
@@ -253,7 +253,7 @@
                 android:layout_height="40dp"
                 android:layout_gravity="end"
                 android:background="@drawable/bg_watch_info_button"
-                android:contentDescription="Watch info"
+                android:contentDescription="@string/cd_watch_info"
                 android:padding="12dp"
                 android:src="@drawable/ic_info"
                 app:tint="@color/watch_info_icon_tint" />

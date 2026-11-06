@@ -458,7 +458,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 updateApluscChrome(showing);
                 if (btnWatchInfo == null) return;
                 btnWatchInfo.setSelected(showing);
-                btnWatchInfo.setContentDescription(showing ? "Close watch info" : "Watch info");
+                btnWatchInfo.setContentDescription(getString(showing ? R.string.cd_close_watch_info : R.string.cd_watch_info));
             });
         }
         btnWatchInfoLand = findViewById(R.id.btn_watch_info_land);
@@ -680,10 +680,10 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         if (captionView != null) captionView.attachTo(playerView);
         else applyCaptionStyle();
 
-        tabLayout.addTab(tabLayout.newTab().setText("Channels"));
-        tabLayout.addTab(tabLayout.newTab().setText("EPG"));
-        tabLayout.addTab(tabLayout.newTab().setText("Favorites"));
-        tabLayout.addTab(tabLayout.newTab().setText("Settings"));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_channels));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_epg));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_favorites));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_settings));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -742,13 +742,13 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         TsDemux d = hub != null ? hub.demux() : null;
         ServiceInfo svc = liveService(d);
         if (svc == null) {
-            Toast.makeText(this, "Tune a channel first", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_tune_first, Toast.LENGTH_SHORT).show();
             return;
         }
         boolean hasData = false;
         for (ph.opendtv.ts.StreamInfo st : svc.streams) hasData |= st.isDatacast();
         if (!hasData) {
-            Toast.makeText(this, "This channel has no data broadcast", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_no_data_broadcast, Toast.LENGTH_SHORT).show();
             return;
         }
         hideSidePanel();
@@ -817,7 +817,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
     /** A pad key: only meaningful while a page is up, so say so instead of doing nothing. */
     private void padKey(int code) {
         if (bml == null || !bml.isVisible()) {
-            Toast.makeText(this, "Open the data broadcast first", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_open_data_first, Toast.LENGTH_SHORT).show();
             return;
         }
         bml.tap(code);
@@ -1158,7 +1158,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
      */
     private void setHardwareDecoder(boolean hardware) {
         getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean(PREF_HW_DECODER, hardware).apply();
-        Toast.makeText(this, hardware ? "Hardware decoder selected" : "FFmpeg software decoder selected",
+        Toast.makeText(this, hardware ? R.string.toast_decoder_hardware : R.string.toast_decoder_ffmpeg,
                 Toast.LENGTH_SHORT).show();
         recreate();
     }
@@ -1175,7 +1175,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         } catch (Exception ignored) {
             // version stays "?" when the package info is unavailable
         }
-        return BuildStamp.versionLine(version);
+        return BuildStamp.versionLine(this, version);
     }
 
     private void showAboutDialog() {
@@ -1192,7 +1192,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         TextView stampView = content.findViewById(R.id.about_stamp);
         versionView.setText(getString(R.string.app_name));
         // One builder for this line: the Settings row under ABOUT prints the same string.
-        buildView.setText(BuildStamp.versionLine(version));
+        buildView.setText(BuildStamp.versionLine(this, version));
         String date = BuildStamp.date();
         String time = BuildStamp.time();
         if (date.isEmpty() || time.isEmpty()) {
@@ -1223,12 +1223,11 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 // The first few taps are silent, like the build number: an accidental tap on a
                 // picture must not advertise a developer door.
                 if (DeveloperActions.doorTaps() > DeveloperActions.DOOR_SILENT_TAPS) {
-                    doorToast(left + (left == 1 ? " more tap" : " more taps")
-                            + " to unlock Developer options");
+                    doorToast(getResources().getQuantityString(R.plurals.dev_door_taps_left, left, left));
                 }
                 return;
             }
-            doorToast("Developer options unlocked");
+            doorToast(getString(R.string.dev_door_unlocked));
             refreshSettings();
             dialog.dismiss();
             startActivity(new Intent(this, DeveloperOptionsActivity.class));
@@ -1295,21 +1294,21 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         if (captionView != null) captionView.clear();
     }
 
-    private static String captionStyleName(int style) {
-        return style == 1 ? "Styled (broadcast layout)"
-                : style == 2 ? "Auto (per broadcast)" : "Simple text line";
+    private String captionStyleName(int style) {
+        return getString(style == 1 ? R.string.caption_style_styled
+                : style == 2 ? R.string.caption_style_auto : R.string.caption_style_simple);
     }
 
     private void showCaptionDisplayDialog() {
-        final String[] labels = {
-                "Simple text line", "Styled (broadcast layout)", "Auto (per broadcast)"};
+        final String[] labels = {getString(R.string.caption_style_simple),
+                getString(R.string.caption_style_styled), getString(R.string.caption_style_auto)};
         new MaterialAlertDialogBuilder(this)
-                .setTitle("Caption display")
+                .setTitle(R.string.caption_display_title)
                 .setSingleChoiceItems(labels, captionStyle(), (dlg, which) -> {
                     setCaptionStyle(which);
                     dlg.dismiss();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
@@ -1324,7 +1323,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         captionOverlay.setEnabled(on);
         if (captionView != null) captionView.setEnabled(on);
         getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean(PREF_CC, on).apply();
-        Toast.makeText(this, on ? "Captions on" : "Captions off",
+        Toast.makeText(this, on ? R.string.toast_captions_on : R.string.toast_captions_off,
                 Toast.LENGTH_SHORT).show();
         // The switch shows the state itself: rebuilding the list here would
         // reset the scroll and drop the focus to the video surface.
@@ -1334,19 +1333,19 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         return getSharedPreferences(PREFS, MODE_PRIVATE).getInt(PREF_CC_LANG, 1) == 2 ? 2 : 1;
     }
 
-    private static String captionLanguageName(int language) {
-        return language == 2 ? "Language 2 (second, if broadcast)" : "Language 1 (main)";
+    private String captionLanguageName(int language) {
+        return getString(language == 2 ? R.string.caption_language_2 : R.string.caption_language_1);
     }
 
     private void showCaptionLanguageDialog() {
-        final String[] labels = {"Language 1 (main)", "Language 2 (second, if broadcast)"};
+        final String[] labels = {getString(R.string.caption_language_1), getString(R.string.caption_language_2)};
         new MaterialAlertDialogBuilder(this)
-                .setTitle("Caption language")
+                .setTitle(R.string.caption_language_title)
                 .setSingleChoiceItems(labels, captionLanguage() - 1, (dlg, which) -> {
                     setCaptionLanguage(which + 1);
                     dlg.dismiss();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
@@ -1374,7 +1373,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
     private String audioLanguageSummary() {
         String code = getSharedPreferences(PREFS, MODE_PRIVATE).getString(PREF_AUDIO_LANG, "");
         String n = languageName(code);
-        return n == null ? "Automatic (best quality)" : n;
+        return n == null ? getString(R.string.audio_automatic) : n;
     }
 
     /** Applies the saved audio language preference to the player (it picks the matching track when a channel starts). */
@@ -1400,7 +1399,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 // best effort: an unparseable id only costs the language label
             }
         }
-        StringBuilder sb = new StringBuilder(lang != null ? lang : "Audio " + (index + 1));
+        StringBuilder sb = new StringBuilder(lang != null ? lang : getString(R.string.audio_track, index + 1));
         String codec = f.sampleMimeType == null ? null
                 : f.sampleMimeType.contains("mp4a") ? "AAC" : f.sampleMimeType.contains("ac3") ? "AC-3"
                 : f.sampleMimeType.contains("mpeg") ? "MP2" : null;
@@ -1464,20 +1463,21 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             if (g.getType() == C.TRACK_TYPE_AUDIO && g.length > 0) groups.add(g);
         }
         if (groups.isEmpty()) {
-            Toast.makeText(this, "Tune a channel first", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_tune_first, Toast.LENGTH_SHORT).show();
             return;
         }
         final String[] labels = new String[groups.size() + 1];
-        labels[0] = "Automatic (best quality)";
+        labels[0] = getString(R.string.audio_automatic);
         int checked = 0;
         for (int i = 0; i < groups.size(); i++) {
             androidx.media3.common.Tracks.Group g = groups.get(i);
-            labels[i + 1] = audioTrackLabel(i, g.getTrackFormat(0)) + (g.isTrackSupported(0) ? "" : "  [not supported]");
+            String label = audioTrackLabel(i, g.getTrackFormat(0));
+            labels[i + 1] = g.isTrackSupported(0) ? label : getString(R.string.audio_track_not_supported, label);
             if (g.isTrackSelected(0) && g.getMediaTrackGroup() != autoAudioGroup
                     && player.getTrackSelectionParameters().overrides.containsKey(g.getMediaTrackGroup())) checked = i + 1;
         }
         new MaterialAlertDialogBuilder(this)
-                .setTitle("Audio language")
+                .setTitle(R.string.audio_language_title)
                 .setSingleChoiceItems(labels, checked, (dlg, which) -> {
                     android.content.SharedPreferences.Editor ed = getSharedPreferences(PREFS, MODE_PRIVATE).edit();
                     androidx.media3.common.TrackSelectionParameters.Builder b = player.getTrackSelectionParameters().buildUpon();
@@ -1498,7 +1498,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                     dlg.dismiss();
                     refreshSettings();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
@@ -1516,12 +1516,12 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
     }
 
     /** "1 channel" / "3 channels" - no more "channel(s)". */
-    private static String channelCount(int n) {
-        return n == 1 ? "1 channel" : n + " channels";
+    private String channelCount(int n) {
+        return getResources().getQuantityString(R.plurals.channel_count, n, n);
     }
 
-    private static String ewbsLabel(int code) {
-        return code == 0 ? "Show all alerts" : EwbsAreaTable.name(code);
+    private String ewbsLabel(int code) {
+        return code == 0 ? getString(R.string.ewbs_show_all) : EwbsAreaTable.name(code);
     }
 
     /** The zones have a fixed order: Luzon, Visayas, Mindanao. Not alphabetical. */
@@ -1585,13 +1585,13 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             regionValue = regionRow.findViewById(R.id.picker_value);
             cityValue = cityRow.findViewById(R.id.picker_value);
             auto = content.findViewById(R.id.ewbs_auto);
-            ((TextView) zoneRow.findViewById(R.id.picker_label)).setText("Zone");
-            ((TextView) regionRow.findViewById(R.id.picker_label)).setText("Region");
-            ((TextView) cityRow.findViewById(R.id.picker_label)).setText("City");
+            ((TextView) zoneRow.findViewById(R.id.picker_label)).setText(R.string.ewbs_zone);
+            ((TextView) regionRow.findViewById(R.id.picker_label)).setText(R.string.ewbs_region);
+            ((TextView) cityRow.findViewById(R.id.picker_label)).setText(R.string.ewbs_city);
 
             content.findViewById(R.id.ewbs_list_back).setOnClickListener(v -> showFields(zoneRow));
 
-            zoneRow.setOnClickListener(v -> openList(v, "Zone", ewbsZones(), pick[0], which -> {
+            zoneRow.setOnClickListener(v -> openList(v, getString(R.string.ewbs_zone), ewbsZones(), pick[0], which -> {
                 int[] zones = ewbsZones();
                 pick[0] = zones[which];
                 int[] regions = pick[0] == 0 ? new int[0] : EwbsAreaTable.regionsInZone(pick[0]);
@@ -1603,7 +1603,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             regionRow.setOnClickListener(v -> {
                 if (pick[0] == 0) return;
                 final int[] regions = EwbsAreaTable.regionsInZone(pick[0]);
-                openList(v, "Region", regions, pick[1], which -> {
+                openList(v, getString(R.string.ewbs_region), regions, pick[1], which -> {
                     pick[1] = regions[which];
                     int[] cities = EwbsAreaTable.citiesInRegion(pick[1]);
                     pick[2] = cities.length == 0 ? 0 : cities[0];
@@ -1613,14 +1613,14 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             cityRow.setOnClickListener(v -> {
                 if (pick[1] == 0) return;
                 final int[] cities = EwbsAreaTable.citiesInRegion(pick[1]);
-                openList(v, "City", cities, pick[2], which -> pick[2] = cities[which]);
+                openList(v, getString(R.string.ewbs_city), cities, pick[2], which -> pick[2] = cities[which]);
             });
 
             dialog = new MaterialAlertDialogBuilder(MainActivity.this)
-                    .setTitle("EWBS location")
+                    .setTitle(R.string.ewbs_location_title)
                     .setView(content)
-                    .setPositiveButton("Apply", (d, which) -> saveEwbsLocation(selectedCode()))
-                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton(R.string.apply, (d, which) -> saveEwbsLocation(selectedCode()))
+                    .setNegativeButton(R.string.cancel, null)
                     .create();
             dialog.setOnKeyListener((d, keyCode, event) -> {
                 if (keyCode == KeyEvent.KEYCODE_BACK
@@ -1636,13 +1636,13 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 @Override public void onLocation(int code) {
                     if (code == 0) {
                         Toast.makeText(MainActivity.this,
-                                "Location not matched · pick the area manually",
+                                R.string.toast_location_not_matched,
                                 Toast.LENGTH_LONG).show();
                         return;
                     }
                     applyDetected(code);
                     Toast.makeText(MainActivity.this,
-                            "Current location: " + EwbsAreaTable.name(code), Toast.LENGTH_SHORT).show();
+                            getString(R.string.toast_current_location, EwbsAreaTable.name(code)), Toast.LENGTH_SHORT).show();
                 }
             }));
         }
@@ -1667,7 +1667,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             cityValue.setText(pick[1] == 0 || pick[2] == 0 ? "—" : EwbsAreaTable.name(pick[2]));
             setEwbsRowEnabled(regionRow, pick[0] != 0);
             setEwbsRowEnabled(cityRow, pick[1] != 0);
-            codeText.setText(String.format(Locale.US, "Code: 0x%03X", selectedCode()));
+            codeText.setText(String.format(Locale.US, getString(R.string.ewbs_code), selectedCode()));
             if (dialog.isShowing()) {
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(
                         pick[0] != original[0] || pick[1] != original[1] || pick[2] != original[2]);
@@ -1874,14 +1874,14 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 && callback != null) {
             detectEwbsLocation(callback);
         } else {
-            Toast.makeText(this, "Location permission denied · pick the area manually",
+            Toast.makeText(this, R.string.toast_location_denied,
                     Toast.LENGTH_LONG).show();
         }
     }
 
     private void toggleChannelRecording() {
         if (currentPacketSink == null) {
-            Toast.makeText(this, "Tune a channel first", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_tune_first, Toast.LENGTH_SHORT).show();
             return;
         }
         if (!currentPacketSink.isRecording()) {
@@ -1900,17 +1900,17 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 File file = new File(dir, fileName);
                 currentPacketSink.startRecord(file);
                 Toast.makeText(this, currentChannelEntry != null && currentChannelEntry.service != null
-                        ? "Recording " + ph.opendtv.ui.ChannelAdapter.displayName(currentChannelEntry.service)
-                        : "Recording", Toast.LENGTH_SHORT).show();
+                        ? getString(R.string.toast_recording_channel, ph.opendtv.ui.ChannelAdapter.displayName(currentChannelEntry.service))
+                        : getString(R.string.toast_recording), Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 Log.e(TAG, "Failed to start recording", e);
-                Toast.makeText(this, "Could not start recording", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.toast_recording_failed, Toast.LENGTH_SHORT).show();
             }
         } else {
             boolean wrote = currentPacketSink.stopRecord();
             Toast.makeText(this,
-                    wrote ? "Recording stopped · OpenDTV/Record"
-                          : "Nothing recorded · this service sent no stream",
+                    wrote ? R.string.toast_recording_stopped
+                          : R.string.toast_nothing_recorded,
                     Toast.LENGTH_SHORT).show();
         }
         updateRecordTally();
@@ -1936,7 +1936,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         if (on) ui.postDelayed(recordTick, 1000);
         if (btnRecord == null) return;
         btnRecord.setSelected(on);
-        btnRecord.setContentDescription(on ? "Stop recording" : "Record channel");
+        btnRecord.setContentDescription(getString(on ? R.string.cd_stop_recording : R.string.cd_record_channel));
         if (on) {
             startRecordPulse();
         } else {
@@ -1987,7 +1987,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 } catch (Exception e) {
                     Log.w(TAG, "no all-files access screen on this device", e);
                 }
-                Toast.makeText(activity, "Allow storage access to record", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, R.string.toast_allow_storage, Toast.LENGTH_LONG).show();
                 return false;
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -1996,7 +1996,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.READ_EXTERNAL_STORAGE
                 }, 1001);
-                Toast.makeText(activity, "Allow storage access to record", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, R.string.toast_allow_storage, Toast.LENGTH_LONG).show();
                 return false;
             }
         }
@@ -2357,7 +2357,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
     private void enterMoveMode(int position) {
         if (favoritesAdapter == null) return;
         movingPosition = position;
-        Toast.makeText(this, "Move with ▲▼ · OK when done", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.toast_move_favorite, Toast.LENGTH_SHORT).show();
     }
 
     private void moveFavorite(int delta) {
@@ -2425,24 +2425,24 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
     /** Aspect ratio as a pick-one list, matching the audio language row. */
     private void showAspectRatioDialog() {
         final int current = getSharedPreferences(PREFS, MODE_PRIVATE).getInt(PREF_ASPECT, 0);
-        final String[] labels = {
-                "Stretch (full 16:9)", "Fit (original ratio)", "Zoom (crop to 16:9)"};
+        final String[] labels = {getString(R.string.aspect_stretch),
+                getString(R.string.aspect_fit), getString(R.string.aspect_zoom)};
         new MaterialAlertDialogBuilder(this)
-                .setTitle("Video aspect ratio")
+                .setTitle(R.string.aspect_title)
                 .setSingleChoiceItems(labels, current, (dlg, which) -> {
                     applyAspectMode(which, false);
                     dlg.dismiss();
                     refreshSettings();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
-    private static String aspectModeName(int mode) {
+    private String aspectModeName(int mode) {
         switch (mode) {
-            case 1: return "Fit (original ratio)";
-            case 2: return "Zoom (crop to 16:9)";
-            default: return "Stretch (full 16:9)";
+            case 1: return getString(R.string.aspect_fit);
+            case 2: return getString(R.string.aspect_zoom);
+            default: return getString(R.string.aspect_stretch);
         }
     }
 
@@ -2450,9 +2450,9 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         int rm;
         String name;
         switch (mode) {
-            case 1: rm = AspectRatioFrameLayout.RESIZE_MODE_FIT; name = "Fit (original ratio)"; break;
-            case 2: rm = AspectRatioFrameLayout.RESIZE_MODE_ZOOM; name = "Zoom (crop to 16:9)"; break;
-            default: mode = 0; rm = AspectRatioFrameLayout.RESIZE_MODE_FILL; name = "Stretch (full 16:9)";
+            case 1: rm = AspectRatioFrameLayout.RESIZE_MODE_FIT; name = getString(R.string.aspect_fit); break;
+            case 2: rm = AspectRatioFrameLayout.RESIZE_MODE_ZOOM; name = getString(R.string.aspect_zoom); break;
+            default: mode = 0; rm = AspectRatioFrameLayout.RESIZE_MODE_FILL; name = getString(R.string.aspect_stretch);
         }
         playerView.setResizeMode(rm);
         getSharedPreferences(PREFS, MODE_PRIVATE).edit().putInt(PREF_ASPECT, mode).apply();
@@ -2607,15 +2607,15 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         }
 
         if (signal == null || !signal.locked) {
-            hudSignal.setText("Tuning…");
+            hudSignal.setText(R.string.tuning);
         } else {
             hudSignal.setText("S " + signalPercent(signal.strengthPercent)
                     + "  Q " + signalPercent(signal.qualityPercent));
         }
 
-        setHudChip(hudChipData, data, R.color.odtv_ok, "Data broadcast");
-        setHudChip(hudChipCc, caption, R.color.odtv_ok, "Closed captions");
-        setHudChip(hudChipLock, encrypted, R.color.odtv_warning, "Encrypted");
+        setHudChip(hudChipData, data, R.color.odtv_ok, getString(R.string.cd_data_broadcast));
+        setHudChip(hudChipCc, caption, R.color.odtv_ok, getString(R.string.cd_closed_captions));
+        setHudChip(hudChipLock, encrypted, R.color.odtv_warning, getString(R.string.cd_encrypted));
         setHudAlertChip(emergency);
     }
 
@@ -2629,8 +2629,8 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         if (hudChipEwbs == null) return;
         hudChipEwbs.setSelected(active);
         hudChipEwbs.setAlpha(active ? 1f : 0.28f);
-        hudChipEwbs.setContentDescription(
-                "Emergency broadcast" + (active ? " active" : " inactive"));
+        hudChipEwbs.setContentDescription(getString(active ? R.string.cd_chip_active : R.string.cd_chip_inactive,
+                getString(R.string.cd_emergency_broadcast)));
     }
 
     /** NIT name and SDT provider share one marquee line, so they never fight for width. */
@@ -2638,8 +2638,8 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         if (hudTvNetworkName == null) return;
         String nit = demux != null ? demux.getNetworkName() : "";
         String provider = service != null ? service.provider : "";
-        String line = "NIT : " + (nit.isEmpty() ? "—" : nit)
-                + "   ·   Provider : " + (provider.isEmpty() ? "—" : provider);
+        String line = getString(R.string.network_line, nit.isEmpty() ? "—" : nit,
+                provider.isEmpty() ? "—" : provider);
         if (!line.contentEquals(hudTvNetworkName.getText())) {
             hudTvNetworkName.setText(line);
         }
@@ -2651,7 +2651,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 active ? activeColorRes : R.color.odtv_on_surface_variant);
         chip.setTextColor(color);
         chip.setAlpha(active ? 1f : 0.28f);
-        chip.setContentDescription(description + (active ? " active" : " inactive"));
+        chip.setContentDescription(getString(active ? R.string.cd_chip_active : R.string.cd_chip_inactive, description));
     }
 
     private static String signalPercent(int value) {
@@ -2678,7 +2678,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
 
     private void showCurrentChannel() {
         if (currentChannelEntry == null) {
-            if (tvCurrentChannel != null) tvCurrentChannel.setText("No channel tuned");
+            if (tvCurrentChannel != null) tvCurrentChannel.setText(R.string.no_channel_tuned);
             if (watchInfo != null) watchInfo.hide();
             hideTuningCard();
             updateChannelSelection();
@@ -2745,7 +2745,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 // Tuning here would re-open the dongle underneath the Analyzer (two native devices).
                 if (handingOver) return;
                 if (!ok) {
-                    Toast.makeText(MainActivity.this, "USB permission needed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.toast_usb_permission, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (debugTuneKhz > 0) {
@@ -2840,17 +2840,17 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             recyclerView.setAdapter(new ph.opendtv.ui.EpgAdapter(this, events, clock));
             if (guideService == null) {
                 setListChrome(0, "", "", R.drawable.ic_schedule,
-                        "No channel tuned", "Choose a channel to see its program guide.",
-                        "Open Channels", 0);
+                        getString(R.string.no_channel_tuned), getString(R.string.epg_no_channel_body),
+                        getString(R.string.open_channels), 0);
             } else {
                 int programs = events.size();
                 setListChrome(programs,
                         ph.opendtv.ui.ChannelAdapter.displayName(guideService).toUpperCase(Locale.US),
-                        programs == 1 ? "1 PROGRAM" : programs + " PROGRAMS",
+                        getResources().getQuantityString(R.plurals.epg_program_count, programs, programs),
                         R.drawable.ic_schedule,
-                        "No program guide yet",
-                        "Tune a channel and wait for guide data. Some channels don't broadcast an EPG.",
-                        "Open Channels", 0);
+                        getString(R.string.epg_empty_title),
+                        getString(R.string.epg_empty_body),
+                        getString(R.string.open_channels), 0);
             }
         } else if (currentTab == 2) {
             // Favorites tab
@@ -2899,103 +2899,103 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                     saveFavoriteOrder();
                     updateContentAdapter();
                     Toast.makeText(MainActivity.this,
-                            (isFavorite ? "Added to Favorites: " : "Removed from Favorites: ") +
-                                    ph.opendtv.ui.ChannelAdapter.displayName(service),
+                            getString(isFavorite ? R.string.toast_favorite_added : R.string.toast_favorite_removed,
+                                    ph.opendtv.ui.ChannelAdapter.displayName(service)),
                             Toast.LENGTH_SHORT).show();
                 }
             }, (position, channel) -> enterMoveMode(position));
             recyclerView.setAdapter(favoritesAdapter);
             attachFavoritesDrag();
             updateChannelSelection();
-            setListChrome(favServices.size(), "FAVORITES", String.valueOf(favServices.size()),
+            setListChrome(favServices.size(), getString(R.string.favorites_label), String.valueOf(favServices.size()),
                     R.drawable.ic_favorite_border,
-                    "No favorites yet", "Press the star on a channel to add it.",
-                    "Open Channels", 0);
+                    getString(R.string.favorites_empty_title), getString(R.string.favorites_empty_body),
+                    getString(R.string.open_channels), 0);
         } else if (currentTab == 3) {
             // Settings tab: consumer sections, technical tools last.
             List<ph.opendtv.ui.SettingAdapter.SettingItem> items = new ArrayList<>();
 
-            items.add(ph.opendtv.ui.SettingAdapter.SettingItem.header("CHANNELS & ALERTS"));
+            items.add(ph.opendtv.ui.SettingAdapter.SettingItem.header(getString(R.string.settings_header_channels)));
             items.add(new ph.opendtv.ui.SettingAdapter.SettingItem(
-                    "Auto Channel Scan",
-                    "Perform full UHF band scan for channels",
+                    getString(R.string.settings_auto_scan),
+                    getString(R.string.settings_auto_scan_summary),
                     R.drawable.ic_scan,
                     this::confirmFullScan));
             items.add(new ph.opendtv.ui.SettingAdapter.SettingItem(
-                    "Manual Frequency Scan",
-                    "Scan specific UHF channel frequency with signal meter",
+                    getString(R.string.settings_manual_scan),
+                    getString(R.string.settings_manual_scan_summary),
                     R.drawable.ic_tune,
                     this::showManualScanDialog));
             int location = ewbsLocation();
             items.add(new ph.opendtv.ui.SettingAdapter.SettingItem(
-                    "EWBS Location",
-                    location == 0 ? "Show all alerts · tap to choose a location"
-                            : EwbsAreaTable.name(location) + " · tap to change",
+                    getString(R.string.settings_ewbs),
+                    location == 0 ? getString(R.string.settings_ewbs_summary_all)
+                            : getString(R.string.settings_tap_to_change, EwbsAreaTable.name(location)),
                     R.drawable.ic_ewbs_alert,
                     this::showEwbsLocationDialog));
 
-            items.add(ph.opendtv.ui.SettingAdapter.SettingItem.header("PICTURE & SOUND"));
+            items.add(ph.opendtv.ui.SettingAdapter.SettingItem.header(getString(R.string.settings_header_picture)));
             int aspect = getSharedPreferences(PREFS, MODE_PRIVATE).getInt(PREF_ASPECT, 0);
             items.add(new ph.opendtv.ui.SettingAdapter.SettingItem(
-                    "Video Aspect Ratio",
-                    aspectModeName(aspect) + " · tap to change",
+                    getString(R.string.settings_aspect),
+                    getString(R.string.settings_tap_to_change, aspectModeName(aspect)),
                     android.R.drawable.ic_menu_crop,
                     this::showAspectRatioDialog));
             items.add(new ph.opendtv.ui.SettingAdapter.SettingItem(
-                    "Audio Language",
-                    audioLanguageSummary() + " · choose among the channel's audio tracks",
+                    getString(R.string.settings_audio),
+                    getString(R.string.settings_audio_summary, audioLanguageSummary()),
                     R.drawable.ic_audio,
                     this::showAudioLanguageDialog));
             // The decoder was an overflow item with a clipped label ("Hardware decoder (off =
             // FF.."); it is a picture setting, so it sits last here: on = MediaCodec, off =
             // FFmpeg, one line and one gesture instead of a sentence in a menu.
             items.add(ph.opendtv.ui.SettingAdapter.SettingItem.switchItem(
-                    "Hardware decoder",
-                    "On: the device's MediaCodec · off: FFmpeg software decoding",
+                    getString(R.string.settings_hw_decoder),
+                    getString(R.string.settings_hw_decoder_summary),
                     R.drawable.ic_audio,
                     () -> getSharedPreferences(PREFS, MODE_PRIVATE).getBoolean(PREF_HW_DECODER, false),
                     this::setHardwareDecoder));
 
-            items.add(ph.opendtv.ui.SettingAdapter.SettingItem.header("CAPTIONS"));
+            items.add(ph.opendtv.ui.SettingAdapter.SettingItem.header(getString(R.string.settings_header_captions)));
             items.add(ph.opendtv.ui.SettingAdapter.SettingItem.switchItem(
-                    "Closed Captions (CC)",
-                    "Shown when the channel broadcasts captions",
+                    getString(R.string.settings_cc),
+                    getString(R.string.settings_cc_summary),
                     R.drawable.ic_captions,
                     () -> captionOverlay != null && captionOverlay.isEnabled(),
                     this::setCaptionsEnabled));
             items.add(new ph.opendtv.ui.SettingAdapter.SettingItem(
-                    "Caption Display",
-                    captionStyleName(captionStyle()) + " · tap to change",
+                    getString(R.string.settings_caption_display),
+                    getString(R.string.settings_tap_to_change, captionStyleName(captionStyle())),
                     R.drawable.ic_captions,
                     this::showCaptionDisplayDialog));
             items.add(new ph.opendtv.ui.SettingAdapter.SettingItem(
-                    "Caption Language",
-                    captionLanguageName(captionLanguage()) + " · tap to change",
+                    getString(R.string.settings_caption_language),
+                    getString(R.string.settings_tap_to_change, captionLanguageName(captionLanguage())),
                     R.drawable.ic_captions,
                     this::showCaptionLanguageDialog));
 
-            items.add(ph.opendtv.ui.SettingAdapter.SettingItem.header("ADVANCED"));
+            items.add(ph.opendtv.ui.SettingAdapter.SettingItem.header(getString(R.string.settings_header_advanced)));
             boolean isRecording = currentPacketSink != null && currentPacketSink.isRecording();
             items.add(new ph.opendtv.ui.SettingAdapter.SettingItem(
-                    isRecording ? "Stop Channel Recording" : "Record Channel",
-                    isRecording ? "Stop saving transport stream to storage" : "Save TS stream to OpenDTV/Record folder",
+                    getString(isRecording ? R.string.settings_record_stop : R.string.settings_record),
+                    getString(isRecording ? R.string.settings_record_stop_summary : R.string.settings_record_summary),
                     R.drawable.ic_more_vert,
                     this::toggleChannelRecording));
             items.add(new ph.opendtv.ui.SettingAdapter.SettingItem(
-                    "Signal & TS Analyzer",
-                    "Inspect bitrates, PIDs, tables, and raw packets",
+                    getString(R.string.settings_analyzer),
+                    getString(R.string.settings_analyzer_summary),
                     R.drawable.ic_analytics,
                     this::openAnalyzer));
 
-            items.add(ph.opendtv.ui.SettingAdapter.SettingItem.header("ABOUT"));
+            items.add(ph.opendtv.ui.SettingAdapter.SettingItem.header(getString(R.string.settings_header_about)));
             items.add(new ph.opendtv.ui.SettingAdapter.SettingItem(
                     getString(R.string.about_title, getString(R.string.app_name)),
                     aboutSummary(),
                     R.drawable.ic_info,
                     this::showAboutDialog));
             items.add(new ph.opendtv.ui.SettingAdapter.SettingItem(
-                    "Open source licenses",
-                    "The licences of everything this app is built from",
+                    getString(R.string.settings_licenses),
+                    getString(R.string.settings_licenses_summary),
                     R.drawable.ic_check,
                     () -> startActivity(new Intent(this, LicensesActivity.class))));
             // No Developers row here, by the owner's decision: the About art is the only door,
@@ -3037,16 +3037,16 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                     saveFavoriteOrder();
                     updateContentAdapter();
                     Toast.makeText(MainActivity.this,
-                            (isFavorite ? "Added to Favorites: " : "Removed from Favorites: ") +
-                                    ph.opendtv.ui.ChannelAdapter.displayName(service),
+                            getString(isFavorite ? R.string.toast_favorite_added : R.string.toast_favorite_removed,
+                                    ph.opendtv.ui.ChannelAdapter.displayName(service)),
                             Toast.LENGTH_SHORT).show();
                 }
             }));
             updateChannelSelection();
-            setListChrome(services.size(), "CHANNELS", String.valueOf(services.size()),
+            setListChrome(services.size(), getString(R.string.channels_label), String.valueOf(services.size()),
                     R.drawable.ic_scan,
-                    "No channels yet", "Open Settings and run Auto Channel Scan.",
-                    "Open Settings", 3);
+                    getString(R.string.channels_empty_title), getString(R.string.channels_empty_body),
+                    getString(R.string.open_settings), 3);
         }
     }
 
@@ -3100,7 +3100,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         if (tunerReady) {
             tuneAndPlay(entry);
         } else if (!hub.isTunerPresent()) {
-            Toast.makeText(this, "Tuner not found · plug in the USB dongle", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.toast_tuner_not_found, Toast.LENGTH_LONG).show();
         } else {
             initTuner(); // plays currentChannelEntry once ready
         }
@@ -3135,7 +3135,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 Log.w(TAG, "play sid=" + entry.service.serviceId + " name=" + entry.service.name
                         + " -> NO LOCK at " + entry.khz);
                 ui.post(() -> Toast.makeText(MainActivity.this,
-                        "Could not lock " + (entry.khz / 1000.0) + " MHz", Toast.LENGTH_SHORT).show());
+                        getString(R.string.toast_no_lock, String.valueOf(entry.khz / 1000.0)), Toast.LENGTH_SHORT).show());
                 return;
             }
             // Saved channels are stubs: take the live service (PMT PID, streams) from the demux.
@@ -3144,7 +3144,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 Log.w(TAG, "play sid=" + entry.service.serviceId + " name=" + entry.service.name
                         + " -> NOT FOUND after lock");
                 if (g == playGen.get())
-                    ui.post(() -> Toast.makeText(MainActivity.this, "Channel not found on this frequency", Toast.LENGTH_SHORT).show());
+                    ui.post(() -> Toast.makeText(MainActivity.this, R.string.toast_channel_not_found, Toast.LENGTH_SHORT).show());
                 return;
             }
             StringBuilder streams = new StringBuilder();
@@ -3162,7 +3162,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                 pipe.clear();
                 if (currentPacketSink != null && currentPacketSink.isRecording()) {
                     currentPacketSink.stopRecord();
-                    Toast.makeText(MainActivity.this, "Recording stopped · channel changed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.toast_recording_channel_changed, Toast.LENGTH_SHORT).show();
                 }
                 currentPacketSink = new RecordingPacketSink(pipe, d.getTsId(), live);
                 updateRecordTally();
@@ -3220,7 +3220,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         Log.w(TAG, "hardware decoder rendered no frame; switching to FFmpeg");
         getSharedPreferences(PREFS, MODE_PRIVATE).edit()
                 .putBoolean(PREF_HW_DECODER, false).apply();
-        Toast.makeText(this, "Video stalled · switched to software decoding", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, R.string.toast_video_stalled, Toast.LENGTH_LONG).show();
         recreate();
     }
 
@@ -3408,8 +3408,8 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
     private void updateEpgBannerInfo(int serviceId) {
         if (hudTvNowEvent == null || hudTvNextEvent == null) return;
         String[] guide = epgNowNext(serviceId);
-        hudTvNowEvent.setText("Now: " + (guide[0] != null ? guide[0] : "No program info"));
-        hudTvNextEvent.setText("Next: " + (guide[1] != null ? guide[1] : "No program info"));
+        hudTvNowEvent.setText(getString(R.string.now_program, guide[0] != null ? guide[0] : getString(R.string.no_program_info)));
+        hudTvNextEvent.setText(getString(R.string.next_program, guide[1] != null ? guide[1] : getString(R.string.no_program_info)));
     }
 
     /** {now, next} programme names, or nulls when the EIT has no usable entry. */
@@ -3599,21 +3599,21 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
     /** A full scan rebuilds the channel list, so ask before it starts. */
     private void confirmFullScan() {
         int count = allChannels.size();
-        String message = "Scans UHF 14 – 51 and replaces the current channel list"
-                + (count > 0 ? " (" + count + (count == 1 ? " channel)" : " channels)") : "")
-                + ". It can take a few minutes.";
+        String message = count > 0
+                ? getString(R.string.scan_full_message_count, channelCount(count))
+                : getString(R.string.scan_full_message);
         new MaterialAlertDialogBuilder(this)
-                .setTitle("Full scan?")
+                .setTitle(R.string.scan_full_title)
                 .setMessage(message)
-                .setPositiveButton("Scan", (d, w) -> startFullScan())
-                .setNegativeButton("Cancel", null)
+                .setPositiveButton(R.string.scan, (d, w) -> startFullScan())
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
     private void showScanProgress(int max) {
         ui.post(() -> {
             if (scanOverlay == null) scanOverlay = new ph.opendtv.ui.ScanOverlay(this, scanListener);
-            scanOverlay.showBand("UHF 14 – 51 · " + max + " channels", max);
+            scanOverlay.showBand(getString(R.string.scan_band_subtitle, channelCount(max)), max);
         });
     }
 
@@ -3693,7 +3693,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
 
     private void showManualScanDialog() {
         if (hub == null || !hub.isTunerPresent()) {
-            Toast.makeText(this, "Tuner not found · plug in the USB dongle", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.toast_tuner_not_found, Toast.LENGTH_LONG).show();
             return;
         }
         List<Integer> freqs = new ArrayList<>();
@@ -3701,7 +3701,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         int khz = currentChannelEntry != null && currentChannelEntry.khz >= 473143
                 && currentChannelEntry.khz <= 803143 ? currentChannelEntry.khz : freqs.get(0);
         if (scanOverlay == null) scanOverlay = new ph.opendtv.ui.ScanOverlay(this, scanListener);
-        scanOverlay.showManual(khz, freqs, "Pick a UHF channel, watch the lock, then scan it");
+        scanOverlay.showManual(khz, freqs, getString(R.string.scan_manual_subtitle));
         startManualMeter();
     }
 
@@ -3720,7 +3720,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             if (!hub.ensurePermission(60_000)) {
                 scanning = false;
                 dismissScanDialog();
-                ui.post(() -> Toast.makeText(MainActivity.this, "USB permission needed", Toast.LENGTH_SHORT).show());
+                ui.post(() -> Toast.makeText(MainActivity.this, R.string.toast_usb_permission, Toast.LENGTH_SHORT).show());
                 return;
             }
             hub.acquire(MainActivity.this);
@@ -3728,7 +3728,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             if (!locked) {
                 scanning = false;
                 dismissScanDialog();
-                ui.post(() -> Toast.makeText(MainActivity.this, "Could not lock " + (khz/1000.0) + " MHz", Toast.LENGTH_SHORT).show());
+                ui.post(() -> Toast.makeText(MainActivity.this, getString(R.string.toast_no_lock, String.valueOf(khz/1000.0)), Toast.LENGTH_SHORT).show());
                 return;
             }
 
@@ -3760,7 +3760,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             dismissScanDialog();
             saveChannels();
             ui.post(() -> {
-                Toast.makeText(MainActivity.this, "Scan complete · " + channelCount(newEntries.size()) + " channels at " + (khz/1000.0) + " MHz", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, getString(R.string.toast_scan_complete_at, channelCount(newEntries.size()), String.valueOf(khz/1000.0)), Toast.LENGTH_LONG).show();
                 updateContentAdapter();
                 if (!newEntries.isEmpty()) {
                     currentChannelEntry = newEntries.get(0);
@@ -3788,7 +3788,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             return;
         }
         if (hub == null || !hub.isTunerPresent()) {
-            Toast.makeText(this, "Tuner not found · plug in the USB dongle", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.toast_tuner_not_found, Toast.LENGTH_LONG).show();
             return;
         }
         scanning = true;
@@ -3807,7 +3807,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             if (!hub.ensurePermission(60_000)) {
                 scanning = false;
                 dismissScanDialog();
-                ui.post(() -> Toast.makeText(MainActivity.this, "USB permission needed", Toast.LENGTH_SHORT).show());
+                ui.post(() -> Toast.makeText(MainActivity.this, R.string.toast_usb_permission, Toast.LENGTH_SHORT).show());
                 return;
             }
             hub.acquire(MainActivity.this);
@@ -3853,7 +3853,7 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
             dismissScanDialog();
             saveChannels();
             ui.post(() -> {
-                Toast.makeText(MainActivity.this, "Scan complete · " + channelCount(allChannels.size()), Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, getString(R.string.toast_scan_complete, channelCount(allChannels.size())), Toast.LENGTH_LONG).show();
                 updateContentAdapter();
                 currentChannelEntry = pickStartChannel();
                 showCurrentChannel();

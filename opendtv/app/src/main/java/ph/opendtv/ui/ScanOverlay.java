@@ -118,9 +118,9 @@ public final class ScanOverlay {
     public void showBand(String subtitleText, int max) {
         manualMode = false;
         barMax = Math.max(1, max);
-        title.setText("Auto Scan");
+        title.setText(R.string.scan_auto_title);
         subtitle.setText(subtitleText);
-        found.setText("0 services found");
+        found.setText(activity.getResources().getQuantityString(R.plurals.scan_services_found, 0, 0));
         console.setText("");
         bar.setMax(barMax);
         bar.setProgress(0);
@@ -130,7 +130,7 @@ public final class ScanOverlay {
         manualBlock.setVisibility(View.GONE);
         listBlock.setVisibility(View.GONE);
         picking = false;
-        action.setText("Stop");
+        action.setText(R.string.stop);
         action.setVisibility(View.VISIBLE);
         close.setVisibility(View.GONE);
         show(false);
@@ -145,9 +145,9 @@ public final class ScanOverlay {
      */
     public void updateBand(String status, int done, int count, String lines) {
         if (!dialog.isShowing() || manualMode) return;
-        subtitle.setText(status + "  ·  " + Math.min(done + 1, barMax) + " of " + barMax);
+        subtitle.setText(activity.getString(R.string.scan_progress, status, Math.min(done + 1, barMax), barMax));
         bar.setProgress(Math.min(done, barMax));
-        found.setText(count + (count == 1 ? " service found" : " services found"));
+        found.setText(activity.getResources().getQuantityString(R.plurals.scan_services_found, count, count));
         if (!lines.equals(console.getText().toString())) {
             console.setText(lines);
             // Log behaviour: keep the newest line in view as the scan runs.
@@ -160,7 +160,7 @@ public final class ScanOverlay {
         manualMode = true;
         this.frequencies = frequencies;
         selectedKhz = khz;
-        title.setText("Manual Scan");
+        title.setText(R.string.scan_manual_title);
         subtitle.setText(subtitleText);
         bar.setVisibility(View.GONE);
         found.setVisibility(View.GONE);
@@ -168,7 +168,7 @@ public final class ScanOverlay {
         manualBlock.setVisibility(View.VISIBLE);
         listBlock.setVisibility(View.GONE);
         picking = false;
-        action.setText("Scan");
+        action.setText(R.string.scan);
         action.setVisibility(View.VISIBLE);
         close.setVisibility(View.VISIBLE);
         setManualFrequency(khz);
@@ -190,7 +190,7 @@ public final class ScanOverlay {
         if (!dialog.isShowing() || !manualMode) return;
         if (android.os.SystemClock.elapsedRealtime() < meterSettleAt) return;
         boolean locked = status != null && status.locked;
-        lock.setText(locked ? "LOCKED" : "NO LOCK");
+        lock.setText(locked ? R.string.scan_locked : R.string.scan_no_lock);
         lock.setTextColor(activity.getColor(locked ? R.color.odtv_accent : R.color.odtv_on_surface_variant));
         int strength = locked ? Math.max(0, Math.min(100, status.strengthPercent)) : 0;
         int quality = locked ? Math.max(0, Math.min(100, status.qualityPercent)) : 0;
@@ -219,7 +219,7 @@ public final class ScanOverlay {
     }
 
     private void clearMeter() {
-        lock.setText("NO LOCK");
+        lock.setText(R.string.scan_no_lock);
         lock.setTextColor(activity.getColor(R.color.odtv_on_surface_variant));
         strengthBar.setProgress(0);
         qualityBar.setProgress(0);
@@ -233,13 +233,13 @@ public final class ScanOverlay {
         picking = true;
         manualBlock.setVisibility(View.GONE);
         listBlock.setVisibility(View.VISIBLE);
-        title.setText("Pick a channel");
-        subtitle.setText(String.format(Locale.US, "UHF %d – %d · %d frequencies",
+        title.setText(R.string.scan_pick_channel);
+        subtitle.setText(String.format(Locale.US, activity.getString(R.string.scan_pick_subtitle),
                 14 + (frequencies.get(0) - 473143) / 6000,
                 14 + (frequencies.get(frequencies.size() - 1) - 473143) / 6000,
                 frequencies.size()));
         action.setVisibility(View.GONE);
-        close.setText("Back");
+        close.setText(R.string.back);
         buildList();
     }
 
@@ -247,10 +247,10 @@ public final class ScanOverlay {
         picking = false;
         listBlock.setVisibility(View.GONE);
         manualBlock.setVisibility(View.VISIBLE);
-        title.setText("Manual scan");
-        subtitle.setText("Pick a UHF channel, watch the lock, then scan it");
+        title.setText(R.string.scan_manual_title);
+        subtitle.setText(R.string.scan_manual_subtitle);
         action.setVisibility(View.VISIBLE);
-        close.setText("Close");
+        close.setText(R.string.close);
         action.requestFocus();
     }
 
