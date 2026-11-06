@@ -161,6 +161,7 @@ public final class SettingsController {
         switch (DisplayModes.aspectMode(mode)) {
             case DisplayModes.ASPECT_FIT: return "Fit (original ratio)";
             case DisplayModes.ASPECT_ZOOM: return "Zoom (crop to 16:9)";
+            case DisplayModes.ASPECT_FORCED_16_9: return "Forced 16:9 (black bars)";
             default: return "Stretch (full 16:9)";
         }
     }

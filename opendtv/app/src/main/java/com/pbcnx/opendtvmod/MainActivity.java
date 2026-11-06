@@ -1099,7 +1099,9 @@ public class MainActivity extends AppCompatActivity
 
         AspectRatioFrameLayout frame = findViewById(R.id.player_frame);
         if (frame != null) {
-            frame.setAspectRatio(16f / 9f);   // fixed 16:9 display area in portrait
+            // The 16:9 display area: always in portrait; in landscape only with Forced 16:9
+            // (applyAspectMode picks fit or fill).
+            frame.setAspectRatio(16f / 9f);
         }
 
         playerView.setUseController(false);
@@ -1123,6 +1125,10 @@ public class MainActivity extends AppCompatActivity
                 showInfoBanner();
             }
         });
+        // Landscape with Forced 16:9 leaves black bars outside the video: a tap there is a tap on
+        // the video. Taps on the banner, the side panel and the other overlays never reach the root.
+        View landRoot = findViewById(R.id.root_layout_land);
+        if (landRoot != null) landRoot.setOnClickListener(v -> playerView.performClick());
         playerView.setPlayer(player);
         if (captions == null) captions = new CaptionBinder(captionsHost);
         captions.attach();
@@ -2122,9 +2128,18 @@ public class MainActivity extends AppCompatActivity
         switch (mode) {
             case DisplayModes.ASPECT_FIT: rm = AspectRatioFrameLayout.RESIZE_MODE_FIT; name = "Fit (original ratio)"; break;
             case DisplayModes.ASPECT_ZOOM: rm = AspectRatioFrameLayout.RESIZE_MODE_ZOOM; name = "Zoom (crop to 16:9)"; break;
+            case DisplayModes.ASPECT_FORCED_16_9: rm = AspectRatioFrameLayout.RESIZE_MODE_FILL; name = "Forced 16:9 (black bars)"; break;
             default: rm = AspectRatioFrameLayout.RESIZE_MODE_FILL; name = "Stretch (full 16:9)";
         }
         playerView.setResizeMode(rm);
+        // Landscape fills the screen, and most phones are wider than 16:9 (around 20:9), so Stretch
+        // widens the picture past 16:9 there. Forced 16:9 stretches it into a centred 16:9 box
+        // instead. Portrait's frame is 16:9 already, so it keeps its own mode.
+        AspectRatioFrameLayout frame = findViewById(R.id.player_frame);
+        if (frame != null && (layoutKey & 1) != 0) {
+            frame.setResizeMode(mode == DisplayModes.ASPECT_FORCED_16_9
+                    ? AspectRatioFrameLayout.RESIZE_MODE_FIT : AspectRatioFrameLayout.RESIZE_MODE_FILL);
+        }
         getSharedPreferences(PREFS, MODE_PRIVATE).edit().putInt(PREF_ASPECT, mode).apply();
         if (announce) Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
     }

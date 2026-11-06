@@ -201,13 +201,15 @@ public final class MainDialogs {
     /**
      * Aspect ratio as a pick-one list, matching the audio language row.
      *
-     * <p>0 = Stretch (fill 16:9), 1 = Fit (keeps ratio, black bars), 2 = Zoom (keeps ratio, crops).
+     * <p>0 = Stretch (fill 16:9), 1 = Fit (keeps ratio, black bars), 2 = Zoom (keeps ratio, crops),
+     * 3 = Forced 16:9 (stretched into a centred 16:9 box, black bars around it).
      */
     public void showAspectRatioDialog() {
         final int current = screen.aspectMode();
-        // Indexed by DisplayModes.ASPECT_* (stretch, fit, zoom).
+        // Indexed by DisplayModes.ASPECT_* (stretch, fit, zoom, forced 16:9).
         final String[] labels = {
-                "Stretch (full 16:9)", "Fit (original ratio)", "Zoom (crop to 16:9)"};
+                "Stretch (full 16:9)", "Fit (original ratio)", "Zoom (crop to 16:9)",
+                "Forced 16:9 (black bars)"};
         new MaterialAlertDialogBuilder(activity)
                 .setTitle("Video aspect ratio")
                 .setSingleChoiceItems(labels, current, (dlg, which) -> {
