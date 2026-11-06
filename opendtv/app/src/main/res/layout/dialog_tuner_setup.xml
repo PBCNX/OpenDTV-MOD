@@ -43,7 +43,7 @@
             android:maxLines="1"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:text="Import folder"
+            android:text="@string/tuner_import_folder"
             android:textSize="12sp" />
 
         <TextView
@@ -57,7 +57,7 @@
             android:maxLines="1"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:text="Import file"
+            android:text="@string/tuner_import_file"
             android:textSize="12sp" />
 
         <TextView
@@ -69,7 +69,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Close"
+            android:text="@string/close"
             android:textSize="12sp" />
     </LinearLayout>
 </LinearLayout>

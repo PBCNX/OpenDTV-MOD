@@ -497,7 +497,7 @@ public class MainActivity extends AppCompatActivity
         @Override public boolean isScanning() { return MainActivity.this.isScanning(); }
         public boolean hasChannel() { return MainActivity.this.hasChannel(); }
         public void tuneAndPlayCurrent() { MainActivity.this.tuneAndPlayCurrent(); }
-        public void toast(String message) { MainActivity.this.toast(message); }
+        public void toast(int message) { MainActivity.this.toast(getString(message)); }
     };
 
     private WatchTicker watchTicker;
@@ -919,7 +919,7 @@ public class MainActivity extends AppCompatActivity
                 updateApluscChrome(showing);
                 if (btnWatchCard == null) return;
                 btnWatchCard.setSelected(showing);
-                btnWatchCard.setContentDescription(showing ? "Close watch info" : "Watch info");
+                btnWatchCard.setContentDescription(getString(showing ? R.string.cd_close_watch_info : R.string.cd_watch_info));
             });
         }
         btnWatchInfoLand = findViewById(R.id.btn_watch_info_land);
@@ -1131,10 +1131,10 @@ public class MainActivity extends AppCompatActivity
 
     /** The four tabs, their selection behaviour and the first paint. */
     private void bindTabStrip() {
-        tabLayout.addTab(tabLayout.newTab().setText("Channels"));
-        tabLayout.addTab(tabLayout.newTab().setText("EPG"));
-        tabLayout.addTab(tabLayout.newTab().setText("Favorites"));
-        tabLayout.addTab(tabLayout.newTab().setText("Settings"));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_channels));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_epg));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_favorites));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_settings));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -1228,13 +1228,13 @@ public class MainActivity extends AppCompatActivity
         TsDemux d = hub.demux();
         ServiceInfo svc = liveService(d);
         if (svc == null) {
-            Toast.makeText(this, "Tune a channel first · the data broadcast belongs to the tuned channel.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_data_tune_first, Toast.LENGTH_SHORT).show();
             return;
         }
     boolean hasData = false;
         for (StreamInfo st : svc.streams) hasData |= st.isDatacast();
         if (!hasData) {
-            Toast.makeText(this, "This channel has no data broadcast · try another channel.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_no_data_broadcast, Toast.LENGTH_SHORT).show();
             return;
         }
         hideSidePanel();
@@ -1294,7 +1294,7 @@ public class MainActivity extends AppCompatActivity
     /** A pad key: only meaningful while a page is up, so say so instead of doing nothing. */
     private void padKey(int code) {
         if (!bml.isVisible()) {
-            Toast.makeText(this, "Open the data broadcast first · press DATA to load this channel's page.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_open_data_first, Toast.LENGTH_SHORT).show();
             return;
         }
         bml.tap(code);
@@ -1702,23 +1702,23 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void setDecoderManual(boolean manual) {
         DecoderPrefs.setManual(this, manual);
-        refreshAfterDecoderChange(manual
-                ? "Manual decoding · the switches below decide"
-                : "Auto decoding · the app chooses");
+        refreshAfterDecoderChange(getString(manual
+                ? R.string.toast_decoding_manual
+                : R.string.toast_decoding_auto));
     }
 
     @Override
     public void setDecoderVideoSoftware(boolean software) {
         DecoderPrefs.setVideoSoftware(this, software);
-        refreshAfterDecoderChange("Video decoder: "
-                + (software ? "software (FFmpeg)" : "the device's decoder"));
+        refreshAfterDecoderChange(getString(R.string.toast_video_decoder,
+                getString(software ? R.string.decoder_software_lower : R.string.decoder_device_lower)));
     }
 
     @Override
     public void setDecoderAudioSoftware(boolean software) {
         DecoderPrefs.setAudioSoftware(this, software);
-        refreshAfterDecoderChange("Audio decoder: "
-                + (software ? "software (FFmpeg)" : "the device's decoder"));
+        refreshAfterDecoderChange(getString(R.string.toast_audio_decoder,
+                getString(software ? R.string.decoder_software_lower : R.string.decoder_device_lower)));
     }
 
     /** Re-binds the rows (the Manual gate greys two of them) and rebuilds the player if one is live. */
@@ -1766,16 +1766,16 @@ public class MainActivity extends AppCompatActivity
     public String decoderVideoSummary(boolean manual, int khz) {
         if (manual) {
             return DecoderPrefs.videoSoftware(this)
-                    ? "Software (FFmpeg)"
-                    : "The device's decoder";
+                    ? getString(R.string.decoder_software)
+                    : getString(R.string.decoder_device);
         }
         Boolean learned = DecoderPrefs.autoVideoSoftware(this, khz);
         if (learned == null) {
-            return "Auto · the app chooses for this channel";
+            return getString(R.string.decoder_auto_unknown);
         }
         return learned
-                ? "Auto · software for this channel"
-                : "Auto · the device's decoder for this channel";
+                ? getString(R.string.decoder_auto_software)
+                : getString(R.string.decoder_auto_device);
     }
 
     /**
@@ -1791,7 +1791,7 @@ public class MainActivity extends AppCompatActivity
         } catch (Exception ignored) {
             // version stays "?" when the package info is unavailable
         }
-        return BuildStamp.versionLine(version);
+        return BuildStamp.versionLine(this, version);
     }
 
     // ------------------------------------------------------------------ closed captions / audio language
@@ -1829,7 +1829,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public String audioLanguageSummary() {
         String n = languageName(AudioLanguage.code(prefs()));
-        return n == null ? "Automatic (best quality)" : n;
+        return n == null ? getString(R.string.audio_automatic) : n;
     }
 
     /** Applies the saved audio language preference to the player (it picks the matching track when a channel starts). */
@@ -1853,7 +1853,7 @@ public class MainActivity extends AppCompatActivity
                 // best effort: an unparseable id only costs the language label
             }
         }
-        StringBuilder sb = new StringBuilder(lang != null ? lang : "Audio " + (index + 1));
+        StringBuilder sb = new StringBuilder(lang != null ? lang : getString(R.string.audio_track, index + 1));
         String codec = f.sampleMimeType == null ? null
                 : f.sampleMimeType.contains("mp4a") ? "AAC" : f.sampleMimeType.contains("ac3") ? "AC-3"
                 : f.sampleMimeType.contains("mpeg") ? "MP2" : null;
@@ -2120,9 +2120,9 @@ public class MainActivity extends AppCompatActivity
     String name;
         mode = DisplayModes.aspectMode(mode);
         switch (mode) {
-            case DisplayModes.ASPECT_FIT: rm = AspectRatioFrameLayout.RESIZE_MODE_FIT; name = "Fit (original ratio)"; break;
-            case DisplayModes.ASPECT_ZOOM: rm = AspectRatioFrameLayout.RESIZE_MODE_ZOOM; name = "Zoom (crop to 16:9)"; break;
-            default: rm = AspectRatioFrameLayout.RESIZE_MODE_FILL; name = "Stretch (full 16:9)";
+            case DisplayModes.ASPECT_FIT: rm = AspectRatioFrameLayout.RESIZE_MODE_FIT; name = getString(R.string.aspect_fit); break;
+            case DisplayModes.ASPECT_ZOOM: rm = AspectRatioFrameLayout.RESIZE_MODE_ZOOM; name = getString(R.string.aspect_zoom); break;
+            default: rm = AspectRatioFrameLayout.RESIZE_MODE_FILL; name = getString(R.string.aspect_stretch);
         }
         playerView.setResizeMode(rm);
         getSharedPreferences(PREFS, MODE_PRIVATE).edit().putInt(PREF_ASPECT, mode).apply();
@@ -2222,7 +2222,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void showCurrentChannel() {
         if (currentChannelEntry == null) {
-            if (tvCurrentChannel != null) tvCurrentChannel.setText("No channel tuned");
+            if (tvCurrentChannel != null) tvCurrentChannel.setText(R.string.no_channel_tuned);
             if (watchCard != null) watchCard.hide();
             hideTuningCard();
             // Nothing tuned: the landscape banner has nothing to say, and until it is filled it
@@ -2382,8 +2382,8 @@ public class MainActivity extends AppCompatActivity
         channelStore.saveOrder(storePrefs());
                     updateContentAdapter();
                     Toast.makeText(MainActivity.this,
-                            (isFavorite ? "Added to Favorites: " : "Removed from Favorites: ")
-                                    + ChannelAdapter.displayName(service),
+                            getString(isFavorite ? R.string.toast_favorite_added : R.string.toast_favorite_removed,
+                                    ChannelAdapter.displayName(service)),
                             Toast.LENGTH_SHORT).show();
                 }
             };
@@ -2440,12 +2440,12 @@ public class MainActivity extends AppCompatActivity
         if (footerLabel == null || footerValue == null) return;
         switch (currentTab) {
             case 1: // EPG: current programme's progress in the middle, TDT/TOT clock on the right
-                footerLabel.setText("EPG");
+                footerLabel.setText(R.string.epg_label);
                 footerEpgBar.setVisibility(View.VISIBLE);
                 footerValue.setText(clockText());
                 break;
             case 2: // Favorites
-                footerLabel.setText("FAVORITES");
+                footerLabel.setText(R.string.favorites_label);
                 footerEpgBar.setVisibility(View.GONE);
                 footerValue.setText(String.valueOf(channelStore.favorites().size()));
                 break;
@@ -2455,7 +2455,7 @@ public class MainActivity extends AppCompatActivity
                 footerValue.setText(buildLine());
                 break;
             default: // Channels
-                footerLabel.setText("CHANNELS");
+                footerLabel.setText(R.string.channels_label);
                 footerEpgBar.setVisibility(View.GONE);
                 footerValue.setText(String.valueOf(channelStore.channelCount()));
                 break;
@@ -2525,15 +2525,15 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setAdapter(new EpgAdapter(this, events, clock));
         if (guideService == null) {
             setListChrome(0, R.drawable.ic_schedule,
-                    "No channel tuned", "Choose a channel to see its program guide.",
-                    "Open Channels", 0);
+                    getString(R.string.no_channel_tuned), getString(R.string.epg_no_channel_body),
+                    getString(R.string.open_channels), 0);
         } else {
             int programs = events.size();
             setListChrome(programs,
                     R.drawable.ic_schedule,
-                    "No program guide yet",
-                    "Tune a channel and wait for guide data. Some channels don't broadcast an EPG.",
-                    "Open Channels", 0);
+                    getString(R.string.epg_empty_title),
+                    getString(R.string.epg_empty_body),
+                    getString(R.string.open_channels), 0);
         }
     }
 
@@ -2564,8 +2564,8 @@ public class MainActivity extends AppCompatActivity
         favoritesReorder.attach(favoritesAdapter);
         updateChannelSelection();
         setListChrome(favServices.size(), R.drawable.ic_favorite_border,
-                "No favorites yet", "Press the star on a channel to add it.",
-                "Open Channels", 0);
+                getString(R.string.favorites_empty_title), getString(R.string.favorites_empty_body),
+                getString(R.string.open_channels), 0);
     }
 
     /** Settings tab: consumer sections first, technical tools last. */
@@ -2584,8 +2584,8 @@ public class MainActivity extends AppCompatActivity
                 this, services, channelStore.favorites(), channelClickListener));
         updateChannelSelection();
         setListChrome(services.size(), R.drawable.ic_scan,
-                "No channels yet", "Open Settings and run Auto Channel Scan.",
-                "Open Settings", 3);
+                getString(R.string.channels_empty_title), getString(R.string.channels_empty_body),
+                getString(R.string.open_settings), 3);
     }
 
     /**
@@ -2627,7 +2627,7 @@ public class MainActivity extends AppCompatActivity
         if (sourceCannotTune()) {
             // A capture plays one multiplex and stays on it: there is no demodulator to retune, and
             // tearing the source down to look for one would be the churn this change removes.
-            Toast.makeText(this, "This source is a recorded capture · it can play, but not tune; open a live tuner to scan.",
+            Toast.makeText(this, R.string.toast_capture_cannot_tune,
                     Toast.LENGTH_LONG).show();
             return;
         }
@@ -2639,7 +2639,7 @@ public class MainActivity extends AppCompatActivity
         if (tunerLifecycle.canTune()) {
             playback.tuneAndPlay(entry);
         } else if (!hub.isTunerPresent()) {
-            Toast.makeText(this, "No tuner detected · plug the dongle into the OTG port, then reopen the app or scan again.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.toast_no_tuner_reopen, Toast.LENGTH_LONG).show();
         } else {
             initTuner(); // plays currentChannelEntry once ready
         }
@@ -2827,8 +2827,8 @@ public class MainActivity extends AppCompatActivity
     private void updateEpgBannerInfo(int serviceId) {
         if (hudTvNowEvent == null || hudTvNextEvent == null) return;
     String[] guide = epgNowNext(serviceId);
-        hudTvNowEvent.setText("Now: " + (guide[0] != null ? guide[0] : "No program info"));
-        hudTvNextEvent.setText("Next: " + (guide[1] != null ? guide[1] : "No program info"));
+        hudTvNowEvent.setText(getString(R.string.now_program, guide[0] != null ? guide[0] : getString(R.string.no_program_info)));
+        hudTvNextEvent.setText(getString(R.string.next_program, guide[1] != null ? guide[1] : getString(R.string.no_program_info)));
     }
 
     /** {now, next} programme names, or nulls when the EIT has no usable entry. */

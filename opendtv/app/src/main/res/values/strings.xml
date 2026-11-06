@@ -12,12 +12,429 @@
      literals again.
 -->
 <resources>
-    <string name="app_name">OpenDTV-MOD</string>
+    <string name="app_name" translatable="false">OpenDTV-MOD</string>
     <!-- Under the title on the BENCH build only (MainActivity.bindLayout sets it under BuildConfig.DEBUG).
          The release app carries no region line: the owner asked for it back on com.pbcnx.opendtvmod.ph
          and only there, which is a variant difference and not a layout one. -->
     <string name="app_region_ph">Philippines</string>
     <string name="app_name_scanner">OpenDTV-MOD channel scan</string>
-    <string name="app_name_tuner">OpenDTV-MOD ISDB-T</string>
+    <string name="app_name_tuner" translatable="false">OpenDTV-MOD ISDB-T</string>
     <string name="about_title">About %1$s</string>
+
+    <!-- Everything a viewer reads, so a language is one file (values-tl is Tagalog). The English
+         is what the code used to say, word for word. Not here on purpose: the Signal & TS
+         Analyzer, the Developers screen and the USB probe (technical tools; the analyzer also
+         colours its log by matching English words), the licence texts, log lines, the messages
+         code compares by text, and the key names DATA / BACK / OK / CC / REC, which are printed
+         that way on the remotes and in the broadcasts. opendtv/TRANSLATING.md has the word list
+         for adding a screen or a language.
+
+         Strings with two spaces in a row are in quotes: a resource collapses runs of spaces
+         otherwise, and the gaps are part of the layout. -->
+
+    <!-- Shared buttons -->
+    <string name="cancel">Cancel</string>
+    <string name="stop">Stop</string>
+    <string name="scan">Scan</string>
+    <string name="back">Back</string>
+    <string name="close">Close</string>
+    <string name="ok">OK</string>
+    <string name="apply">Apply</string>
+
+    <!-- Tabs and the footer -->
+    <string name="tab_channels">Channels</string>
+    <string name="tab_epg">EPG</string>
+    <string name="tab_favorites">Favorites</string>
+    <string name="tab_settings">Settings</string>
+    <string name="channels_label">CHANNELS</string>
+    <string name="epg_label">EPG</string>
+    <string name="favorites_label">FAVORITES</string>
+
+    <!-- Watching -->
+    <string name="no_channel_tuned">No channel tuned</string>
+    <string name="now_program">Now: %1$s</string>
+    <string name="next_program">Next: %1$s</string>
+    <string name="no_program_info">No program info</string>
+    <string name="cd_watch_info">Watch info</string>
+    <string name="cd_close_watch_info">Close watch info</string>
+    <string name="watch_no_tuner">No Tuner Available</string>
+    <string name="watch_playing">Playing</string>
+    <string name="tuning">Tuning…</string>
+    <!-- %1$s is one of the four chip names below -->
+    <string name="cd_chip_active">%1$s active</string>
+    <string name="cd_chip_inactive">%1$s inactive</string>
+    <string name="cd_data_broadcast">Data broadcast</string>
+    <string name="cd_closed_captions">Closed captions</string>
+    <string name="cd_encrypted">Encrypted</string>
+    <string name="cd_emergency_broadcast">Emergency broadcast</string>
+    <string name="no_channel">No channel</string>
+    <!-- The landscape HUD writes it with three dots -->
+    <string name="hud_tuning">Tuning...</string>
+    <string name="hud_network_line">"NIT : %1$s   -   Provider : %2$s"</string>
+    <string name="cd_remote">Remote</string>
+    <!-- What the landscape HUD shows before the first sample; hud_network_line with nothing known -->
+    <string name="hud_network_placeholder">"NIT : -   -   Provider : -"</string>
+    <string name="unknown_channel">Unknown Channel</string>
+    <string name="now_placeholder">Now: No current data available.</string>
+    <string name="next_placeholder">Next: No current data available.</string>
+
+    <!-- The tuning card -->
+    <string name="tuning_in">Tuning in…</string>
+    <string name="tuning_opening">Opening…</string>
+    <string name="tuning_no_signal">No Signal</string>
+    <string name="tuning_no_signal_hint">Check the antenna or run a scan in Settings</string>
+    <string name="tuning_scrambled">Scrambled</string>
+    <string name="tuning_scrambled_hint">The signal is fine - this service is encrypted</string>
+    <string name="tuning_no_picture">No picture</string>
+    <string name="tuning_weak_hint">The signal is locked but too weak to decode</string>
+    <string name="tuning_no_video_hint">The signal is fine - this service carries no video</string>
+    <string name="tuning_source_no_video_hint">This source has no video for that service</string>
+    <string name="tuning_no_tuner">Tuner not found</string>
+    <string name="tuning_plug_in">Plug in the USB dongle</string>
+
+    <!-- Watch info card -->
+    <string name="watch_tune_for_details">Tune a channel to see signal details</string>
+    <string name="watch_no_channel_tuned">No channel tuned.</string>
+    <string name="watch_isdbt_broadcast">ISDB-T Broadcast</string>
+    <string name="watch_tuning_strength">Tuning… · Strength %1$s</string>
+    <string name="watch_locked_signal">Locked · Strength %1$s · Quality %2$s</string>
+    <string name="network_line">"NIT : %1$s   ·   Provider : %2$s"</string>
+    <string name="watch_signal_details">Signal details</string>
+    <string name="watch_hide_details">Hide details</string>
+    <!-- Row labels of the signal details table; they are padded to 9 characters -->
+    <string name="watch_row_frequency">Frequency</string>
+    <string name="watch_row_signal">Signal</string>
+    <string name="watch_row_video">Video</string>
+    <string name="watch_row_audio">Audio</string>
+    <string name="watch_row_service">Service</string>
+    <string name="watch_playing_no_rf">Playing (no RF)</string>
+    <string name="watch_locked">Locked</string>
+    <string name="watch_unlocked">Unlocked</string>
+    <string name="cd_close_info">Close info</string>
+
+    <!-- Toasts -->
+    <string name="toast_data_tune_first">Tune a channel first · the data broadcast belongs to the tuned channel.</string>
+    <string name="toast_no_data_broadcast">This channel has no data broadcast · try another channel.</string>
+    <string name="toast_open_data_first">Open the data broadcast first · press DATA to load this channel\'s page.</string>
+    <string name="toast_favorite_added">Added to Favorites: %1$s</string>
+    <string name="toast_favorite_removed">Removed from Favorites: %1$s</string>
+    <string name="toast_capture_cannot_tune">This source is a recorded capture · it can play, but not tune; open a live tuner to scan.</string>
+    <string name="toast_no_tuner_reopen">No tuner detected · plug the dongle into the OTG port, then reopen the app or scan again.</string>
+    <string name="toast_tune_first">Tune a channel first</string>
+    <string name="toast_channel_not_found">Channel not found on this frequency</string>
+
+    <!-- Recording -->
+    <string name="toast_recording_channel_changed">Recording stopped - channel changed</string>
+    <!-- %1$s is the error, in English -->
+    <string name="toast_recording_failed_why">Recording failed: %1$s</string>
+    <string name="toast_recording">Recording</string>
+    <string name="toast_recording_channel">Recording %1$s</string>
+    <string name="toast_recording_failed">Could not start recording</string>
+    <string name="toast_recording_stopped">Recording stopped · OpenDTV/Record</string>
+    <string name="toast_nothing_recorded">Nothing recorded · this service sent no stream</string>
+    <string name="cd_record_channel">Record channel</string>
+    <string name="cd_stop_recording">Stop recording</string>
+    <string name="toast_allow_storage_settings">Allow storage access in Android settings so recordings can be saved.</string>
+
+    <!-- Decoder -->
+    <string name="toast_decoding_manual">Manual decoding · the switches below decide</string>
+    <string name="toast_decoding_auto">Auto decoding · the app chooses</string>
+    <!-- %1$s is decoder_software_lower or decoder_device_lower -->
+    <string name="toast_video_decoder">Video decoder: %1$s</string>
+    <string name="toast_audio_decoder">Audio decoder: %1$s</string>
+    <string name="decoder_software_lower">software (FFmpeg)</string>
+    <string name="decoder_device_lower">the device\'s decoder</string>
+    <string name="decoder_software">Software (FFmpeg)</string>
+    <string name="decoder_device">The device\'s decoder</string>
+    <string name="decoder_auto_unknown">Auto · the app chooses for this channel</string>
+    <string name="decoder_auto_software">Auto · software for this channel</string>
+    <string name="decoder_auto_device">Auto · the device\'s decoder for this channel</string>
+    <string name="decoder_auto_audio">Auto · the device\'s decoder, FFmpeg for MPEG-1</string>
+    <string name="toast_video_stalled_channel">Video stalled · software video from now on for this channel</string>
+    <string name="toast_video_stalled">Video stalled · switched video to software decoding</string>
+
+    <!-- Captions and audio -->
+    <string name="audio_automatic">Automatic (best quality)</string>
+    <string name="audio_track">Audio %1$d</string>
+    <string name="caption_style_name_simple">Simple text</string>
+    <string name="caption_style_name_styled">Styled</string>
+    <string name="caption_style_name_auto">Auto</string>
+    <string name="caption_language_name_1">Language 1</string>
+    <string name="caption_language_name_2">Language 2</string>
+    <string name="caption_display_title">Caption display</string>
+    <string name="caption_language_title">Caption language</string>
+    <string name="audio_track_not_supported">"%1$s  [not supported]"</string>
+    <string name="audio_language_title">Audio language</string>
+
+    <!-- Aspect ratio -->
+    <string name="aspect_stretch">Stretch (full 16:9)</string>
+    <string name="aspect_fit">Fit (original ratio)</string>
+    <string name="aspect_zoom">Zoom (crop to 16:9)</string>
+    <string name="aspect_title">Video aspect ratio</string>
+
+    <!-- EWBS location -->
+    <string name="ewbs_zone">Zone</string>
+    <string name="ewbs_region">Region</string>
+    <string name="ewbs_city">City</string>
+    <string name="ewbs_show_all">Show all alerts</string>
+    <string name="ewbs_code">Code: 0x%1$03X</string>
+    <string name="toast_location_not_matched">Location not matched · pick the area manually</string>
+    <string name="toast_current_location">Current location: %1$s</string>
+    <string name="ewbs_warning">Emergency Warning:</string>
+    <!-- %1$s is the alert text from the broadcast -->
+    <string name="ewbs_warning_text">Emergency Warning: %1$s</string>
+    <string name="ewbs_warning_ended">Emergency warning has ended</string>
+    <string name="ewbs_use_current_location">Use current location</string>
+
+    <!-- Channel list, EPG and Favorites -->
+    <string name="channels_empty_title">No channels yet</string>
+    <string name="channels_empty_body">Open Settings and run Auto Channel Scan.</string>
+    <string name="favorites_empty_title">No favorites yet</string>
+    <string name="favorites_empty_body">Press the star on a channel to add it.</string>
+    <string name="epg_no_channel_body">Choose a channel to see its program guide.</string>
+    <string name="epg_empty_title">No program guide yet</string>
+    <string name="epg_empty_body">Tune a channel and wait for guide data. Some channels don\'t broadcast an EPG.</string>
+    <string name="open_channels">Open Channels</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="cd_approximate_number">Approximate number %1$s: this multiplex broadcasts no channel number</string>
+    <string name="epg_no_title">(no title)</string>
+    <string name="toast_move_favorite">Move with up/down - OK when done</string>
+    <string name="channel_now_badge">NOW</string>
+
+    <!-- Channel list backup -->
+    <!-- %1$s is channel_list_channels, %2$s is channel_list_favorites -->
+    <string name="channel_list_counts">%1$s · %2$s</string>
+    <plurals name="channel_list_channels">
+        <item quantity="one">%d Channel</item>
+        <item quantity="other">%d Channels</item>
+    </plurals>
+    <plurals name="channel_list_favorites">
+        <item quantity="one">%d Favorite</item>
+        <item quantity="other">%d Favorites</item>
+    </plurals>
+    <string name="channel_list_note">Export saves the names, numbers and favourites to a file. Import adds a file\'s channels, or replaces the list.</string>
+    <string name="toast_no_channels_export">No channels to export</string>
+    <!-- %1$s is the error, in English -->
+    <string name="toast_file_build_failed">Could not build the file: %1$s</string>
+    <string name="toast_no_file_picker">No file picker on this device</string>
+    <string name="toast_file_write_failed">Could not write the file: %1$s</string>
+    <string name="toast_file_read_failed">Could not read the file: %1$s</string>
+    <string name="import_nothing_title">Nothing imported</string>
+    <!-- %1$s is import_channels, %2$s is import_favourites -->
+    <string name="import_summary">%1$s - %2$s</string>
+    <!-- %1$s is import_summary, %2$s is import_rows_skipped -->
+    <string name="import_summary_skipped">%1$s - %2$s</string>
+    <plurals name="import_channels">
+        <item quantity="one">%d channel</item>
+        <item quantity="other">%d channels</item>
+    </plurals>
+    <plurals name="import_favourites">
+        <item quantity="one">%d favourite</item>
+        <item quantity="other">%d favourites</item>
+    </plurals>
+    <plurals name="import_rows_skipped">
+        <item quantity="one">%d row skipped</item>
+        <item quantity="other">%d rows skipped</item>
+    </plurals>
+    <plurals name="import_title">
+        <item quantity="one">Import %d channel?</item>
+        <item quantity="other">Import %d channels?</item>
+    </plurals>
+    <!-- %1$s is import_summary -->
+    <string name="import_message">%1$s\n\nMerge keeps the channels you already have and adds these.\nReplace deletes every channel that is not in the file.</string>
+    <string name="toast_import_done">%1$d added - %2$d updated - %3$d favourites</string>
+    <string name="import_file">Import file</string>
+    <string name="export_file">Export file</string>
+
+    <!-- Settings tab -->
+    <string name="settings_header_channels">CHANNELS &amp; ALERTS</string>
+    <string name="settings_auto_scan">Auto Channel Scan</string>
+    <string name="settings_auto_scan_summary">Scans the UHF band - merge it into the list or replace it</string>
+    <string name="settings_manual_scan">Manual Frequency Scan</string>
+    <string name="settings_manual_scan_summary">Tune one frequency and watch the signal meter</string>
+    <string name="settings_ewbs_alerts">Emergency Alerts</string>
+    <string name="settings_ewbs_summary_all">All alerts shown · tap to choose your area</string>
+    <!-- %1$s is the current choice -->
+    <string name="settings_tap_to_change">%1$s · tap to change</string>
+    <string name="settings_channel_list">Channel list</string>
+    <plurals name="settings_channel_list_summary">
+        <item quantity="one">%d channel · back up or restore the list</item>
+        <item quantity="other">%d channels · back up or restore the list</item>
+    </plurals>
+    <string name="settings_header_picture">PICTURE &amp; SOUND</string>
+    <string name="settings_aspect">Video Aspect Ratio</string>
+    <string name="settings_audio">Audio Language</string>
+    <string name="settings_header_decoder">DECODER</string>
+    <string name="settings_decoder_manual">Manual Settings</string>
+    <string name="settings_decoder_manual_on">On · the switches below decide</string>
+    <string name="settings_decoder_manual_off">Off · the app chooses the decoder</string>
+    <string name="settings_video_decoder">Video Decoder</string>
+    <string name="settings_audio_decoder">Audio Decoder</string>
+    <string name="settings_header_captions">CAPTIONS</string>
+    <string name="settings_cc">Closed Captions (CC)</string>
+    <string name="settings_cc_summary">Show captions when a channel has them</string>
+    <string name="settings_caption_display">Caption Display</string>
+    <string name="settings_caption_language">Caption Language</string>
+    <string name="settings_header_advanced">ADVANCED</string>
+    <string name="settings_tuner_setup">Tuner setup</string>
+    <string name="settings_tuner_setup_summary">Vendor images for the supported USB tuners</string>
+    <string name="settings_record">Record Channel</string>
+    <string name="settings_record_summary">Save this channel to OpenDTV/Record</string>
+    <string name="settings_record_stop">Stop Channel Recording</string>
+    <string name="settings_record_stop_summary">Tap to stop recording</string>
+    <string name="settings_analyzer">Signal &amp; TS Analyzer</string>
+    <string name="settings_analyzer_summary">Bitrates, PIDs, tables and raw packets</string>
+    <string name="settings_header_about">ABOUT</string>
+    <string name="settings_licenses">Open source licenses</string>
+    <string name="settings_licenses_summary">What this app is built on</string>
+
+    <!-- About and its developer door -->
+    <plurals name="dev_door_taps_left">
+        <item quantity="one">%d more tap to unlock Developer options</item>
+        <item quantity="other">%d more taps to unlock Developer options</item>
+    </plurals>
+    <string name="dev_door_unlocked">Developer options unlocked</string>
+    <string name="version_line">Version %1$s</string>
+    <string name="version_line_build">Version %1$s build [%2$s]</string>
+
+    <!-- Scans -->
+    <string name="toast_no_tuner_scan">No tuner detected · plug the dongle into the OTG port, then start the scan again.</string>
+    <string name="scan_full_message">Scans UHF 14 - 51. It can take a few minutes.</string>
+    <!-- Merge and Replace are scan_merge and scan_replace, the dialog's buttons -->
+    <plurals name="scan_full_message_merge">
+        <item quantity="one">Scans UHF 14 - 51. Merge keeps the %d saved channel and adds or updates what this scan finds. Replace drops the saved list first.</item>
+        <item quantity="other">Scans UHF 14 - 51. Merge keeps the %d saved channels and adds or updates what this scan finds. Replace drops the saved list first.</item>
+    </plurals>
+    <string name="scan_merge">Merge</string>
+    <string name="scan_replace">Replace</string>
+    <string name="toast_scan_stopped">Scan stopped</string>
+    <!-- %1$s is a channel count from the channel_count plural -->
+    <string name="toast_scan_complete">Scan complete - %1$s</string>
+    <string name="toast_scan_complete_merged">Scan complete - %1$s in the list (merged)</string>
+    <!-- %2$s is the frequency, e.g. 497.143 MHz -->
+    <string name="toast_scan_complete_at">Scan complete - %1$s at %2$s</string>
+    <string name="toast_could_not_lock">Could not lock %1$s</string>
+    <!-- %2$s is the tuner's own message, in English -->
+    <string name="toast_could_not_lock_why">Could not lock %1$s - %2$s</string>
+    <string name="toast_usb_permission">USB permission needed</string>
+    <string name="scan_manual_subtitle">Pick a UHF channel, watch the lock, then scan it</string>
+    <plurals name="scan_band_subtitle">
+        <item quantity="one">UHF 14 - 51 · %d frequency</item>
+        <item quantity="other">UHF 14 - 51 · %d frequencies</item>
+    </plurals>
+    <plurals name="channel_count">
+        <item quantity="one">%d channel</item>
+        <item quantity="other">%d channels</item>
+    </plurals>
+    <!-- %1$s is the frequency being swept, then channels done and the total -->
+    <string name="scan_progress">"%1$s  ·  %2$d of %3$d"</string>
+    <plurals name="scan_services_found">
+        <item quantity="one">%d service found</item>
+        <item quantity="other">%d services found</item>
+    </plurals>
+    <string name="scan_locked">LOCKED</string>
+    <string name="scan_no_lock">NO LOCK</string>
+    <string name="scan_pick_channel">Pick a channel</string>
+    <plurals name="scan_pick_subtitle">
+        <item quantity="one">UHF %1$d – %2$d · %3$d frequency</item>
+        <item quantity="other">UHF %1$d – %2$d · %3$d frequencies</item>
+    </plurals>
+    <string name="scan_manual_sheet_title">Manual scan</string>
+    <string name="scan_auto_title">Auto Scan</string>
+    <string name="scan_strength">Strength</string>
+    <string name="scan_quality">Quality</string>
+
+    <!-- Tuner setup (vendor images) -->
+    <!-- A vendor image is the tuner firmware the app uploads to the USB stick -->
+    <string name="tuner_setup_note">Vendor images. A stick is blank until one is uploaded. Plugged sticks are listed first.</string>
+    <string name="tuner_header_plugged">PLUGGED IN</string>
+    <string name="tuner_header_supported">SUPPORTED TUNERS</string>
+    <string name="tuner_header_development">IN DEVELOPMENT</string>
+    <string name="tuner_header_other">OTHER DEVICES</string>
+    <string name="tuner_header_legend">LEGEND</string>
+    <string name="tuner_ready">● READY</string>
+    <string name="tuner_plugged">● PLUGGED</string>
+    <string name="tuner_not_plugged">○ NOT PLUGGED</string>
+    <string name="tuner_pill_available">AVAILABLE</string>
+    <string name="tuner_pill_vendor">VENDOR IMAGE</string>
+    <string name="tuner_pill_missing">MISSING</string>
+    <string name="tuner_pill_no_driver">NO DRIVER</string>
+    <!-- %1$s is the image size in bytes, already grouped (1,234,567) -->
+    <string name="tuner_tap_to_import">tap to import · %1$s B</string>
+    <string name="toast_tuner_in_build">%1$s is already in this build · nothing to import.</string>
+    <string name="tuner_dev_detected">driver in development · stick detected</string>
+    <string name="tuner_dev_waiting">driver in development · waiting for a stick</string>
+    <string name="tuner_unknown_stick">Unknown stick</string>
+    <string name="tuner_no_driver_detail">plugged, this build cannot drive it</string>
+    <string name="tuner_legend_vendor">carried by this build</string>
+    <string name="tuner_legend_available">imported on this device</string>
+    <string name="tuner_legend_missing">no image yet - tap to add</string>
+    <string name="tuner_legend_no_driver">no driver in this build</string>
+    <string name="tuner_legend_ready">plugged and running</string>
+    <string name="tuner_legend_plugged">plugged, not started</string>
+    <string name="tuner_legend_not_plugged">not on the bus</string>
+    <string name="tuner_remove_title">Remove the imported image?</string>
+    <string name="tuner_remove_has_copy">This build also carries a copy, so the tuner keeps working.</string>
+    <string name="tuner_remove_no_copy">This build carries no copy: the tuner will not start until you import it again.</string>
+    <string name="tuner_remove">Remove</string>
+    <string name="tuner_keep">Keep</string>
+    <string name="toast_tuner_removed">Removed %1$s · this build\'s copy is used again</string>
+    <string name="toast_tuner_nothing_removed">Nothing to remove · that image was not imported here.</string>
+    <string name="fw_the_folder">the folder</string>
+    <!-- %1$s lists the sticks, e.g. IT9175, IT9308 -->
+    <string name="fw_installed">Installed: %1$s</string>
+    <string name="fw_not_vendor_list">Not a vendor image for any supported stick:\n%1$s</string>
+    <plurals name="fw_ignored">
+        <item quantity="one">%d other file ignored</item>
+        <item quantity="other">%d other files ignored</item>
+    </plurals>
+    <string name="fw_could_not_read_list">Could not read:\n%1$s</string>
+    <string name="fw_no_images_folder">No vendor images in that folder.</string>
+    <string name="fw_not_vendor_file">Not a vendor image for any supported stick (%1$d bytes, sha256 %2$s)</string>
+    <string name="fw_image_installed">%1$s image installed</string>
+    <string name="fw_could_not_read_file">Could not read that file</string>
+    <string name="fw_could_not_read_file_why">Could not read that file: %1$s</string>
+    <string name="fw_no_picker">No file picker app on this device · install a Files app, then try again.</string>
+    <string name="tuner_import_folder">Import folder</string>
+    <string name="tuner_import_file">Import file</string>
+
+    <!-- The data broadcast keys (the landscape strip, the corner pad and the remote) -->
+    <string name="bml_key_red">RED</string>
+    <string name="bml_key_green">GREEN</string>
+    <string name="bml_key_yellow">YELLOW</string>
+    <string name="bml_key_blue">BLUE</string>
+    <!-- %1$s is the key's label -->
+    <string name="cd_bml_key">%1$s key</string>
+    <string name="cd_bml_close">Close the data broadcast</string>
+    <string name="cd_bml_back">Back inside the page</string>
+    <string name="cd_bml_arrow_pad">Back to the arrow pad</string>
+    <string name="bml_colour_red">Red</string>
+    <string name="bml_colour_green">Green</string>
+    <string name="bml_colour_yellow">Yellow</string>
+    <string name="bml_colour_blue">Blue</string>
+
+    <!-- Live Channels setup (Android TV) -->
+    <string name="setup_title">"OpenDTV  -  ISDB-T channel scan"</string>
+    <string name="setup_no_tuner">Tuner not found. Plug in a supported dongle (048d:275a IT9175, 048d:9308 IT9308), then choose a scan.</string>
+    <string name="setup_choose">Choose Quick scan (known channels) or Full scan (all UHF channels).</string>
+    <string name="setup_quick">Quick scan</string>
+    <string name="setup_full">Full scan</string>
+    <string name="setup_skip">Skip to app</string>
+    <string name="setup_analyzer">Analyzer</string>
+    <string name="setup_finish">Finish</string>
+    <string name="setup_stopping">Stopping after this channel ...</string>
+    <string name="setup_waiting_usb">Waiting for USB permission ...</string>
+    <!-- %1$d of %2$d channels, %3$s is "UHF 22  521.143 MHz" -->
+    <string name="setup_channel_head">"Channel %1$d of %2$d:  %3$s\n"</string>
+    <string name="setup_tuning">tuning ... (the first one also loads the tuner firmware)</string>
+    <string name="setup_reading">LOCKED, reading channel list ...</string>
+    <string name="setup_reading_count">LOCKED, reading channel list ... %1$d service(s)</string>
+    <string name="setup_saving">Saving channels ...</string>
+    <!-- %1$s is the error, in English -->
+    <string name="setup_failed">Scan failed: %1$s</string>
+    <string name="setup_tuner_problem">Tuner problem: %1$s</string>
+    <string name="setup_done">Scan done: %1$d channel(s) in %2$d multiplex(es) added to Live Channels.</string>
+    <string name="setup_stopped_partial">Scan stopped: %1$d channel(s) in %2$d multiplex(es) added to Live Channels.</string>
+    <string name="setup_stopped_nothing">Scan stopped, nothing saved.</string>
+    <string name="setup_no_channels">No channels found. Check the antenna and try a Full scan.</string>
 </resources>

@@ -12,8 +12,11 @@ package com.pbcnx.opendtvmod.ui.watch;
  */
 public final class WatchSignalText {
 
-    /** Shown when nothing plays and no tuner is attached: a wait word there would be a lie. */
-    public static final String NO_TUNER = "No Tuner Available";
+    /**
+     * Shown when nothing plays and no tuner is attached: a wait word there would be a lie. A string
+     * resource (watch_no_tuner), so it reads in the app's language; setText takes it as it is.
+     */
+    public static final int NO_TUNER = com.pbcnx.opendtvmod.R.string.watch_no_tuner;
 
     /** What the cell says. */
     public enum State {

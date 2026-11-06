@@ -173,10 +173,10 @@ public final class RemotePanel extends LinearLayout {
 
     private LinearLayout colourRow() {
         LinearLayout colors = row();
-        colors.addView(key("Blue", RemoteKeys.colour(getContext(), R.color.odtv_key_blue), Color.WHITE, BmlController.BLUE, 1f));
-        colors.addView(key("Red", RemoteKeys.alert(getContext()), Color.WHITE, BmlController.RED, 1f));
-        colors.addView(key("Green", RemoteKeys.positive(getContext()), Color.BLACK, BmlController.GREEN, 1f));
-        colors.addView(key("Yellow", RemoteKeys.accent(getContext()), Color.BLACK, BmlController.YELLOW, 1f));
+        colors.addView(key(getContext().getString(R.string.bml_colour_blue), RemoteKeys.colour(getContext(), R.color.odtv_key_blue), Color.WHITE, BmlController.BLUE, 1f));
+        colors.addView(key(getContext().getString(R.string.bml_colour_red), RemoteKeys.alert(getContext()), Color.WHITE, BmlController.RED, 1f));
+        colors.addView(key(getContext().getString(R.string.bml_colour_green), RemoteKeys.positive(getContext()), Color.BLACK, BmlController.GREEN, 1f));
+        colors.addView(key(getContext().getString(R.string.bml_colour_yellow), RemoteKeys.accent(getContext()), Color.BLACK, BmlController.YELLOW, 1f));
         return colors;
     }
 

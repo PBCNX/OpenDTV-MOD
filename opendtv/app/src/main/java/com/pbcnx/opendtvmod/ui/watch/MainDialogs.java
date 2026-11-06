@@ -65,21 +65,21 @@ public final class MainDialogs {
         LinearLayout body = content.findViewById(R.id.channel_content);
 
         TextView counts = new TextView(activity);
-        counts.setText(screen.channelCount()
-                + (screen.channelCount() == 1 ? " Channel · " : " Channels · ")
-                + screen.favoriteCount()
-                + (screen.favoriteCount() == 1 ? " Favorite" : " Favorites"));
+        counts.setText(activity.getString(R.string.channel_list_counts,
+                activity.getResources().getQuantityString(R.plurals.channel_list_channels,
+                        screen.channelCount(), screen.channelCount()),
+                activity.getResources().getQuantityString(R.plurals.channel_list_favorites,
+                        screen.favoriteCount(), screen.favoriteCount())));
         counts.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 16);
         counts.setTextColor(ContextCompat.getColor(activity, R.color.odtv_on_surface));
         body.addView(counts);
 
-        TextView note = FirmwareCards.note(activity, "Export saves the names, numbers and favourites to a file. "
-                + "Import adds a file's channels, or replaces the list.");
+        TextView note = FirmwareCards.note(activity, activity.getString(R.string.channel_list_note));
         note.setPadding(0, Dims.dp(activity, 16), 0, Dims.dp(activity, 4));
         body.addView(note);
 
         AlertDialog dialog = new MaterialAlertDialogBuilder(activity)
-                .setTitle("Channel list")
+                .setTitle(R.string.settings_channel_list)
                 .setView(content)
                 .create();
         content.findViewById(R.id.channel_export).setOnClickListener(v -> {
@@ -114,7 +114,7 @@ public final class MainDialogs {
         TextView stampView = content.findViewById(R.id.about_stamp);
         versionView.setText(activity.getString(R.string.app_name));
         // One builder for this line: the Settings row under ABOUT prints the same string.
-        buildView.setText(BuildStamp.versionLine(version));
+        buildView.setText(BuildStamp.versionLine(activity, version));
         String date = BuildStamp.date();
         String time = BuildStamp.time();
         if (date.isEmpty() || time.isEmpty()) {
@@ -145,12 +145,11 @@ public final class MainDialogs {
                 // The first few taps are silent, like the build number: an accidental tap on a
                 // picture must not advertise a developer door.
                 if (com.pbcnx.opendtvmod.App.developer(activity).doorTaps() > DeveloperActions.DOOR_SILENT_TAPS) {
-                    doorToast(left + (left == 1 ? " more tap" : " more taps")
-                            + " to unlock Developer options");
+                    doorToast(activity.getResources().getQuantityString(R.plurals.dev_door_taps_left, left, left));
                 }
                 return;
             }
-            doorToast("Developer options unlocked");
+            doorToast(activity.getString(R.string.dev_door_unlocked));
             screen.refreshSettings();
             dialog.dismiss();
             screen.openDeveloperOptions();
@@ -173,28 +172,30 @@ public final class MainDialogs {
 
     public void showCaptionDisplayDialog() {
         // Indexed by DisplayModes.CAPTION_* (simple, styled, auto).
-        final String[] labels = {"Simple text", "Styled", "Auto"};
+        final String[] labels = {activity.getString(R.string.caption_style_name_simple),
+                activity.getString(R.string.caption_style_name_styled), activity.getString(R.string.caption_style_name_auto)};
         new MaterialAlertDialogBuilder(activity)
-                .setTitle("Caption display")
+                .setTitle(R.string.caption_display_title)
                 .setSingleChoiceItems(labels, screen.captionStyle(), (dlg, which) -> {
                     screen.setCaptionStyle(which);
                     dlg.dismiss();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
     public void showCaptionLanguageDialog() {
         // Indexed by DisplayModes.LANGUAGE_MAIN - 1 and LANGUAGE_SECOND - 1.
-        final String[] labels = {"Language 1", "Language 2"};
+        final String[] labels = {activity.getString(R.string.caption_language_name_1),
+                activity.getString(R.string.caption_language_name_2)};
         new MaterialAlertDialogBuilder(activity)
-                .setTitle("Caption language")
+                .setTitle(R.string.caption_language_title)
                 .setSingleChoiceItems(labels, screen.captionLanguage() - DisplayModes.LANGUAGE_MAIN,
                         (dlg, which) -> {
                     screen.setCaptionLanguage(which + DisplayModes.LANGUAGE_MAIN);
                     dlg.dismiss();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
@@ -207,15 +208,16 @@ public final class MainDialogs {
         final int current = screen.aspectMode();
         // Indexed by DisplayModes.ASPECT_* (stretch, fit, zoom).
         final String[] labels = {
-                "Stretch (full 16:9)", "Fit (original ratio)", "Zoom (crop to 16:9)"};
+                activity.getString(R.string.aspect_stretch), activity.getString(R.string.aspect_fit),
+                activity.getString(R.string.aspect_zoom)};
         new MaterialAlertDialogBuilder(activity)
-                .setTitle("Video aspect ratio")
+                .setTitle(R.string.aspect_title)
                 .setSingleChoiceItems(labels, current, (dlg, which) -> {
                     screen.setAspectMode(which);
                     dlg.dismiss();
                     screen.refreshSettings();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
@@ -227,20 +229,21 @@ public final class MainDialogs {
             if (g.getType() == C.TRACK_TYPE_AUDIO && g.length > 0) groups.add(g);
         }
         if (groups.isEmpty()) {
-            Toast.makeText(activity, "Tune a channel first", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, R.string.toast_tune_first, Toast.LENGTH_SHORT).show();
             return;
         }
         final String[] labels = new String[groups.size() + 1];
-        labels[0] = "Automatic (best quality)";
+        labels[0] = activity.getString(R.string.audio_automatic);
         int checked = 0;
         for (int i = 0; i < groups.size(); i++) {
             Tracks.Group g = groups.get(i);
-            labels[i + 1] = screen.audioTrackLabel(i, g.getTrackFormat(0)) + (g.isTrackSupported(0) ? "" : "  [not supported]");
+            String track = screen.audioTrackLabel(i, g.getTrackFormat(0));
+            labels[i + 1] = g.isTrackSupported(0) ? track : activity.getString(R.string.audio_track_not_supported, track);
             if (g.isTrackSelected(0) && g.getMediaTrackGroup() != screen.autoAudioGroup()
                     && player.getTrackSelectionParameters().overrides.containsKey(g.getMediaTrackGroup())) checked = i + 1;
         }
         new MaterialAlertDialogBuilder(activity)
-                .setTitle("Audio language")
+                .setTitle(R.string.audio_language_title)
                 .setSingleChoiceItems(labels, checked, (dlg, which) -> {
                     TrackSelectionParameters.Builder b = player.getTrackSelectionParameters().buildUpon();
                     if (which == 0) {
@@ -259,7 +262,7 @@ public final class MainDialogs {
                     dlg.dismiss();
                     screen.refreshSettings();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 

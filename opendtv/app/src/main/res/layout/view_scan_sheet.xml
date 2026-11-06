@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
-        android:text="Auto Scan"
+        android:text="@string/scan_auto_title"
         android:textColor="@color/odtv_on_surface"
         android:textSize="20sp" />
 
@@ -107,7 +107,7 @@
             android:background="@drawable/bg_scan_chip"
             android:paddingHorizontal="12dp"
             android:paddingVertical="5dp"
-            android:text="NO LOCK"
+            android:text="@string/scan_no_lock"
             android:textColor="@color/odtv_on_surface_variant"
             android:textSize="11sp" />
 
@@ -121,7 +121,7 @@
             <TextView
                 android:layout_width="78dp"
                 android:layout_height="wrap_content"
-                android:text="Strength"
+                android:text="@string/scan_strength"
                 android:textColor="@color/odtv_on_surface_variant"
                 android:textSize="12sp" />
 
@@ -155,7 +155,7 @@
             <TextView
                 android:layout_width="78dp"
                 android:layout_height="wrap_content"
-                android:text="Quality"
+                android:text="@string/scan_quality"
                 android:textColor="@color/odtv_on_surface_variant"
                 android:textSize="12sp" />
 
@@ -218,7 +218,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Stop" />
+            android:text="@string/stop" />
 
         <TextView
             android:id="@+id/scan_close"
@@ -229,6 +229,6 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Close" />
+            android:text="@string/close" />
     </LinearLayout>
 </LinearLayout>

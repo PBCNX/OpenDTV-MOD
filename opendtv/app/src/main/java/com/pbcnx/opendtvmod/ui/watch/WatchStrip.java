@@ -90,11 +90,11 @@ public final class WatchStrip extends LinearLayout {
         boolean emergency = s.emergency;
         boolean live = s.live;
         if (service == null) {
-            details.setText("No channel");
+            details.setText(R.string.no_channel);
             signal.setText("--");
-            ChipStyle.apply(chipData, getContext(), false, R.color.odtv_ok, "Data broadcast");
-            ChipStyle.apply(chipCc, getContext(), false, R.color.odtv_ok, "Closed captions");
-            ChipStyle.apply(chipLock, getContext(), false, R.color.odtv_warning, "Encrypted");
+            ChipStyle.apply(chipData, getContext(), false, R.color.odtv_ok, getContext().getString(R.string.cd_data_broadcast));
+            ChipStyle.apply(chipCc, getContext(), false, R.color.odtv_ok, getContext().getString(R.string.cd_closed_captions));
+            ChipStyle.apply(chipLock, getContext(), false, R.color.odtv_warning, getContext().getString(R.string.cd_encrypted));
             setAlertChip(false);
             return;
         }
@@ -107,18 +107,18 @@ public final class WatchStrip extends LinearLayout {
             line += com.pbcnx.opendtvmod.tuner.MhzLabel.mhz(khz);
         }
         details.setText(line.isEmpty()
-                ? (muxFallback == null ? "No channel" : muxFallback) : line);
+                ? (muxFallback == null ? getContext().getString(R.string.no_channel) : muxFallback) : line);
 
         switch (WatchSignalText.of(live, s.tunerPresent, signalStatus != null,
                 signalStatus != null && signalStatus.locked)) {
             case PLAYING:
-                signal.setText("Playing");
+                signal.setText(R.string.watch_playing);
                 break;
             case NO_TUNER:
                 signal.setText(WatchSignalText.NO_TUNER);
                 break;
             case TUNING:
-                signal.setText("Tuning…");
+                signal.setText(R.string.tuning);
                 break;
             default:
                 signal.setText("S " + percent(signalStatus.strengthPercent)
@@ -126,9 +126,9 @@ public final class WatchStrip extends LinearLayout {
                 break;
         }
 
-        ChipStyle.apply(chipData, getContext(), data, R.color.odtv_ok, "Data broadcast");
-        ChipStyle.apply(chipCc, getContext(), caption, R.color.odtv_ok, "Closed captions");
-        ChipStyle.apply(chipLock, getContext(), encrypted, R.color.odtv_warning, "Encrypted");
+        ChipStyle.apply(chipData, getContext(), data, R.color.odtv_ok, getContext().getString(R.string.cd_data_broadcast));
+        ChipStyle.apply(chipCc, getContext(), caption, R.color.odtv_ok, getContext().getString(R.string.cd_closed_captions));
+        ChipStyle.apply(chipLock, getContext(), encrypted, R.color.odtv_warning, getContext().getString(R.string.cd_encrypted));
         setAlertChip(emergency);
     }
 
@@ -140,7 +140,8 @@ public final class WatchStrip extends LinearLayout {
     private void setAlertChip(boolean active) {
         chipEwbs.setSelected(active);
         chipEwbs.setAlpha(active ? 1f : 0.28f);
-        chipEwbs.setContentDescription("Emergency broadcast" + (active ? " active" : " inactive"));
+        chipEwbs.setContentDescription(getContext().getString(active ? R.string.cd_chip_active : R.string.cd_chip_inactive,
+                getContext().getString(R.string.cd_emergency_broadcast)));
     }
 
     private static String percent(int value) {

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.widget.Toast;
+import com.pbcnx.opendtvmod.R;
 
 /** The two firmware file pickers, outside the screen that offers them. */
 public final class FirmwarePicker {
@@ -21,7 +22,7 @@ public final class FirmwarePicker {
         try {
             activity.startActivityForResult(i, REQ_IMPORT);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(activity, "No file picker app on this device · install a Files app, then try again.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, R.string.fw_no_picker, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -30,7 +31,7 @@ public final class FirmwarePicker {
         try {
             activity.startActivityForResult(i, REQ_FOLDER);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(activity, "No file picker app on this device · install a Files app, then try again.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, R.string.fw_no_picker, Toast.LENGTH_LONG).show();
         }
     }
 }
