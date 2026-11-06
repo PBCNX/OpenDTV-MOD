@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.Executor;
+import com.pbcnx.opendtvmod.R;
 
 /**
  * The two ways a vendor image arrives - one file, or a folder of them - and the state the activity
@@ -105,7 +106,7 @@ public final class FirmwareImport {
                     }
                 }
             } catch (RuntimeException e) {
-                unreadable.add("the folder" + (e.getMessage() == null ? "" : " (" + e.getMessage() + ")"));
+                unreadable.add(activity.getString(R.string.fw_the_folder) + (e.getMessage() == null ? "" : " (" + e.getMessage() + ")"));
             }
             final List<String> refusedList = refused;
             final int ignoredCount = ignored;
@@ -113,27 +114,25 @@ public final class FirmwareImport {
             activity.runOnUiThread(() -> {
                 StringBuilder b = new StringBuilder();
                 if (!imported.isEmpty()) {
-                    b.append("Installed: ").append(TextUtils.join(", ", imported));
+                    b.append(activity.getString(R.string.fw_installed, TextUtils.join(", ", imported)));
                 }
                 if (!refusedList.isEmpty()) {
                     if (b.length() > 0) b.append("\n\n");
-                    b.append("Not a vendor image for any supported stick:\n")
-                            .append(TextUtils.join("\n", refusedList));
+                    b.append(activity.getString(R.string.fw_not_vendor_list, TextUtils.join("\n", refusedList)));
                 }
                 if (ignoredCount > 0) {
                     if (b.length() > 0) b.append("\n\n");
-                    b.append(ignoredCount).append(ignoredCount == 1
-                            ? " other file ignored" : " other files ignored");
+                    b.append(activity.getResources().getQuantityString(R.plurals.fw_ignored, ignoredCount, ignoredCount));
                 }
                 if (!unreadableList.isEmpty()) {
                     if (b.length() > 0) b.append("\n\n");
-                    b.append("Could not read:\n").append(TextUtils.join("\n", unreadableList));
+                    b.append(activity.getString(R.string.fw_could_not_read_list, TextUtils.join("\n", unreadableList)));
                 }
-                if (b.length() == 0) b.append("No vendor images in that folder.");
+                if (b.length() == 0) b.append(activity.getString(R.string.fw_no_images_folder));
                 new MaterialAlertDialogBuilder(activity)
-                        .setTitle("Tuner setup")
+                        .setTitle(R.string.settings_tuner_setup)
                         .setMessage(b.toString())
-                        .setPositiveButton("Close", null)
+                        .setPositiveButton(R.string.close, null)
                         .show();
                 if (!imported.isEmpty()) {
                     host.imagesChanged();
@@ -157,15 +156,15 @@ public final class FirmwareImport {
                 byte[] data = readBytes(activity, uri);   // the same bounded, closed read as a folder
                 FirmwareStore.Image image = FirmwareStore.importBytes(activity, data);
                 if (image == null) {
-                    message = "Not a vendor image for any supported stick ("
-                            + data.length + " bytes, sha256 "
-                            + FirmwareStore.shorten(FirmwareStore.sha256Hex(data)) + ")";
+                    message = activity.getString(R.string.fw_not_vendor_file, data.length,
+                            FirmwareStore.shorten(FirmwareStore.sha256Hex(data)));
                 } else {
                     installed = true;
-                    message = image.device + " image installed";
+                    message = activity.getString(R.string.fw_image_installed, image.device);
                 }
             } catch (IOException | RuntimeException e) {
-                message = "Could not read that file" + (e.getMessage() == null ? "" : ": " + e.getMessage());
+                message = e.getMessage() == null ? activity.getString(R.string.fw_could_not_read_file)
+                        : activity.getString(R.string.fw_could_not_read_file_why, e.getMessage());
             }
             final String text = message;
             final boolean ok = installed;

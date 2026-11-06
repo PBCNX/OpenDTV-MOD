@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.pbcnx.opendtvmod.R;
 import com.pbcnx.opendtvmod.ts.TsDemux;
 
 /**
@@ -75,13 +76,14 @@ public final class EwbsAlerts {
         notifyHost(true);
         if (active) {
             String why = d.ewbsBannerText(location);
-            text.setText("Emergency Warning:" + (why.isEmpty() ? "" : " " + why));
+            text.setText(why.isEmpty() ? act.getString(R.string.ewbs_warning)
+                    : act.getString(R.string.ewbs_warning_text, why));
             text.setTextColor(WARNING_COLOR);
             view.setBackground(activeBackground());
             leftIcon.setVisibility(View.VISIBLE);
             rightIcon.setVisibility(View.VISIBLE);
         } else {
-            text.setText("Emergency warning has ended");
+            text.setText(R.string.ewbs_warning_ended);
             text.setTextColor(INFO_COLOR);
             view.setBackground(endedBackground());
             leftIcon.setVisibility(View.GONE);

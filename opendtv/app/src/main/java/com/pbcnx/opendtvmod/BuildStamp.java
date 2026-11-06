@@ -48,10 +48,10 @@ public final class BuildStamp {
      * About box and the Settings row under it read this, so the same fact cannot drift into two
      * shapes.
      */
-    public static String versionLine(String version) {
+    public static String versionLine(android.content.Context context, String version) {
         String commit = commit();
         return commit.isEmpty()
-                ? "Version " + version
-                : "Version " + version + " build [" + commit + "]";
+                ? context.getString(R.string.version_line, version)
+                : context.getString(R.string.version_line_build, version, commit);
     }
 }
