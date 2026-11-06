@@ -221,6 +221,22 @@ public final class MainDialogs {
                 .show();
     }
 
+    /**
+     * Settings > App language: follow the phone, English or Tagalog. The same setting as Android 13's
+     * Settings > Apps > OpenDTV-MOD > Language; choosing recreates the screen (AppLanguage).
+     */
+    public void showAppLanguageDialog() {
+        final int current = AppLanguage.current();
+        new MaterialAlertDialogBuilder(activity)
+                .setTitle(R.string.language_title)
+                .setSingleChoiceItems(AppLanguage.labels(activity), current, (dlg, which) -> {
+                    dlg.dismiss();
+                    if (which != current) AppLanguage.choose(which);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
     /** Settings > Audio Language: lists the audio streams of the playing channel and switches between them. */
     public void showAudioLanguageDialog() {
         final Player player = screen.audioPlayer();

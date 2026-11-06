@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Tagalog. Shown when the app's language is Tagalog (on Android 13 and up, the phone's
-     Settings > Apps > OpenDTV-MOD > Language), or when the phone itself is set to Filipino:
-     Android treats "tl" and "fil" as the same language, and its own Filipino translations live in
-     values-tl too.
+<!-- Tagalog. Shown when the app's language is Tagalog (Settings > Wika ng app, which on Android
+     13 and up is also the phone's Settings > Apps > OpenDTV-MOD > Language), or when the phone
+     itself is set to Filipino: Android treats "tl" and "fil" as the same language, and its own
+     Filipino translations live in values-tl too.
 
      The words follow the way Android and Google apps are translated into Filipino: plain Tagalog,
      with the technical words people already say in English kept in English (channel, signal,
@@ -271,6 +271,15 @@
     <string name="settings_header_about">TUNGKOL DITO</string>
     <string name="settings_licenses">Mga open source na lisensya</string>
     <string name="settings_licenses_summary">Ang mga pinagbatayan ng app na ito</string>
+
+    <!-- App language -->
+    <string name="settings_header_language">WIKA</string>
+    <!-- Says "language" in both languages, so it can be found from either -->
+    <string name="settings_language">Wika ng app · Language</string>
+    <string name="language_title">Wika ng app</string>
+    <string name="language_system">Default ng system</string>
+    <!-- %1$s is the phone's language, in that language -->
+    <string name="language_system_current">Default ng system (%1$s)</string>
 
     <!-- About and its developer door -->
     <plurals name="dev_door_taps_left">

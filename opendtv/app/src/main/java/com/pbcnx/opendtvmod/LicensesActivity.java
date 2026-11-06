@@ -147,9 +147,9 @@ public class LicensesActivity extends AppCompatActivity {
         list.addView(card("Material Components for Android  1.12.0", "Apache-2.0",
                 "https://github.com/material-components/material-components-android", "apache-2.0.txt", false, list));
         // The Settings icon set added 2026-11-04 (ic_list, ic_aspect, ic_toggle, ic_memory, ic_record,
-        // ic_subtitles, ic_language, ic_license) is Material Icons: a different repository from the
-        // Components library above, Apache-2.0 either way. Credited separately so the entry names the
-        // place the artwork actually came from.
+        // ic_subtitles, ic_language, ic_license, then ic_translate for App language) is Material
+        // Icons: a different repository from the Components library above, Apache-2.0 either way.
+        // Credited separately so the entry names the place the artwork actually came from.
         list.addView(card("Material Icons  (Settings icon set)", "Apache-2.0",
                 "https://github.com/google/material-design-icons", "apache-2.0.txt", false, list));
         list.addView(card("AndroidX AppCompat / RecyclerView", "Apache-2.0",

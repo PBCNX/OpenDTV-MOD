@@ -123,6 +123,16 @@ public final class SettingsController {
                 R.drawable.ic_captions,
                 dialogs::showCaptionLanguageDialog));
 
+        // App language: the same per-app language Android 13 keeps in its own Settings, and the only
+        // way to choose one on Android 5 to 12. The row's title says "language" in both languages,
+        // so it can be found from either.
+        items.add(SettingAdapter.SettingItem.header(activity.getString(R.string.settings_header_language)));
+        items.add(SettingAdapter.SettingItem.action(
+                activity.getString(R.string.settings_language),
+                activity.getString(R.string.settings_tap_to_change, AppLanguage.currentLabel(activity)),
+                R.drawable.ic_translate,
+                dialogs::showAppLanguageDialog));
+
         items.add(SettingAdapter.SettingItem.header(activity.getString(R.string.settings_header_advanced)));
         // A stick is a bridge with no firmware of its own: the driver uploads an image every time
         // it is plugged in. Those images are vendor material, so a public build carries none and
