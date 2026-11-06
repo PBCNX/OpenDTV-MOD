@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- The languages the app ships, for Android 13 and up: Settings > Apps > OpenDTV-MOD > Language
-     lists these. Add a line here together with a new values-xx folder. Tagalog is "fil" here
+     lists these, and it is the same setting as the app's own Settings > App language row. Add a
+     line here together with a new values-xx folder and an AppLanguage row. Tagalog is "fil" here
      although its folder is values-tl: a "tl" entry is reported back as "fil" and never matches, so
      choosing it in Settings would leave the app in English. The system lists it under its CLDR
      name, Filipino. -->

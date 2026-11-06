@@ -85,6 +85,17 @@
         </activity>
 
         <!-- Live Channels: the tuner input itself -->
+        <!-- Settings > App language on Android 12 and older: AppCompat saves the choice itself and
+             applies it on start (Android 13 and up keep it in the system). See TRANSLATING.md. -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
+
         <service
             android:name=".tv.OpenDtvInputService"
             android:exported="true"

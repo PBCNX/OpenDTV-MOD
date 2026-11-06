@@ -291,6 +291,18 @@
     <string name="settings_licenses">Open source licenses</string>
     <string name="settings_licenses_summary">What this app is built on</string>
 
+    <!-- App language -->
+    <string name="settings_header_language">LANGUAGE</string>
+    <!-- Says "language" in both languages, so it can be found from either -->
+    <string name="settings_language">App language · Wika</string>
+    <string name="language_title">App language</string>
+    <string name="language_system">System default</string>
+    <!-- %1$s is the phone's language, in that language -->
+    <string name="language_system_current">System default (%1$s)</string>
+    <!-- Each language keeps its own name in every language, so it can be found -->
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_tagalog" translatable="false">Tagalog</string>
+
     <!-- About and its developer door -->
     <plurals name="dev_door_taps_left">
         <item quantity="one">%d more tap to unlock Developer options</item>

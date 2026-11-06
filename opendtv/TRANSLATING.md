@@ -6,6 +6,10 @@ to English, so a new screen never breaks; it shows in English until its translat
 
 ## How the language is picked
 
+- **Settings > App language · Wika** (Tagalog: *Wika ng app · Language*) offers System default,
+  English and Tagalog (`ui/watch/AppLanguage`). On Android 13 and up it is the same setting as the
+  phone's Settings > Apps > OpenDTV-MOD > Language; on older phones AppCompat stores the choice
+  (`autoStoreLocales` in the manifest) and applies it on start.
 - **The phone's language.** A phone set to Filipino (`fil-PH`) loads `values-tl`, because Android
   treats `tl` and `fil` as one language.
 - **Android 13 and up: the app's own language.** `res/xml/locales_config.xml` (the manifest's
@@ -18,7 +22,7 @@ to English, so a new screen never breaks; it shows in English until its translat
     matches and the app stays in English (checked on the emulator with
     `cmd locale set-app-locales`). `locales_config.xml` lists `fil` for the same reason. Do not
     turn on AGP's `generateLocaleConfig`: it would write `tl`.
-  - The system names the language "Filipino".
+  - The system names the language "Filipino"; the app's own list calls it "Tagalog".
 - Changing the language recreates the screen, the same way the decoder switch does.
 
 To check a translation without tapping through Settings (the bench build is
@@ -136,4 +140,5 @@ including Android 8.1's USB TV tuner app), the Microsoft Filipino style guide an
 2. Add the same key to `values-tl/strings.xml` with the rules above. A key that exists only in a
    translation fails the release build (lint ExtraTranslation is fatal); a key missing from it
    only shows English.
-3. A new language: a `values-xx` folder and one `<locale>` line in `res/xml/locales_config.xml`.
+3. A new language: a `values-xx` folder, one `<locale>` line in `res/xml/locales_config.xml`, and
+   a row in `AppLanguage` (`TAGS` and `labels`).
