@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tagalog. Shown when the app language is Tagalog (Settings > Wika ng app), or when the phone
+     itself is set to Filipino: Android treats "tl" and "fil" as the same language, and its own
+     Filipino translations live in values-tl too.
+
+     The words follow the way Android and Google apps are translated into Filipino: plain Tagalog,
+     with the technical words people already say in English kept in English (channel, signal,
+     scan, tuner, dongle, antenna, frequency, caption, record, data broadcast). opendtv/TRANSLATING.md
+     has the word list and the rules, for a new screen or a fix.
+
+     A string missing here falls back to the English one, so a new screen never breaks; it just
+     shows in English until its Tagalog is added. -->
+<resources>
+    <string name="app_name_scanner">Pag-scan ng channel ng OpenDTV-MOD</string>
+    <string name="about_title">Tungkol sa %1$s</string>
+
+    <!-- Shared buttons -->
+    <string name="ok">OK</string>
+    <string name="cancel">Kanselahin</string>
+    <string name="apply">Ilapat</string>
+    <string name="close">Isara</string>
+    <string name="back">Bumalik</string>
+    <string name="stop">Ihinto</string>
+    <string name="scan">I-scan</string>
+
+    <!-- Tabs -->
+    <string name="tab_channels">Mga Channel</string>
+    <string name="tab_epg">EPG</string>
+    <string name="tab_favorites">Mga Paborito</string>
+    <string name="tab_settings">Mga Setting</string>
+
+    <!-- Watching: the toolbar, the channel row, the banner, the cards -->
+    <string name="main_subtitle">Pilipinas</string>
+    <string name="no_channel_tuned">Walang naka-tune na channel</string>
+    <string name="no_channel">Walang channel</string>
+    <string name="tuning">Nagtu-tune…</string>
+    <string name="unknown_channel">Hindi kilalang channel</string>
+    <string name="now_placeholder">Ngayon: Wala pang impormasyon.</string>
+    <string name="next_placeholder">Susunod: Wala pang impormasyon.</string>
+    <string name="now_program">Ngayon: %1$s</string>
+    <string name="next_program">Susunod: %1$s</string>
+    <string name="no_program_info">Walang impormasyon ng programa</string>
+    <string name="network_line">"NIT : %1$s   ·   Provider : %2$s"</string>
+    <string name="network_line_placeholder">"NIT : —   ·   Provider : —"</string>
+    <string name="cd_record_channel">I-record ang channel</string>
+    <string name="cd_stop_recording">Ihinto ang pag-record</string>
+    <string name="cd_remote">Remote</string>
+    <string name="cd_watch_info">Impormasyon ng pinapanood</string>
+    <string name="cd_close_watch_info">Isara ang impormasyon ng pinapanood</string>
+    <string name="cd_close_info">Isara ang impormasyon</string>
+    <string name="cd_data_broadcast">Data broadcast</string>
+    <string name="cd_closed_captions">Mga closed caption</string>
+    <string name="cd_encrypted">Naka-encrypt</string>
+    <string name="cd_emergency_broadcast">Pang-emergency na broadcast</string>
+    <string name="cd_chip_active">%1$s: aktibo</string>
+    <string name="cd_chip_inactive">%1$s: hindi aktibo</string>
+    <string name="channel_now_badge">NGAYON</string>
+
+    <!-- The tuning card -->
+    <string name="tuning_in">Nagtu-tune…</string>
+    <string name="tuning_no_signal">Walang signal</string>
+    <string name="tuning_no_signal_hint">Tingnan ang antenna o mag-scan sa Mga Setting</string>
+    <string name="tuning_scrambled">Naka-scramble</string>
+    <string name="tuning_scrambled_hint">Maayos ang signal - naka-encrypt ang serbisyong ito</string>
+    <string name="tuning_no_picture">Walang larawan</string>
+    <string name="tuning_weak_hint">Naka-lock ang signal pero masyadong mahina para ma-decode</string>
+    <string name="tuning_no_video_hint">Maayos ang signal - walang video ang serbisyong ito</string>
+    <string name="tuning_no_tuner">Walang nakitang tuner</string>
+    <string name="tuning_plug_in">Isaksak ang USB dongle</string>
+
+    <!-- Watch info card -->
+    <string name="watch_tune_for_details">Mag-tune ng channel para makita ang mga detalye ng signal</string>
+    <string name="watch_no_channel_tuned">Walang naka-tune na channel.</string>
+    <string name="watch_isdbt_broadcast">ISDB-T Broadcast</string>
+    <string name="watch_tuning_strength">Nagtu-tune… · Lakas %1$s</string>
+    <string name="watch_locked_signal">Naka-lock · Lakas %1$s · Kalidad %2$s</string>
+    <string name="watch_signal_details">Mga detalye ng signal</string>
+    <string name="watch_hide_details">Itago ang mga detalye</string>
+    <string name="watch_row_frequency">Frequency</string>
+    <string name="watch_row_signal">Signal</string>
+    <string name="watch_row_video">Video</string>
+    <string name="watch_row_audio">Audio</string>
+    <string name="watch_row_service">Serbisyo</string>
+    <string name="watch_locked">Naka-lock</string>
+    <string name="watch_unlocked">Hindi naka-lock</string>
+
+    <!-- Toasts -->
+    <string name="toast_tune_first">Mag-tune muna ng channel</string>
+    <string name="toast_no_data_broadcast">Walang data broadcast ang channel na ito</string>
+    <string name="toast_open_data_first">Buksan muna ang data broadcast</string>
+    <string name="toast_decoder_hardware">Napili ang hardware decoder</string>
+    <string name="toast_decoder_ffmpeg">Napili ang FFmpeg software decoder</string>
+    <string name="toast_captions_on">Naka-on ang mga caption</string>
+    <string name="toast_captions_off">Naka-off ang mga caption</string>
+    <string name="toast_location_not_matched">Hindi natukoy ang lugar · piliin ito nang manual</string>
+    <string name="toast_current_location">Kasalukuyang lokasyon: %1$s</string>
+    <string name="toast_location_denied">Hindi pinayagan ang lokasyon · piliin nang manual ang lugar</string>
+    <string name="toast_recording">Nagre-record</string>
+    <string name="toast_recording_channel">Nire-record ang %1$s</string>
+    <string name="toast_recording_failed">Hindi masimulan ang pag-record</string>
+    <string name="toast_recording_stopped">Itinigil ang pag-record · OpenDTV/Record</string>
+    <string name="toast_nothing_recorded">Walang na-record · walang ipinadalang stream ang serbisyong ito</string>
+    <string name="toast_recording_channel_changed">Itinigil ang pag-record · lumipat ng channel</string>
+    <string name="toast_allow_storage">Payagan ang access sa storage para makapag-record</string>
+    <string name="toast_move_favorite">Ilipat gamit ang ▲▼ · OK kapag tapos na</string>
+    <string name="toast_usb_permission">Kailangan ng pahintulot sa USB</string>
+    <string name="toast_favorite_added">Idinagdag sa Mga Paborito: %1$s</string>
+    <string name="toast_favorite_removed">Inalis sa Mga Paborito: %1$s</string>
+    <string name="toast_tuner_not_found">Walang nakitang tuner · isaksak ang USB dongle</string>
+    <string name="toast_no_lock">Hindi ma-lock ang %1$s MHz</string>
+    <string name="toast_channel_not_found">Walang nakitang channel sa frequency na ito</string>
+    <string name="toast_video_stalled">Huminto ang video · lumipat sa software decoding</string>
+    <string name="toast_scan_complete">Tapos na ang pag-scan · %1$s</string>
+    <string name="toast_scan_complete_at">Tapos na ang pag-scan · %1$s sa %2$s MHz</string>
+
+    <!-- Not singular and plural: "one" is a number said with -ng (isang, dalawang, limang channel),
+         "other" one that ends in 4, 6 or 9 and takes "na" (apat na channel). CLDR: {0} araw / {0} na araw. -->
+    <plurals name="channel_count">
+        <item quantity="one">%d channel</item>
+        <item quantity="other">%d na channel</item>
+    </plurals>
+
+    <!-- About and its developer door -->
+    <string name="version_line">Bersyon %1$s</string>
+    <string name="version_line_build">Bersyon %1$s build [%2$s]</string>
+    <plurals name="dev_door_taps_left">
+        <item quantity="one">%d tap na lang para ma-unlock ang Developer options</item>
+        <item quantity="other">%d na tap na lang para ma-unlock ang Developer options</item>
+    </plurals>
+    <string name="dev_door_unlocked">Na-unlock na ang Developer options</string>
+
+    <!-- Captions and audio -->
+    <string name="caption_display_title">Hitsura ng caption</string>
+    <string name="caption_style_simple">Simpleng linya ng text</string>
+    <string name="caption_style_styled">May istilo (layout ng broadcast)</string>
+    <string name="caption_style_auto">Auto (depende sa broadcast)</string>
+    <string name="caption_language_title">Wika ng caption</string>
+    <string name="caption_language_1">Wika 1 (pangunahin)</string>
+    <string name="caption_language_2">Wika 2 (pangalawa, kung mayroon)</string>
+    <string name="audio_language_title">Wika ng audio</string>
+    <string name="audio_automatic">Awtomatiko (pinakamagandang kalidad)</string>
+    <string name="audio_track">Audio %1$d</string>
+    <string name="audio_track_not_supported">"%1$s  [hindi sinusuportahan]"</string>
+
+    <!-- Aspect ratio -->
+    <string name="aspect_title">Aspect ratio ng video</string>
+    <string name="aspect_stretch">I-stretch (buong 16:9)</string>
+    <string name="aspect_fit">Ipagkasya (orihinal na ratio)</string>
+    <string name="aspect_zoom">Mag-zoom (i-crop sa 16:9)</string>
+
+    <!-- EWBS location -->
+    <string name="ewbs_location_title">Lokasyon para sa EWBS</string>
+    <string name="ewbs_show_all">Ipakita lahat ng alerto</string>
+    <string name="ewbs_zone">Zone</string>
+    <string name="ewbs_region">Rehiyon</string>
+    <string name="ewbs_city">Lungsod</string>
+    <string name="ewbs_code">Code: 0x%1$03X</string>
+    <string name="ewbs_use_current_location">Gamitin ang kasalukuyang lokasyon</string>
+
+    <!-- Channel list, EPG and Favorites -->
+    <string name="channels_label">MGA CHANNEL</string>
+    <string name="channels_empty_title">Wala pang channel</string>
+    <string name="channels_empty_body">Buksan ang Mga Setting at piliin ang Awtomatikong pag-scan ng channel.</string>
+    <string name="favorites_label">MGA PABORITO</string>
+    <string name="favorites_empty_title">Wala pang paborito</string>
+    <string name="favorites_empty_body">Pindutin ang star ng isang channel para idagdag ito.</string>
+    <string name="epg_no_channel_body">Pumili ng channel para makita ang gabay sa programa nito.</string>
+    <string name="epg_empty_title">Wala pang gabay sa programa</string>
+    <string name="epg_empty_body">Mag-tune ng channel at hintayin ang data ng gabay. May mga channel na hindi nagpapadala ng EPG.</string>
+    <plurals name="epg_program_count">
+        <item quantity="one">%d PROGRAMA</item>
+        <item quantity="other">%d NA PROGRAMA</item>
+    </plurals>
+    <string name="epg_no_title">(walang pamagat)</string>
+    <string name="epg_time_length">%1$s (%2$dm)</string>
+    <string name="open_channels">Buksan ang Mga Channel</string>
+    <string name="open_settings">Buksan ang Mga Setting</string>
+
+    <!-- Settings tab -->
+    <string name="settings_header_channels">MGA CHANNEL AT ALERTO</string>
+    <string name="settings_auto_scan">Awtomatikong pag-scan ng channel</string>
+    <string name="settings_auto_scan_summary">Mag-scan ng mga channel sa buong UHF band</string>
+    <string name="settings_manual_scan">Manual na pag-scan ng frequency</string>
+    <string name="settings_manual_scan_summary">I-scan ang isang partikular na UHF channel gamit ang signal meter</string>
+    <string name="settings_ewbs">Lokasyon para sa EWBS</string>
+    <string name="settings_ewbs_summary_all">Ipakita lahat ng alerto · i-tap para pumili ng lokasyon</string>
+    <string name="settings_tap_to_change">%1$s · i-tap para baguhin</string>
+    <string name="settings_header_picture">LARAWAN AT TUNOG</string>
+    <string name="settings_aspect">Aspect ratio ng video</string>
+    <string name="settings_audio">Wika ng audio</string>
+    <string name="settings_audio_summary">%1$s · pumili sa mga audio track ng channel</string>
+    <string name="settings_hw_decoder">Hardware decoder</string>
+    <string name="settings_hw_decoder_summary">Naka-on: MediaCodec ng device · naka-off: FFmpeg software decoding</string>
+    <string name="settings_header_captions">MGA CAPTION</string>
+    <string name="settings_cc">Mga closed caption (CC)</string>
+    <string name="settings_cc_summary">Lumalabas kapag may caption ang broadcast ng channel</string>
+    <string name="settings_caption_display">Hitsura ng caption</string>
+    <string name="settings_caption_language">Wika ng caption</string>
+    <string name="settings_header_advanced">ADVANCED</string>
+    <string name="settings_record">I-record ang channel</string>
+    <string name="settings_record_summary">I-save ang TS stream sa folder na OpenDTV/Record</string>
+    <string name="settings_record_stop">Ihinto ang pag-record ng channel</string>
+    <string name="settings_record_stop_summary">Ihinto ang pag-save ng transport stream sa storage</string>
+    <string name="settings_analyzer">Signal at TS Analyzer</string>
+    <string name="settings_analyzer_summary">Suriin ang bitrate, PID, table at raw packet</string>
+    <string name="settings_header_about">TUNGKOL DITO</string>
+    <string name="settings_licenses">Mga open source na lisensya</string>
+    <string name="settings_licenses_summary">Ang mga lisensya ng lahat ng bumubuo sa app na ito</string>
+
+    <!-- Scans -->
+    <string name="scan_full_title">Buong pag-scan?</string>
+    <string name="scan_full_message">Isa-scan nito ang UHF 14 – 51 at papalitan ang kasalukuyang listahan ng channel. Puwede itong tumagal ng ilang minuto.</string>
+    <string name="scan_full_message_count">Isa-scan nito ang UHF 14 – 51 at papalitan ang kasalukuyang listahan ng channel (%1$s). Puwede itong tumagal ng ilang minuto.</string>
+    <string name="scan_band_subtitle">UHF 14 – 51 · %1$s</string>
+    <string name="scan_auto_title">Awtomatikong pag-scan</string>
+    <string name="scan_manual_title">Manual na pag-scan</string>
+    <string name="scan_manual_subtitle">Pumili ng UHF channel, tingnan kung naka-lock, saka ito i-scan</string>
+    <string name="scan_progress">"%1$s  ·  %2$d sa %3$d"</string>
+    <plurals name="scan_services_found">
+        <item quantity="one">Nakahanap ng %d serbisyo</item>
+        <item quantity="other">Nakahanap ng %d na serbisyo</item>
+    </plurals>
+    <string name="scan_locked">NAKA-LOCK</string>
+    <string name="scan_no_lock">WALANG LOCK</string>
+    <string name="scan_strength">Lakas</string>
+    <string name="scan_quality">Kalidad</string>
+    <string name="scan_pick_channel">Pumili ng channel</string>
+    <!-- Always 56 frequencies (UHF 14 - 69), hence "na" -->
+    <string name="scan_pick_subtitle">UHF %1$d – %2$d · %3$d na frequency</string>
+
+    <!-- The data broadcast keys -->
+    <string name="bml_key_red">PULA</string>
+    <string name="bml_key_green">BERDE</string>
+    <string name="bml_key_yellow">DILAW</string>
+    <string name="bml_key_blue">ASUL</string>
+    <string name="cd_bml_key">Key na %1$s</string>
+    <string name="cd_bml_red">Pula</string>
+    <string name="cd_bml_green">Berde</string>
+    <string name="cd_bml_yellow">Dilaw</string>
+    <string name="cd_bml_blue">Asul</string>
+    <string name="cd_bml_close">Isara ang data broadcast</string>
+    <string name="cd_bml_back">Bumalik sa loob ng page</string>
+    <string name="cd_bml_arrow_pad">Bumalik sa arrow pad</string>
+
+    <!-- Live Channels setup (Android TV) -->
+    <string name="setup_title">"OpenDTV  -  Pag-scan ng ISDB-T channel"</string>
+    <string name="setup_no_tuner">Walang nakitang tuner. Isaksak ang dongle (048d:275a), saka pumili ng scan.</string>
+    <string name="setup_choose">Piliin ang Mabilis na pag-scan (mga kilalang channel) o Buong pag-scan (lahat ng UHF channel).</string>
+    <string name="setup_quick">Mabilis na pag-scan</string>
+    <string name="setup_full">Buong pag-scan</string>
+    <string name="setup_skip">Dumiretso sa app</string>
+    <string name="setup_analyzer">Analyzer</string>
+    <string name="setup_finish">Tapusin</string>
+    <string name="setup_stopping">Hihinto pagkatapos ng channel na ito ...</string>
+    <string name="setup_waiting_usb">Hinihintay ang pahintulot sa USB ...</string>
+    <string name="setup_channel_head">"Channel %1$d sa %2$d:  %3$s\n"</string>
+    <string name="setup_tuning">nagtu-tune ... (nilo-load din ng una ang firmware ng tuner)</string>
+    <string name="setup_reading">NAKA-LOCK, binabasa ang listahan ng channel ...</string>
+    <string name="setup_reading_count">NAKA-LOCK, binabasa ang listahan ng channel ... %1$d serbisyo</string>
+    <string name="setup_saving">Sine-save ang mga channel ...</string>
+    <string name="setup_failed">Nagka-error sa pag-scan: %1$s</string>
+    <string name="setup_tuner_problem">Problema sa tuner: %1$s</string>
+    <string name="setup_done">Tapos na ang pag-scan: %1$d channel sa %2$d multiplex ang naidagdag sa Live Channels.</string>
+    <string name="setup_stopped_partial">Itinigil ang pag-scan: %1$d channel sa %2$d multiplex ang naidagdag sa Live Channels.</string>
+    <string name="setup_stopped_nothing">Itinigil ang pag-scan, walang na-save.</string>
+    <string name="setup_no_channels">Walang nakitang channel. Tingnan ang antenna at subukan ang Buong pag-scan.</string>
+</resources>

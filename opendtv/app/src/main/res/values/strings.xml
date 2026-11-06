@@ -12,9 +12,9 @@
      literals again.
 -->
 <resources>
-    <string name="app_name">OpenDTV-MOD</string>
+    <string name="app_name" translatable="false">OpenDTV-MOD</string>
     <string name="app_name_scanner">OpenDTV-MOD channel scan</string>
-    <string name="app_name_tuner">OpenDTV-MOD ISDB-T</string>
+    <string name="app_name_tuner" translatable="false">OpenDTV-MOD ISDB-T</string>
     <string name="about_title">About %1$s</string>
 
     <!-- Everything a viewer reads, so a language is one file (values-tl is Tagalog). The English
