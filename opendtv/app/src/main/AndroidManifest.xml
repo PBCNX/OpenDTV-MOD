@@ -23,6 +23,7 @@
         android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.OpenDtv">
@@ -90,6 +91,18 @@
             <meta-data
                 android:name="android.media.tv.input"
                 android:resource="@xml/tv_input_service" />
+        </service>
+
+        <!-- The app language (Settings > App language) on Android 12 and older: AppCompat stores the
+             choice itself and puts it back on every start. Android 13 and up keep it in the system,
+             from localeConfig above. Never started: AppCompat only reads the meta-data. -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
         </service>
     </application>
 </manifest>

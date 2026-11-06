@@ -35,11 +35,14 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.LocaleManagerCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.os.LocaleListCompat;
 
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
@@ -1252,6 +1255,75 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
         if (devDoorToast != null) devDoorToast.cancel();
         devDoorToast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
         devDoorToast.show();
+    }
+
+    // ------------------------------------------------------------------ app language
+
+    /**
+     * The Language row's choices: "" follows the phone, then English and Tagalog. Tagalog is asked
+     * for as "fil", not "tl", although its strings are in values-tl like Android's own: Android
+     * puts the phone's languages after the app's ([tl, en-US]) and then matches that list against
+     * the app's languages, where it reports values-tl as "fil". A "tl" request never matches there
+     * and the app comes up in English; "fil" finds values-tl on every version.
+     */
+    private static final String[] APP_LANGUAGE_TAGS = {"", "en", "fil"};
+
+    /**
+     * Which row is picked. AppCompat keeps the choice: on Android 13 and up the system holds it (the
+     * same setting as Settings > Apps > Language), on older phones AppCompat stores it and puts it
+     * back on start (autoStoreLocales in the manifest). A "tl" from anywhere counts as Tagalog too.
+     */
+    private static int appLanguageIndex() {
+        LocaleListCompat locales = AppCompatDelegate.getApplicationLocales();
+        Locale first = locales.isEmpty() ? null : locales.get(0);
+        if (first == null) return 0;
+        String language = first.getLanguage();
+        if ("en".equals(language)) return 1;
+        if ("tl".equals(language) || "fil".equals(language)) return 2;
+        return 0;
+    }
+
+    /**
+     * "System default (English)": the phone's own language, named in that language. Read through
+     * LocaleManagerCompat, not Resources.getSystem(): from Android 13 that follows the app's
+     * language, and with Tagalog picked it called an English phone "Filipino".
+     */
+    private String systemLanguageLabel() {
+        LocaleListCompat system = LocaleManagerCompat.getSystemLocales(this);
+        Locale first = system.isEmpty() ? null : system.get(0);
+        String name = first == null ? "" : first.getDisplayLanguage(first);
+        if (name.isEmpty()) return getString(R.string.language_system);
+        return getString(R.string.language_system_current,
+                name.substring(0, 1).toUpperCase(first) + name.substring(1));
+    }
+
+    private String appLanguageName() {
+        switch (appLanguageIndex()) {
+            case 1: return getString(R.string.language_english);
+            case 2: return getString(R.string.language_tagalog);
+            default: return systemLanguageLabel();
+        }
+    }
+
+    /**
+     * Settings > App language. Picking a new one rebuilds the screen in it, the same recreate the
+     * decoder switch does, so the tab and the place in the list come back.
+     */
+    private void showAppLanguageDialog() {
+        final int current = appLanguageIndex();
+        final String[] labels = {systemLanguageLabel(),
+                getString(R.string.language_english), getString(R.string.language_tagalog)};
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.language_title)
+                .setSingleChoiceItems(labels, current, (dlg, which) -> {
+                    dlg.dismiss();
+                    if (which == current) return;
+                    AppCompatDelegate.setApplicationLocales(which == 0
+                            ? LocaleListCompat.getEmptyLocaleList()
+                            : LocaleListCompat.forLanguageTags(APP_LANGUAGE_TAGS[which]));
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     // ------------------------------------------------------------------ closed captions / audio language
@@ -2973,6 +3045,15 @@ public class MainActivity extends AppCompatActivity implements TunerHub.Owner {
                     getString(R.string.settings_tap_to_change, captionLanguageName(captionLanguage())),
                     R.drawable.ic_captions,
                     this::showCaptionLanguageDialog));
+
+            // Its own section, before the technical tools: someone looking for Tagalog should not
+            // have to read past the analyzer to find it. The title says "language" in both.
+            items.add(ph.opendtv.ui.SettingAdapter.SettingItem.header(getString(R.string.settings_header_language)));
+            items.add(new ph.opendtv.ui.SettingAdapter.SettingItem(
+                    getString(R.string.settings_language),
+                    getString(R.string.settings_tap_to_change, appLanguageName()),
+                    R.drawable.ic_language,
+                    this::showAppLanguageDialog));
 
             items.add(ph.opendtv.ui.SettingAdapter.SettingItem.header(getString(R.string.settings_header_advanced)));
             boolean isRecording = currentPacketSink != null && currentPacketSink.isRecording();

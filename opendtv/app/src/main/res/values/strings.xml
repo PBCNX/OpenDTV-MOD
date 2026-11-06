@@ -213,6 +213,9 @@
     <string name="settings_cc_summary">Shown when the channel broadcasts captions</string>
     <string name="settings_caption_display">Caption Display</string>
     <string name="settings_caption_language">Caption Language</string>
+    <string name="settings_header_language">LANGUAGE</string>
+    <!-- Says "language" in both languages, so it can be found from either -->
+    <string name="settings_language">App language · Wika</string>
     <string name="settings_header_advanced">ADVANCED</string>
     <string name="settings_record">Record Channel</string>
     <string name="settings_record_summary">Save TS stream to OpenDTV/Record folder</string>
@@ -223,6 +226,14 @@
     <string name="settings_header_about">ABOUT</string>
     <string name="settings_licenses">Open source licenses</string>
     <string name="settings_licenses_summary">The licences of everything this app is built from</string>
+
+    <!-- App language. Each language keeps its own name in every language, so it can be found. -->
+    <string name="language_title">App language</string>
+    <string name="language_system">System default</string>
+    <!-- %1$s is the phone's language, in that language -->
+    <string name="language_system_current">System default (%1$s)</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_tagalog" translatable="false">Tagalog</string>
 
     <!-- Scans -->
     <string name="scan_full_title">Full scan?</string>

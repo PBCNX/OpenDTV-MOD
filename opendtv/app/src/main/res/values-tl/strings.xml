@@ -196,6 +196,8 @@
     <string name="settings_cc_summary">Lumalabas kapag may caption ang broadcast ng channel</string>
     <string name="settings_caption_display">Hitsura ng caption</string>
     <string name="settings_caption_language">Wika ng caption</string>
+    <string name="settings_header_language">WIKA</string>
+    <string name="settings_language">Wika ng app · Language</string>
     <string name="settings_header_advanced">ADVANCED</string>
     <string name="settings_record">I-record ang channel</string>
     <string name="settings_record_summary">I-save ang TS stream sa folder na OpenDTV/Record</string>
@@ -206,6 +208,11 @@
     <string name="settings_header_about">TUNGKOL DITO</string>
     <string name="settings_licenses">Mga open source na lisensya</string>
     <string name="settings_licenses_summary">Ang mga lisensya ng lahat ng bumubuo sa app na ito</string>
+
+    <!-- App language -->
+    <string name="language_title">Wika ng app</string>
+    <string name="language_system">Default ng system</string>
+    <string name="language_system_current">Default ng system (%1$s)</string>
 
     <!-- Scans -->
     <string name="scan_full_title">Buong pag-scan?</string>
