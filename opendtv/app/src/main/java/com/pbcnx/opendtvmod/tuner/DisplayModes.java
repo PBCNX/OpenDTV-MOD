@@ -17,10 +17,17 @@ public final class DisplayModes {
     public static final int LANGUAGE_MAIN = 1;
     public static final int LANGUAGE_SECOND = 2;
 
-    // Video aspect (PREF_ASPECT): fill 16:9, keep the ratio with bars, or keep it and crop.
+    // Video aspect (PREF_ASPECT): fill 16:9, keep the ratio with bars, keep it and crop, or a 16:9 box.
     public static final int ASPECT_STRETCH = 0;
     public static final int ASPECT_FIT = 1;
     public static final int ASPECT_ZOOM = 2;
+    /**
+     * Stretch, but never wider than 16:9: in landscape the picture fills a centred 16:9 box, with
+     * black bars where the screen is not 16:9 (the sides of a 20:9 phone, top and bottom of a 16:10
+     * tablet). A 4:3 picture is widened to 16:9 like a TV's 16:9 setting, never cropped, so Zoom
+     * stays the only mode that crops. Portrait's video area is 16:9 already: there it is Stretch.
+     */
+    public static final int ASPECT_FORCED_16_9 = 3;
 
     private DisplayModes() {
     }
@@ -41,6 +48,7 @@ public final class DisplayModes {
     public static int aspectMode(int stored) {
         if (stored == ASPECT_FIT) return ASPECT_FIT;
         if (stored == ASPECT_ZOOM) return ASPECT_ZOOM;
+        if (stored == ASPECT_FORCED_16_9) return ASPECT_FORCED_16_9;
         return ASPECT_STRETCH;
     }
 }

@@ -6,22 +6,31 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <!-- LAYER 0: FULL SCREEN Live TV Video Player -->
-    <androidx.media3.ui.PlayerView
-        android:id="@+id/player_view"
+    <!-- The video area: the whole screen, or a centred 16:9 box when "Forced 16:9" is picked
+         (MainActivity.applyAspectMode). The BML page is inside it, so it follows the box. -->
+    <androidx.media3.ui.AspectRatioFrameLayout
+        android:id="@+id/player_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#000000"
-        app:resize_mode="fill"
-        app:show_buffering="never"
-        app:shutter_background_color="#000000"
-        app:use_controller="false" />
+        android:layout_gravity="center">
 
-    <!-- LAYER 0.5: ARIB data broadcast (BML) page. Empty until DATA is pressed; transparent, over the video. -->
-    <FrameLayout
-        android:id="@+id/bml_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <!-- LAYER 0: FULL SCREEN Live TV Video Player -->
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/player_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000000"
+            app:resize_mode="fill"
+            app:show_buffering="never"
+            app:shutter_background_color="#000000"
+            app:use_controller="false" />
+
+        <!-- LAYER 0.5: ARIB data broadcast (BML) page. Empty until DATA is pressed; transparent, over the video. -->
+        <FrameLayout
+            android:id="@+id/bml_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.media3.ui.AspectRatioFrameLayout>
 
     <!-- Tuning / no-signal card; passive, never takes a tap -->
     <com.pbcnx.opendtvmod.ui.watch.TuningCard
