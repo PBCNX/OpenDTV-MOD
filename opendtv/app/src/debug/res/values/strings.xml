@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The debug variant's identity, so a bench install and a release install are not two identical
+     "OpenDTV-MOD" tiles on the same launcher (AGENTS.md: the label is not the id, and a tester cannot
+     tell two ids apart). The release build keeps the plain name. -->
+<resources>
+    <string name="app_name">OpenDTV-MOD bench</string>
+    <string name="app_name_scanner">OpenDTV-MOD bench scan</string>
+    <string name="app_name_tuner">OpenDTV-MOD bench ISDB-T</string>
+</resources>

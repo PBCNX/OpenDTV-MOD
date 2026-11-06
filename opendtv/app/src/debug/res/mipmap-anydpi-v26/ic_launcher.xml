@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The bench build's own artwork (art\launcher\OpenDTVmod-PH.jpg): the same phone, blue screen,
+     MOD.PH under it. Same white plate as the release, because the ARTWORK carries the difference -
+     a second colour plate would be two signals for one fact. This file is why the debug variant does
+     not inherit the release artwork from main. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/opendtv_icon_background" />
+    <foreground android:drawable="@drawable/ic_launcher_ph_foreground" />
+</adaptive-icon>

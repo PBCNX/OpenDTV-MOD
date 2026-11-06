@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Build info: monospace, selectable on a touch screen, and two pills instead of the dialog's
+     own buttons. An AlertDialog button bar adds a focusable ScrollView of its own, and a
+     selectable TextView is focusable too: on the set the D-pad stopped on both, invisibly, and
+     never reached the buttons. These two pills are the only focus stops, and they carry the
+     focused ring (bg_empty_action). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="4dp">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fadeScrollbars="true"
+        android:focusable="false"
+        android:scrollbarStyle="insideInset"
+        android:scrollbars="vertical">
+
+        <TextView
+            android:id="@+id/build_info_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:lineSpacingExtra="3dp"
+            android:nextFocusDown="@+id/build_info_copy"
+            android:textColor="?attr/colorOnSurface"
+            android:textIsSelectable="true"
+            android:textSize="12sp" />
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:paddingTop="14dp">
+
+        <TextView
+            android:id="@+id/build_info_copy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_empty_action"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.08"
+            android:paddingStart="22dp"
+            android:paddingTop="9dp"
+            android:paddingEnd="22dp"
+            android:paddingBottom="9dp"
+            android:text="COPY"
+            android:textColor="@color/odtv_accent"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/build_info_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/bg_empty_action"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.08"
+            android:paddingStart="22dp"
+            android:paddingTop="9dp"
+            android:paddingEnd="22dp"
+            android:paddingBottom="9dp"
+            android:text="CLOSE"
+            android:textColor="@color/odtv_accent"
+            android:textSize="13sp" />
+    </LinearLayout>
+</LinearLayout>

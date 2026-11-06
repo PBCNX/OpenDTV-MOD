@@ -1,0 +1,173 @@
+plugins {
+    id 'com.android.application'
+}
+
+// One counter for every build of this app. opendtv/version.properties holds "build=N";
+// a release increments it and commits that change, so no version is ever hand-edited.
+// versionName 0.0.N (the JP build appends -jp), versionCode 1000 + N. See docs/VERSIONING.md.
+//
+// A milestone adds an optional "version=..." line, which then IS the versionName - that is how a
+// pre-release is written (0.1.0-beta) without inventing a second counter: build= keeps ordering,
+// version= keeps the words. Both are written only in the release commit.
+def versionProps = rootProject.file("version.properties").text.readLines()
+def versionValue = { String key ->
+    def line = versionProps.find { it.trim().startsWith(key + "=") }
+    line == null ? null : line.substring(line.indexOf("=") + 1).trim()
+}
+def buildNumber = Integer.parseInt(versionValue("build"))
+def explicitVersion = versionValue("version")   // null on a plain 0.0.N build
+
+android {
+    namespace 'com.pbcnx.opendtvmod'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.pbcnx.opendtvmod"
+        minSdk 21
+        targetSdk 34
+        versionCode 1000 + buildNumber
+        versionName explicitVersion != null ? explicitVersion : ("0.0." + buildNumber)
+        buildConfigField "String", "BUILD_TIME", "\"${new Date().format('yyyy-MM-dd HH:mm:ss')}\""
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+        // minSdk is 21, but the runtime classes java.util.function.* and List.removeIf only exist from
+        // API 24 (Android 7.0). Core-library desugaring rewrites those calls into j$.* forms that work on
+        // 21-23, so the 25 files that use them (plus ChannelStore's removeIf) do not throw
+        // NoClassDefFoundError on Android 5 or 6. Upstream's ODTV-71 is exactly this crash class; the
+        // alternative was rewriting 25 call sites. No behaviour change on API 24+, and the APK grows.
+        coreLibraryDesugaringEnabled true
+    }
+
+    // The parsing core (TS demux, ARIB captions, MIME parts, the EWBS area table, the firmware
+    // hashing and the IT9135 command framer) is deliberately framework-free, so it is tested on
+    // the JDK with plain JUnit: gradle :app:testDebugUnitTest. A few classes still touch
+    // android.util.Log on their error paths; without this the stub throws where the code would
+    // only log, so return the zero value instead.
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+// Build identity for the About box and the Developers screen's Build info row: the short commit
+// this APK was built from. Deliberately outside defaultConfig and below the block, so it does not
+// touch the version fields native owns - and it is empty, not fatal, when git is not there.
+// The UI reads it by name through com.pbcnx.opendtvmod.BuildStamp and falls back to no bracket.
+def gitCommit = ""
+try {
+    gitCommit = providers.exec {
+        commandLine "git", "rev-parse", "--short", "HEAD"
+        workingDir rootDir
+    }.standardOutput.asText.get().trim()
+} catch (Exception ignored) {
+    gitCommit = ""
+}
+android.defaultConfig.buildConfigField "String", "GIT_COMMIT", "\"${gitCommit}\""
+
+// Release signing, read from a keystore.properties that lives OUTSIDE the repository:
+// <workspace>\keys\keystore.properties, which is ../../keys from the gradle root, or wherever
+// -Popendtv.keys.dir points. Opt-in on purpose, so the stated rule holds both ways: no key on
+// the machine leaves assembleDebug untouched and assembleRelease unsigned, never a failed build.
+def keysDir = new File(project.findProperty("opendtv.keys.dir") ?: rootProject.file("../../keys").absolutePath)
+def keystorePropsFile = new File(keysDir, "keystore.properties")
+def releaseSigning = null
+if (keystorePropsFile.isFile()) {
+    def kp = new Properties()
+    keystorePropsFile.withInputStream { kp.load(it) }
+    def storeName = kp.getProperty("storeFile", "opendtv-release.jks")
+    def store = new File(storeName).isAbsolute() ? new File(storeName) : new File(keysDir, storeName)
+    if (store.isFile()) {
+        releaseSigning = [
+                storeFile    : store,
+                storePassword: kp.getProperty("storePassword", ""),
+                keyAlias     : kp.getProperty("keyAlias", "opendtv"),
+                keyPassword  : kp.getProperty("keyPassword", kp.getProperty("storePassword", ""))
+        ]
+        // Printed on every build: a keystore.properties is plain java.util.Properties, so a Windows
+        // path written with single backslashes loses them silently - this line is how you see it.
+        logger.lifecycle("release signing: alias '${releaseSigning.keyAlias}' from ${store}")
+    } else {
+        logger.lifecycle("release signing: ${keystorePropsFile} names ${store.name}, which is not there - release stays unsigned")
+    }
+} else {
+    logger.lifecycle("release signing: no ${keystorePropsFile} - release stays unsigned")
+}
+
+android {
+    signingConfigs {
+        if (releaseSigning != null) {
+            release {
+                storeFile releaseSigning.storeFile
+                storePassword releaseSigning.storePassword
+                keyAlias releaseSigning.keyAlias
+                keyPassword releaseSigning.keyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        // The bench build and the beta are different apps on purpose:
+        //   debug    com.pbcnx.opendtvmod.ph   debug-signed, the bench's own state
+        //   release  com.pbcnx.opendtvmod      release-signed, what testers get
+        // Two identities means the beta can be installed next to the bench build instead of
+        // replacing it, and a signature change never costs the channel list again. The guard keeps
+        // the JP branch out of it: its applicationId is already ...mod.jp, and the JP debug build
+        // must stay exactly that rather than becoming ...mod.jp.ph.
+        debug {
+            // This block is evaluated against the BuildType, not the project, so the base id is read
+            // from defaultConfig.
+            if (android.defaultConfig.applicationId == "com.pbcnx.opendtvmod") applicationIdSuffix ".ph"
+        }
+        // Minified: this is the artefact testers get, and R8 is the difference between the beta and
+        // the bench build. The rules in proguard-rules.pro cover the three things a string cannot
+        // survive - BuildStamp's field lookup, the WebView bridges, and the native tuner/decoder
+        // symbols. shrinkResources stays off: the analysed saving is small and it is the setting
+        // most likely to remove a resource that is reached by name at runtime.
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // The beta runs on ARM TV boxes and phones. The NextLib/FFmpeg AAR also carries x86 and
+            // x86_64 JNI, which no tester device uses: keeping only the two ARM ABIs takes those
+            // ~5 MiB out of the artefact testers download. The debug/bench build keeps every ABI, so
+            // an emulator still works where an emulator is what one is testing.
+            ndk {
+                abiFilters 'armeabi-v7a', 'arm64-v8a'
+            }
+            if (releaseSigning != null) signingConfig signingConfigs.release
+        }
+    }
+}
+
+
+dependencies {
+    // Runtime backport of the Java-8 library APIs used above (java.util.function, Streams, java.time
+    // subset, Optional...) so minSdk 21 does not have to trade them away. Must match the AGP 8.7.3 era:
+    // desugar_jdk_libs 2.x requires AGP 8.1+; 2.1.5 is the current 2.x line.
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
+
+    // Unit tests run on the JDK, not a device: plain JUnit 4, no Robolectric/Mockito needed.
+    testImplementation 'junit:junit:4.13.2'
+    // ChannelFile reads and writes JSON with org.json, which is a stub on the JVM: the real
+    // artifact makes the channel-file round trip testable without a device or Robolectric.
+    testImplementation 'org.json:json:20240303'
+
+    implementation 'androidx.core:core:1.13.0'
+    implementation 'androidx.activity:activity:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+
+    // Playback: TS demux by Media3's extractor, decoding by the phone's MediaCodec first, with FFmpeg
+    // (NextLib, GPL-3.0) as the software fallback for formats MediaCodec can't play.
+    def media3 = '1.7.1'
+    implementation "androidx.media3:media3-exoplayer:$media3"
+    implementation "androidx.media3:media3-ui:$media3"
+    // FFmpeg decoders (libavcodec/libavutil/libswresample/libswscale + libmedia3ext JNI). Version = <media3>-<nextlib>.
+    implementation "io.github.anilbeesetti:nextlib-media3ext:${media3}-0.9.0"
+}

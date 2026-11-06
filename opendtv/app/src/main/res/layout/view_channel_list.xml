@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The channel picker's list: a plain vertical list with the fading scrollbar
+     the rest of the app uses. Built this way so the scrollbar is styled in XML
+     (a programmatic ScrollView cannot take style attributes). -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/channel_list_scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fadeScrollbars="true"
+    android:scrollbarDefaultDelayBeforeFade="700"
+    android:scrollbarFadeDuration="250"
+    android:scrollbarSize="3dp"
+    android:scrollbarStyle="insideInset"
+    android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
+    android:scrollbars="vertical">
+
+    <LinearLayout
+        android:id="@+id/channel_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp" />
+</ScrollView>

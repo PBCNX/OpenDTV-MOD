@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Accent fill with dark text (odtv_on_accent) - the old version paired white text with the
+     theme-tinted fill, which is ~1.9:1 and was never the drawable's colour anyway. The focused
+     state is a white ring: gold-on-gold would not read, and this dialog's only control is the
+     one the D-pad has to be able to see. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/odtv_accent" />
+            <corners android:radius="8dp" />
+            <stroke
+                android:width="2dp"
+                android:color="@color/odtv_on_surface" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/odtv_accent_dim" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/odtv_accent" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+</selector>

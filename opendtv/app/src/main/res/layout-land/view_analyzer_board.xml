@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Analyzer status board, both landscapes: the 1080p set and a rotated phone.
+     One line of state + S/Q/bitrate and a metadata line, because a landscape screen
+     has no height to spare and every dp here comes out of the tab content below.
+     The three-line version with the bars is the portrait board in layout/.
+     Margins live on the <include>, not here. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/analyzer_board"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_scan_sheet"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/board_dot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="●"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/board_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="sans-serif-medium"
+            android:text=""
+            android:textColor="@color/odtv_on_surface"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/board_channel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text=""
+            android:textColor="@color/odtv_accent"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/board_strength_val"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="—"
+            android:textColor="@color/odtv_on_surface"
+            android:textSize="17sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:letterSpacing="0.1"
+            android:text="STRENGTH"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/board_quality_val"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="—"
+            android:textColor="@color/odtv_on_surface"
+            android:textSize="17sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:letterSpacing="0.1"
+            android:text="QUALITY"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="10sp" />
+
+        <!-- The phone's board lives in a 454 dp column, where this group pushes the
+             line past the edge and ellipsises the channel name, so it is hidden
+             there in code - the Signal card already shows the bitrate as tile one.
+             The wrapper keeps the TV's spacing identical. -->
+        <LinearLayout
+            android:id="@+id/board_bitrate_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/board_bitrate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:text="—"
+                android:textColor="@color/odtv_on_surface"
+                android:textSize="17sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:letterSpacing="0.1"
+                android:text="MBPS"
+                android:textColor="@color/odtv_on_surface_variant"
+                android:textSize="10sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- setFill() still targets these; the TV board shows the numbers only -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <View
+            android:id="@+id/board_strength_fill"
+            android:layout_width="0dp"
+            android:layout_height="0dp" />
+
+        <View
+            android:id="@+id/board_quality_fill"
+            android:layout_width="0dp"
+            android:layout_height="0dp" />
+    </LinearLayout>
+
+    <!-- Metadata on the left, the watching strip's four words on the free right end.
+         Same ids as the portrait board, so updateStatusChips() drives both. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/board_meta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text=""
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/board_chip_data"
+            style="@style/Widget.OpenDtv.StatusChip.Landscape"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="4dp"
+            android:text="DATA" />
+
+        <TextView
+            android:id="@+id/board_chip_cc"
+            style="@style/Widget.OpenDtv.StatusChip.Landscape"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:text="CC" />
+
+        <TextView
+            android:id="@+id/board_chip_lock"
+            style="@style/Widget.OpenDtv.StatusChip.Landscape"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:text="LOCK" />
+
+        <TextView
+            android:id="@+id/board_chip_ewbs"
+            style="@style/Widget.OpenDtv.StatusChip.Landscape"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="0dp"
+            android:text="EWBS" />
+    </LinearLayout>
+</LinearLayout>

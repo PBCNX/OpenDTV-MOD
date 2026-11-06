@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The About image as a target: nothing at rest, a warm wash plus a ring when the D-pad is on
+     it. The hairline under the image does the real work (see bg_about_door_rule); this is only
+     enough to say "this whole block is the thing you are on". -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#1AFFC857" />
+            <corners android:radius="14dp" />
+            <stroke
+                android:width="2dp"
+                android:color="@color/odtv_focus" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/odtv_surface_high" />
+            <corners android:radius="14dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <corners android:radius="14dp" />
+        </shape>
+    </item>
+</selector>

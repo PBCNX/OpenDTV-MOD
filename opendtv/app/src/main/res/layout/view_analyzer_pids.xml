@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PIDs tab: fixed columns, the header stays put while the rows scroll.
+     Column widths are duplicated in the rows built by AnalyzerActivity. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pids_panel"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0.12"
+            android:text="PID"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="10sp" />
+
+        <TextView
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:letterSpacing="0.12"
+            android:text="KBPS"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="10sp" />
+
+        <TextView
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:letterSpacing="0.12"
+            android:text="PKTS"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="10sp" />
+
+        <TextView
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:letterSpacing="0.12"
+            android:text="CC"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="10sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:letterSpacing="0.12"
+            android:text="DESCRIPTION"
+            android:textColor="@color/odtv_on_surface_variant"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/odtv_divider" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="6dp"
+        android:layout_weight="1"
+        android:background="@drawable/bg_tab_selector"
+        android:focusable="true"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="true"
+        android:scrollbarSize="3dp"
+        android:scrollbarStyle="insideInset"
+        android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
+        android:scrollbarDefaultDelayBeforeFade="700"
+        android:scrollbarFadeDuration="250"
+        android:scrollbarAlwaysDrawVerticalTrack="false">
+
+        <LinearLayout
+            android:id="@+id/pids_rows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/pids_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="monospace"
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="11sp" />
+</LinearLayout>

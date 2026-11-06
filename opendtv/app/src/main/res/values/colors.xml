@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- OpenDTV dark TV palette. Keep the watching surface near-black so the
+         picture is the brightest thing on screen. -->
+    <color name="odtv_bg">#0B0D10</color>
+    <color name="odtv_surface">#12161C</color>
+    <color name="odtv_surface_variant">#1A2028</color>
+    <color name="odtv_surface_high">#232B35</color>
+    <color name="odtv_on_surface">#F2F5F8</color>
+    <color name="odtv_on_surface_variant">#A7B0BC</color>
+    <color name="odtv_accent">#FFC857</color>
+    <color name="odtv_accent_dim">#B8892E</color>
+    <color name="odtv_on_accent">#1A1200</color>
+    <color name="odtv_focus">#FFD166</color>
+    <color name="odtv_divider">#2A333D</color>
+    <color name="odtv_live">#E5484D</color>
+    <color name="odtv_ok">#4CC38A</color>
+    <color name="odtv_warning">#FFD166</color>
+    <color name="odtv_selected_bg">#33FFC857</color>
+    <!-- Broadcast colour key, blue - the only hue the palette does not own. -->
+    <color name="odtv_key_blue">#2B62E0</color>
+</resources>

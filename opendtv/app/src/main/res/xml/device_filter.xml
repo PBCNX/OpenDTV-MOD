@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 0x048d = 1165: IT9175 (10074) and IT9308 (37640), driven by the MIT clean-room cores. -->
+    <usb-device vendor-id="1165" product-id="10074" />
+    <usb-device vendor-id="1165" product-id="37640" />
+</resources>

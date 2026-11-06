@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The section tick: a short gold bar that gives the Settings list its rhythm
+     without turning every section label into a card of its own. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/odtv_accent" />
+    <corners android:radius="2dp" />
+</shape>

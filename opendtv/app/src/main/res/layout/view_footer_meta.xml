@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The one line under the tab selector; it follows the selected tab (owner, 2026-11-06):
+    Channels      -> channel total
+    EPG           -> current-programme progress bar + TDT/TOT clock
+    Favorites     -> favorite total
+    Settings      -> OpenDTV-MOD version and build hash
+  Typography is the former list-footer's: ListHeader label (12sp medium, spaced) and ListCount
+  value (11sp medium, accent), so it reads as the old CHANNELS row.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/footer_meta"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/odtv_surface"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="7dp">
+
+    <TextView
+        android:id="@+id/footer_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="CHANNELS"
+        android:textAppearance="@style/TextAppearance.OpenDtv.ListHeader" />
+
+    <ProgressBar
+        android:id="@+id/footer_epg_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="4dp"
+        android:layout_weight="1"
+        android:max="1000"
+        android:progressBackgroundTint="@color/odtv_surface_high"
+        android:progressTint="@color/odtv_accent"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/footer_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="0"
+        android:textAppearance="@style/TextAppearance.OpenDtv.ListCount" />
+</LinearLayout>

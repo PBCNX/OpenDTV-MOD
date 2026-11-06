@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The project's name, in one place.
+
+     It used to be the literal string "OpenDTV-MOD.ph" in seven places (the manifest's three
+     labels, the About dialog's text and content description, and two lines of MainActivity). The
+     .ph was a flavour marker from when the PH and JP builds shared one applicationId; the id is
+     what separates them now (release com.pbcnx.opendtvmod, debug ...mod.ph, JP ...mod.jp), so the
+     name is simply the project's.
+
+     A build that needs a different name - a rename for a release, a JP flavour - overrides these
+     two strings in its own source set (src/<variant>/res/values/strings.xml). It never edits the
+     literals again.
+-->
+<resources>
+    <string name="app_name">OpenDTV-MOD</string>
+    <!-- Under the title on the BENCH build only (MainActivity.bindLayout sets it under BuildConfig.DEBUG).
+         The release app carries no region line: the owner asked for it back on com.pbcnx.opendtvmod.ph
+         and only there, which is a variant difference and not a layout one. -->
+    <string name="app_region_ph">Philippines</string>
+    <string name="app_name_scanner">OpenDTV-MOD channel scan</string>
+    <string name="app_name_tuner">OpenDTV-MOD ISDB-T</string>
+    <string name="about_title">About %1$s</string>
+</resources>

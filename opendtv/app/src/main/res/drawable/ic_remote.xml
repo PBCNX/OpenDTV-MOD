@@ -1,0 +1,28 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <!-- A handset, nothing else: body, one round button, four keys. -->
+  <path
+      android:fillColor="#00000000"
+      android:strokeColor="#FFFFFFFF"
+      android:strokeWidth="1.7"
+      android:strokeLineJoin="round"
+      android:pathData="M9.2,3 L14.8,3 A2.3,2.3 0 0 1 17.1,5.3 L17.1,18.7 A2.3,2.3 0 0 1 14.8,21 L9.2,21 A2.3,2.3 0 0 1 6.9,18.7 L6.9,5.3 A2.3,2.3 0 0 1 9.2,3 Z" />
+  <path
+      android:fillColor="#FFFFFFFF"
+      android:pathData="M12,6.9 m-1.7,0 a1.7,1.7 0 1,0 3.4,0 a1.7,1.7 0 1,0 -3.4,0" />
+  <path
+      android:fillColor="#FFFFFFFF"
+      android:pathData="M10.3,12.2 m-0.95,0 a0.95,0.95 0 1,0 1.9,0 a0.95,0.95 0 1,0 -1.9,0" />
+  <path
+      android:fillColor="#FFFFFFFF"
+      android:pathData="M13.7,12.2 m-0.95,0 a0.95,0.95 0 1,0 1.9,0 a0.95,0.95 0 1,0 -1.9,0" />
+  <path
+      android:fillColor="#FFFFFFFF"
+      android:pathData="M10.3,15.6 m-0.95,0 a0.95,0.95 0 1,0 1.9,0 a0.95,0.95 0 1,0 -1.9,0" />
+  <path
+      android:fillColor="#FFFFFFFF"
+      android:pathData="M13.7,15.6 m-0.95,0 a0.95,0.95 0 1,0 1.9,0 a0.95,0.95 0 1,0 -1.9,0" />
+</vector>

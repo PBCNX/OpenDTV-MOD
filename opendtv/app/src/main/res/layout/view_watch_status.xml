@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/strip_details"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="11sp" />
+
+    <LinearLayout
+        android:id="@+id/strip_chips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/strip_chip_data"
+            style="@style/Widget.OpenDtv.StatusChip.Compact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DATA" />
+
+        <TextView
+            android:id="@+id/strip_chip_cc"
+            style="@style/Widget.OpenDtv.StatusChip.Compact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CC" />
+
+        <TextView
+            android:id="@+id/strip_chip_lock"
+            style="@style/Widget.OpenDtv.StatusChip.Compact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LOCK"
+            android:textColor="@color/odtv_warning" />
+
+        <TextView
+            android:id="@+id/strip_chip_ewbs"
+            style="@style/Widget.OpenDtv.StatusChip.Compact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_status_chip_alert_state"
+            android:text="EWBS"
+            android:textColor="@color/strip_chip_ewbs_text" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/strip_signal"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:ellipsize="end"
+        android:gravity="end"
+        android:maxLines="1"
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="11sp" />
+</merge>

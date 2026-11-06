@@ -1,0 +1,10 @@
+{
+  "_comment": "The web-bml engine this app's BML bundle is built from. Public, MIT, pinned by COMMIT as published by the remote (the local clone's tags disagreed with it once, which is why this file records the remote's answer and fetch-engine.mjs refuses a different commit). dist/ is copied out of a shallow clone; the clone itself stays out of git (the repository ignores vendor/).",
+  "repo": "https://github.com/PBCNX/web-bml-PHL.git",
+  "tag": "v3.0.1",
+  "tagObject": "1effc25ec3cc0c614c92ba07e2295f75a94b7af4",
+  "commit": "041726960996c555d46c871fb304d7cf99f8e418",
+  "dist": ".",
+  "into": "vendor/web-bml",
+  "_heads": "main 376429c and legacy/1.1.x 3272dde are docs-only commits AFTER the tags (engine session, 31 Oct) - the tags are what a host pins, never a head"
+}

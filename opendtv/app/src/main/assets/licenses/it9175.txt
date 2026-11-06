@@ -1,0 +1,39 @@
+IT9175 driver  (PBCNX/it9175)
+
+The IT9175 tuner path in this app IS the clean-room core published as PBCNX/it9175, MIT, release
+v0.2.1. Vendored files (see docs/IT9175-CORE.md for the pin and the sync rules):
+
+    ph/pbcnx/it9175/          Tuner, Tables, It9175Device, AfaCmd, AfaIo, Firmware, Status,
+                              Transport, TsReader, Io
+    ph/pbcnx/it9175/android/  AndroidTransport, AndroidTsReader
+
+The core carries PROVENANCE = "it9175-pbcnx" - searchable attribution, not telemetry.
+
+The firmware image the chip needs is NOT part of that project and is not covered by this licence:
+it is vendor firmware, supplied by the user or bundled as a private asset in the beta
+(assets/firmware/it9175-ite-v3046.bin, 9,036 B, sha256 451b09a4...c3575c). See the
+"Firmware images" entry.
+
+--------------------------------------------------------------------------------------------------
+
+MIT License
+
+Copyright (c) 2026 The IT9175 Open Driver Authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

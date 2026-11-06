@@ -1,0 +1,26 @@
+User-supplied vendor images
+===========================
+
+This build contains no vendor images.
+
+The two USB tuner drivers it does build - the IT9175 (048d:275a) and the IT9308 (048d:9308) - drive a
+bridge chip that starts blank: a vendor image must be uploaded into it every time the stick is plugged
+in. Those images belong to the chip and bridge vendors. They are not distributed with this source or
+this app, and nothing here grants any right to them.
+
+The app therefore asks you to supply the image once, in Settings -> Tuner setup. It is copied into the
+app's private storage, checked against the SHA-256 of the image the driver was written for, and
+refused if it is not byte-for-byte that file. Nothing is uploaded to a stick before that check passes.
+
+What this notice does NOT claim:
+  - no right to the vendor images, express or implied;
+  - no permission to modify or redistribute them;
+  - no statement that the vendor licenses their redistribution.
+
+It records only what the software expects to be handed, and what it refuses.
+
+The images, and the hashes the app checks:
+  it9175-ite-v3046.bin     9,036 bytes   sha256 451b09a4...c3575c   ITE IT9175
+  it9308-sony-1.10.bin     6,498 bytes   sha256 e4e94633...4704a70  IT930x bridge (Sony 1.10)
+
+The full hashes are in DRIVERS.md at the root of this repository.

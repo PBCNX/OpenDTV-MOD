@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nine tabs, nothing dropped. One indicator View slides under the current tab
+     (animated in code) instead of a separate underline per tab.
+     The labels are focusable: on a TV the tab row is the only way into the
+     content, and bg_tab_selector is the 2 dp gold ring. -->
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/analyzer_tab_scroll"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fadingEdge="horizontal"
+    android:fadingEdgeLength="24dp"
+    android:focusable="false"
+    android:requiresFadingEdge="horizontal"
+    android:scrollbars="none">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/analyzer_tab_row"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingEnd="10dp"
+            android:paddingBottom="7dp">
+
+            <TextView
+                android:id="@+id/tab_signal"
+                style="@style/Widget.OpenDtv.TabLabel"
+                android:text="Signal" />
+
+            <TextView
+                android:id="@+id/tab_services"
+                style="@style/Widget.OpenDtv.TabLabel"
+                android:layout_marginStart="@dimen/analyzer_tab_gap"
+                android:text="Services" />
+
+            <TextView
+                android:id="@+id/tab_pids"
+                style="@style/Widget.OpenDtv.TabLabel"
+                android:layout_marginStart="@dimen/analyzer_tab_gap"
+                android:text="PIDs" />
+
+            <TextView
+                android:id="@+id/tab_tables"
+                style="@style/Widget.OpenDtv.TabLabel"
+                android:layout_marginStart="@dimen/analyzer_tab_gap"
+                android:text="Tables" />
+
+            <TextView
+                android:id="@+id/tab_epg"
+                style="@style/Widget.OpenDtv.TabLabel"
+                android:layout_marginStart="@dimen/analyzer_tab_gap"
+                android:text="EPG" />
+
+            <TextView
+                android:id="@+id/tab_datacast"
+                style="@style/Widget.OpenDtv.TabLabel"
+                android:layout_marginStart="@dimen/analyzer_tab_gap"
+                android:text="Datacast" />
+
+            <TextView
+                android:id="@+id/tab_logs"
+                style="@style/Widget.OpenDtv.TabLabel"
+                android:layout_marginStart="@dimen/analyzer_tab_gap"
+                android:text="Logs" />
+
+            <TextView
+                android:id="@+id/tab_graph"
+                style="@style/Widget.OpenDtv.TabLabel"
+                android:layout_marginStart="@dimen/analyzer_tab_gap"
+                android:text="Graph" />
+
+            <TextView
+                android:id="@+id/tab_remote"
+                style="@style/Widget.OpenDtv.TabLabel"
+                android:layout_marginStart="@dimen/analyzer_tab_gap"
+                android:text="Remote" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/tab_indicator"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_gravity="bottom|start"
+            android:background="@color/odtv_accent" />
+    </FrameLayout>
+</HorizontalScrollView>

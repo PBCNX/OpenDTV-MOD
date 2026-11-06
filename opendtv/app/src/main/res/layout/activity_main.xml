@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/odtv_bg">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/odtv_toolbar_height"
+        android:background="@color/odtv_surface"
+        android:elevation="0dp"
+        app:title="OpenDTV-MOD"
+        app:titleTextColor="@color/odtv_on_surface"
+        app:titleTextAppearance="@style/TextAppearance.OpenDtv.Toolbar"
+        app:subtitleTextColor="@color/odtv_on_surface_variant"
+        app:subtitleTextAppearance="@style/TextAppearance.OpenDtv.ToolbarSubtitle"
+        app:popupTheme="@style/ThemeOverlay.Material3.Dark" />
+
+    <!-- TOP: fixed 16:9 video area (the video itself is letter/pillar-boxed inside, never stretched) -->
+    <androidx.media3.ui.AspectRatioFrameLayout
+        android:id="@+id/player_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000"
+        app:resize_mode="fixed_width">
+
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/player_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000000"
+            app:resize_mode="fill"
+            app:show_buffering="never"
+            app:shutter_background_color="#000000"
+            app:use_controller="false" />
+
+        <!-- ARIB data broadcast (BML) page, transparent over the video. Empty until DATA is pressed on the remote. -->
+        <FrameLayout
+            android:id="@+id/bml_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Tuning / no-signal card; passive, never takes a tap -->
+        <com.pbcnx.opendtvmod.ui.watch.TuningCard
+            android:id="@+id/tuning_overlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </androidx.media3.ui.AspectRatioFrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/odtv_divider" />
+
+    <!-- Current Playing Channel Banner / Info -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/odtv_surface"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_current_channel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="No channel tuned"
+            android:textSize="15sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/odtv_on_surface"
+            android:paddingStart="0dp" />
+
+        <!-- Record: the key is also the tally light. A quiet ring while it is idle,
+             a filled red disc that pulses while a recording runs (MainActivity owns
+             the pulse). Drawing something is all it can do in portrait - the menu
+             item was the only sign a recording was running. -->
+        <TextView
+            android:id="@+id/btn_record"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_record_button"
+            android:clickable="true"
+            android:contentDescription="Record channel"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.02"
+            android:text="REC"
+            android:textColor="@color/record_text_tint"
+            android:textSize="9sp" />
+
+        <!-- Opens the BML pad. Replaces the floating button the owner called "bad". -->
+        <ImageButton
+            android:id="@+id/btn_remote"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_watch_info_button"
+            android:contentDescription="Remote"
+            android:padding="11dp"
+            android:src="@drawable/ic_remote"
+            app:tint="@color/watch_info_icon_tint" />
+
+        <ImageButton
+            android:id="@+id/btn_watch_info"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_watch_info_button"
+            android:contentDescription="Watch info"
+            android:padding="12dp"
+            android:src="@drawable/ic_info"
+            app:tint="@color/watch_info_icon_tint" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/odtv_divider" />
+
+    <!-- Status strip: UHF, freq, chips and S/Q, right under the channel name (owner, 2026-11-06). -->
+    <com.pbcnx.opendtvmod.ui.watch.WatchStrip
+        android:id="@+id/watch_status"
+        android:layout_width="match_parent"
+        android:layout_height="34dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/odtv_divider" />
+
+    <!-- TabLayout: Channels, EPG, Favorites, Settings -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        style="@style/Widget.OpenDtv.Tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/odtv_surface" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/odtv_divider" />
+
+    <!-- Content: list, or the shared empty state when the list has no rows -->
+    <FrameLayout
+        android:id="@+id/list_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="4dp"
+            android:paddingBottom="96dp" />
+
+        <include
+            android:id="@+id/empty_state"
+            layout="@layout/view_empty_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/odtv_divider" />
+
+    <!-- Shared footer: one per-tab line at the bottom of the list (owner, 2026-11-06). -->
+    <include
+        layout="@layout/view_footer_meta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
+
+    <com.pbcnx.opendtvmod.ui.watch.WatchCardView
+        android:id="@+id/watch_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="104dp"
+        android:visibility="gone" />
+
+    <!-- BML remote: one square pad in the shape of the handset (portrait only) -->
+    <com.pbcnx.opendtvmod.bml.CornerPad
+        android:id="@+id/remote_panel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="90dp"
+        android:visibility="gone" />
+
+</FrameLayout>

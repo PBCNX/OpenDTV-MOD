@@ -1,0 +1,23 @@
+LME2510 driver  (PBCNX/lme2510)
+
+MIT. Independently written from reverse engineering of the vendor app
+com.bestone.mytv.usb 5.15: no vendor source code, no vendor binary and no
+firmware is included. Facts (USB ids, endpoint numbers, command and register
+names) were observed in the vendor SDK; the code is ours.
+
+This is not a strict clean room - the same authors read the vendor material
+and wrote the driver. Do not describe it as "clean-room" in release notes.
+The accurate wording is: "independently written from reverse engineering;
+no vendor code included".
+
+Bundled and derived work:
+  pyusb            BSD-3-Clause, for the desktop driver only
+  libusb           LGPL-2.1, dynamically linked on Windows only; this Android
+                   core uses android.hardware.usb.UsbManager and links neither
+  PacketAligner    adapted from PBCNX/it9308 (MIT, The IT9308 Open Driver
+                   Authors)
+
+Provenance marker: lme2510-pbcnx
+Upstream: https://github.com/PBCNX/lme2510
+
+Copyright (c) 2026 The LME2510 Open Driver Authors

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds only: the analyzer is a diagnostic screen, so let adb open it
+     directly (adb shell am start -n com.pbcnx.opendtvmod/com.pbcnx.opendtvmod.analyzer.AnalyzerActivity).
+     The release manifest keeps android:exported="false". -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+
+        <activity
+            android:name=".analyzer.AnalyzerActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
+
+        <activity
+            android:name=".analyzer.UsbProbeActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
+
+        <!-- The hidden Developers screen guards itself with DeveloperSurface.isUnlocked(), so a
+             direct adb start finishes silently. The supported bench route is the debug-only
+             dev_options boolean extra on MainActivity (see MainActivity's onCreate javadoc).          -->
+        <activity
+            android:name=".dev.screen.DeveloperOptionsActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
+    </application>
+</manifest>

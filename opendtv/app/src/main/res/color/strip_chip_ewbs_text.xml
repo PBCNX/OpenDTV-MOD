@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- White on the filled alert pill, red on the outlined chip. The old code tinted the
+     label with the same red it filled the pill with, so "EWBS" disappeared. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:state_selected="true"
+        android:color="@android:color/white" />
+    <item android:color="@color/odtv_live" />
+</selector>

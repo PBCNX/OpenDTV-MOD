@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- About, redesigned: no title bar, no "Developed by" block, no links - the art is the hero and
+     the app name is the title. The art is also the door to Developer options (the owner's
+     gesture): the hairline under it is nearly invisible at rest and turns solid gold when the
+     D-pad sits on it, because the set highlights nothing by itself.
+     The root paints nothing: the dialog window supplies the surface, so this box is the same
+     rounded M3 panel as every other dialog instead of a square card sitting inside one. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="vertical"
+    android:paddingStart="8dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="4dp">
+
+    <LinearLayout
+        android:id="@+id/about_door"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_about_door"
+        android:clickable="true"
+        android:contentDescription="@string/app_name"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:padding="6dp">
+
+        <ImageView
+            android:id="@+id/about_art"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/about_art" />
+
+        <View
+            android:id="@+id/about_door_rule"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_about_door_rule"
+            android:duplicateParentState="true" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/about_version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center_horizontal"
+        android:text="@string/app_name"
+        android:textColor="@color/odtv_on_surface"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/about_build"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/about_stamp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="12sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/about_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_about_ok"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:minWidth="96dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:text="OK"
+            android:textAllCaps="false"
+            android:textColor="@color/odtv_on_accent"
+            android:textSize="14sp" />
+    </LinearLayout>
+</LinearLayout>
