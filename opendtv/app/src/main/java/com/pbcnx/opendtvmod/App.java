@@ -26,6 +26,10 @@ public class App extends Application {
         // The process owns the channel list too: a TV-input process can start with no activity, so
         // hydration cannot be the watch screen's job.
         channels.loadAll(com.pbcnx.opendtvmod.tuner.ChannelStore.prefs(this));
+        // The session ring starts empty in every new process; the first line names the build so a
+        // bundle opened on a desk can be tied to the APK that wrote it without guessing.
+        LOG_RING.clear();
+        LOG_RING.record("app", BuildStamp.versionLine(BuildConfig.VERSION_NAME) + " started");
     }
 
     /** The developer surface's state, created once with the process. */
@@ -37,6 +41,19 @@ public class App extends Application {
     /** The one diagnostics object for this process. */
     public static Diagnostics diagnostics() {
         return DIAGNOSTICS;
+    }
+
+    /**
+     * The process-wide session ring: the Logs tab writes it as statuses land, and the developers
+     * screen reads it for "Copy log" and "Export diagnostics". It redacts on the way in, so what
+     * it holds is already safe to paste or write.
+     */
+    private static final com.pbcnx.opendtvmod.diag.DiagnosticsRing LOG_RING =
+            new com.pbcnx.opendtvmod.diag.DiagnosticsRing();
+
+    /** The one session ring for this process. */
+    public static com.pbcnx.opendtvmod.diag.DiagnosticsRing logRing() {
+        return LOG_RING;
     }
 
     /** The channel list and favourites: process-wide, like the tuner hub. */

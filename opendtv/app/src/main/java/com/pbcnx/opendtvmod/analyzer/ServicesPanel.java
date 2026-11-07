@@ -111,6 +111,9 @@ public final class ServicesPanel implements TabPanel {
 
     private void selectService(ServiceInfo svc) {
         state.selectedServiceId = svc.serviceId;
+        // Auto's per-mux decoder memory is consulted when this frequency opens, exactly as the
+        // watch path does it, so a mux that needed software video starts on software video.
+        a.applyDecoderMemoryFor(state.currentTunedKhz);
         state.player.stop();
         state.pipe.clear();
         state.captionOverlay.reset();

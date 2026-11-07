@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The debug variant's identity, so a bench install and a release install are not two identical
-     "OpenDTV-MOD" tiles on the same launcher (AGENTS.md: the label is not the id, and a tester cannot
-     tell two ids apart). The release build keeps the plain name. -->
+<!-- The bench variant's identity. It is the project name plus the build's flavour, exactly as the
+     launcher tile and the toolbar title read it, so the two private debug installs (ph here, jp on
+     its branch) are distinguishable from each other and from the release app. The release build
+     keeps the plain "OpenDTV-MOD" from src/main and drops the region line. -->
 <resources>
-    <string name="app_name">OpenDTV-MOD bench</string>
-    <string name="app_name_scanner">OpenDTV-MOD bench scan</string>
-    <string name="app_name_tuner">OpenDTV-MOD bench ISDB-T</string>
+    <string name="app_name">OpenDTV-MOD.ph</string>
+    <string name="app_name_scanner">OpenDTV-MOD.ph channel scan</string>
+    <string name="app_name_tuner">OpenDTV-MOD.ph ISDB-T</string>
 </resources>

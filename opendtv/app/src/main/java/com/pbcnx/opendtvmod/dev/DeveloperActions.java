@@ -25,6 +25,8 @@ public final class DeveloperActions {
     public static final String OPEN_FOLDER = "dev_open_folder";
     /** Version, commit, ABI, SDK - copyable. Screen's own. */
     public static final String BUILD_INFO = "dev_build_info";
+    /** Writes one redacted diagnostics text file and shows its path. Nothing is uploaded. */
+    public static final String DUMP_DIAGNOSTICS = "dev_dump_diagnostics";
     /** Deletes the saved channel list. Needs a handler and a confirm. */
     public static final String CLEAR_CHANNELS = "dev_clear_channels";
     /** Clears every star and the Favorites order. Needs a handler. */

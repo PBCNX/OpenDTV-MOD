@@ -107,24 +107,55 @@ public final class WatchPlayback {
         public void onPlayerError(PlaybackException error) {
             Log.w(TAG, "player error: " + error.getErrorCodeName() + " " + error.getMessage());
             final ChannelEntry e = host.currentChannel();
+            final DecoderFailurePolicy.Action action = e == null || host.isFinishing()
+                    ? DecoderFailurePolicy.Action.RETRY
+                    : DecoderFailurePolicy.decide(error.errorCode, hasVideoTrack(),
+                            DecoderPrefs.manual(host.activity()),
+                            // A player already built for software video counts as "tried": after
+                            // the recreate below this flag is fresh again, so without it a failing
+                            // software decoder would fall back to itself in a loop.
+                            softwareFallbackTried || playerForcedSoftwareVideo);
+            if (action == DecoderFailurePolicy.Action.FALLBACK_SOFTWARE) {
+                // The decoder refused a stream its format check said it supported; retrying it
+                // cannot help, and that retry is what used to end in "No signal" on a clean mux.
+                Log.w(TAG, "decoder error " + error.getErrorCodeName() + " (" + error.errorCode
+                        + "): switching video to software instead of retrying the same decoder");
+                fallbackToSoftwareDecoder("decoder error " + error.getErrorCodeName()
+                        + " (" + error.errorCode + ")");
+                return;
+            }
+            if (action == DecoderFailurePolicy.Action.GIVE_UP) {
+                // Software video was already the active decoder, so there is no fallback left.
+                Log.w(TAG, "decoder error " + error.getErrorCodeName()
+                        + " with software video: not retrying the same decoder");
+                showPlayerErrorCard();
+                return;
+            }
             if (e != null && !host.isFinishing() && retries++ < MAX_RETRIES) {
                 // Same multiplex: no retune, just a fresh filter + prepare.
                 host.ui().postDelayed(() -> {
                     if (!host.isFinishing() && !host.isScanning() && host.currentChannel() == e) tuneAndPlay(e);
                 }, 1000);
             } else {
-                // The card says this and stays up; a toast on top of it said the same thing twice.
-                // The hub's reason is different: it says why the tune/source failed, so it goes to
-                // the log and to the user instead of staying invisible.
-                String why = host.hub().failure();
-                if (why != null) {
-                    Log.w(TAG, "playback failed after: " + why);
-                    android.widget.Toast.makeText(host.activity(), why, android.widget.Toast.LENGTH_LONG).show();
-                }
-                showNoSignalCard();
+                showPlayerErrorCard();
             }
         }
     };
+
+    /**
+     * The failure card and the hub's reason, shared by "retries exhausted" and "no fallback left".
+     * The card says this and stays up; a toast on top of it said the same thing twice. The hub's
+     * reason is different: it says why the tune/source failed, so it goes to the log and to the
+     * user instead of staying invisible.
+     */
+    private void showPlayerErrorCard() {
+        String why = host.hub().failure();
+        if (why != null) {
+            Log.w(TAG, "playback failed after: " + why);
+            android.widget.Toast.makeText(host.activity(), why, android.widget.Toast.LENGTH_LONG).show();
+        }
+        showNoSignalCard();
+    }
 
     /** The auto-selected audio group (MainScreen reads it). */
     public androidx.media3.common.TrackGroup autoAudioGroup() { return autoAudioGroup; }

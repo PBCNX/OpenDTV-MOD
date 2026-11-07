@@ -54,6 +54,22 @@ public final class LogsPanel implements TabPanel, StatusSink {
         logsText = a.findViewById(R.id.logs_text);
         logsScroll = a.findViewById(R.id.logs_scroll);
         logsCount = a.findViewById(R.id.logs_count);
+        // The same process-wide, redacted ring the developers screen exports: the button is this
+        // tab's half of "give support something to read".
+        android.widget.TextView copy = a.findViewById(R.id.logs_copy);
+        if (copy != null) copy.setOnClickListener(v -> copyLog());
+    }
+
+    /** Copies the redacted session ring, never the raw status text. */
+    private void copyLog() {
+        String text = com.pbcnx.opendtvmod.App.logRing().snapshot();
+        if (text.isEmpty()) text = "(no log lines captured)";
+        Object service = a.getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+        if (service instanceof android.content.ClipboardManager) {
+            ((android.content.ClipboardManager) service).setPrimaryClip(
+                    android.content.ClipData.newPlainText("OpenDTV session log", text));
+        }
+        android.widget.Toast.makeText(a, "Copied (redacted)", android.widget.Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -80,6 +96,9 @@ public final class LogsPanel implements TabPanel, StatusSink {
         logEntries.add(new LogEntry(timeStamp, text, level));
         while (logEntries.size() > LOG_MAX) logEntries.remove(0);
         logVersion++;
+        // The tab's own ring is what the screen draws; the process ring is what "Copy log" and
+        // "Export diagnostics" read, and it redacts as it stores.
+        com.pbcnx.opendtvmod.App.logRing().record("log", text);
         if (state.currentTab == AnalyzerState.TAB_LOGS) renderLogs();
     }
 
@@ -117,6 +136,9 @@ public final class LogsPanel implements TabPanel, StatusSink {
             logEntries.add(new LogEntry(timeStamp, text, levelOf(text)));
             while (logEntries.size() > LOG_MAX) logEntries.remove(0);
             logVersion++;
+            // Analyzer and player statuses all land here, so this is the one feed the process-wide
+            // ring needs; App records the startup line itself.
+            com.pbcnx.opendtvmod.App.logRing().record("status", text);
         }
         if (state.currentTab == AnalyzerState.TAB_LOGS) renderLogs();
     }

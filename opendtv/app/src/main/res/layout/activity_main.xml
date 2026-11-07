@@ -16,7 +16,7 @@
         android:layout_height="@dimen/odtv_toolbar_height"
         android:background="@color/odtv_surface"
         android:elevation="0dp"
-        app:title="OpenDTV-MOD"
+        app:title="@string/app_name"
         app:titleTextColor="@color/odtv_on_surface"
         app:titleTextAppearance="@style/TextAppearance.OpenDtv.Toolbar"
         app:subtitleTextColor="@color/odtv_on_surface_variant"

@@ -29,6 +29,24 @@
             android:fontFamily="monospace"
             android:textColor="@color/odtv_on_surface_variant"
             android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/logs_copy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/bg_tab_selector"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.08"
+            android:paddingStart="8dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="3dp"
+            android:text="COPY LOG"
+            android:textColor="@color/odtv_on_surface"
+            android:textSize="10sp" />
     </LinearLayout>
 
     <View

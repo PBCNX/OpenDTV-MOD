@@ -64,6 +64,11 @@ public final class DevRows {
         rows.add(new Row(DeveloperActions.BUILD_INFO, "Build info",
                 "Version, commit, ABI and SDK",
                 R.drawable.ic_info));
+        // The bug-report file: one redacted text, nothing uploaded. It sits with the other
+        // diagnostics under TOOLS because it reports state rather than changing it.
+        rows.add(new Row(DeveloperActions.DUMP_DIAGNOSTICS, "Export diagnostics",
+                "One redacted text file · nothing is uploaded",
+                R.drawable.ic_code));
         // Diagnostics live under TOOLS, not under STATE: they report, they do not change anything.
         rows.add(new Row(DeveloperActions.BML_DIAGNOSTICS, "BML diagnostics",
                 "The live BML page's state, as JSON",

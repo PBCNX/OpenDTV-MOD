@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Export diagnostics: the file's two opt-ins, both off by default. The dialog's own buttons are
+     Export/Cancel; a checkbox is the only focus stop inside the content. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="4dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="3dp"
+        android:text="One small text file to send when reporting a bug. It is written on this device; nothing is uploaded."
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="13sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:lineSpacingExtra="3dp"
+        android:text="Addresses, e-mail, phone numbers and absolute paths are redacted automatically."
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="12sp" />
+
+    <CheckBox
+        android:id="@+id/export_include_device"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="Include device model and manufacturer"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="14sp" />
+
+    <CheckBox
+        android:id="@+id/export_include_channels"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Include channel names and frequencies"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:lineSpacingExtra="3dp"
+        android:text="Both are off by default. The app's folder and the file name are shown after saving."
+        android:textColor="@color/odtv_on_surface_variant"
+        android:textSize="12sp" />
+</LinearLayout>

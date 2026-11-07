@@ -13,6 +13,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -29,9 +30,11 @@ import androidx.media3.ui.AspectRatioFrameLayout;
 import java.util.List;
 import java.util.Locale;
 
+import com.pbcnx.opendtvmod.player.DecoderPrefs;
 import com.pbcnx.opendtvmod.player.PlayerFactory;
 import com.pbcnx.opendtvmod.source.TunerSignal;
 import com.pbcnx.opendtvmod.ui.CaptionOverlay;
+import com.pbcnx.opendtvmod.ui.watch.DecoderFailurePolicy;
 import com.pbcnx.opendtvmod.ts.ServiceInfo;
 import com.pbcnx.opendtvmod.ts.TsDemux;
 
@@ -55,6 +58,21 @@ public class AnalyzerActivity extends AppCompatActivity implements com.pbcnx.ope
     private static final long TICK_MS = 1000;
 
     private final AnalyzerState state = new AnalyzerState();
+    /** The decoder mode the current player was built with; rebuilt when a mux wants another. */
+    private DefaultLoadControl loadControl;
+    private int playerVideoMode;
+    /** One listener for every player this screen builds, so a decoder rebuild re-attaches it. */
+    private final Player.Listener playerListener = new Player.Listener() {
+        @Override
+        public void onPlayerError(PlaybackException error) {
+            String line = "Player: " + error.getErrorCodeName() + " - " + error.getMessage();
+            if (DecoderFailurePolicy.isDecoderError(error.errorCode)) {
+                // The decoder, not the reception: say what to do about it, next to the error.
+                line = line.replace('\n', ' ') + " \u00B7 " + DecoderFailurePolicy.HINT;
+            }
+            setStatus(line);
+        }
+    };
     private final LogsPanel logsTab = new LogsPanel(this, state);
     private final GraphPanel graphTab = new GraphPanel(this, state);
     private final PidTable pidTab = new PidTable(this, state);
@@ -114,6 +132,32 @@ public class AnalyzerActivity extends AppCompatActivity implements com.pbcnx.ope
         logsTab.setStatus(text);
     }
 
+    /**
+     * Uses the multiplex's learned decoder choice before opening a stream on it: when Auto learned
+     * that only the software video decoder works there, the analyzer's single player is rebuilt on
+     * the FFmpeg video decoder. This is the analyzer's form of the watch path's per-mux memory, and
+     * like it the choice is resolved through {@link DecoderPrefs}; Manual is never overridden.
+     */
+    void applyDecoderMemoryFor(int khz) {
+        int mode = DecoderPrefs.videoMode(this, khz);
+        boolean software = mode == PlayerFactory.MODE_PREFER;
+        boolean learned = DecoderPrefs.autoVideoSoftware(this, khz) != null;
+        // Every playback open says which decoder it is on: a user's screenshot of this line is
+        // enough to tell "hardware decoder failed" from "FFmpeg failed" without a debug build.
+        String decoderLine = "Video decoder: " + (software ? "FFmpeg software" : "MediaCodec (device)")
+                + (learned ? " (learned for this mux)" : "");
+        Log.i(AnalyzerState.TAG, "decoder at " + khz + " kHz: " + decoderLine);
+        setStatus(decoderLine);
+        if (mode == playerVideoMode) return;
+        playerVideoMode = mode;
+        state.player.release();
+        state.player = PlayerFactory.build(this, loadControl, false, playerVideoMode,
+                DecoderPrefs.audioMode(this));
+        state.player.addListener(playerListener);
+        if (state.playerView != null) state.playerView.setPlayer(state.player);
+        if (state.captionOverlay != null) state.captionOverlay.setPlayer(state.player);
+    }
+
     // ------------------------------------------------------------------ lifecycle
 
     /** Makes room for the EWBS strip while it is visible: it is drawn over the window. */
@@ -168,18 +212,17 @@ public class AnalyzerActivity extends AppCompatActivity implements com.pbcnx.ope
 
 
         // Live TV: start after ~1.5 s of data, keep at most 15 s, and refill 2.5 s after an underrun.
-        DefaultLoadControl loadControl = new DefaultLoadControl.Builder()
+        loadControl = new DefaultLoadControl.Builder()
                 .setBufferDurationsMs(2500, 15000, 1500, 2500)
                 .build();
-        state.player = PlayerFactory.build(this, loadControl, false);
+        // Built once, on the decoder this screen starts with; a mux for which Auto learned that
+        // software video is the working one is served by applyDecoderMemoryFor() when it plays.
+        playerVideoMode = DecoderPrefs.videoMode(this, state.currentTunedKhz);
+        state.player = PlayerFactory.build(this, loadControl, false, playerVideoMode,
+                DecoderPrefs.audioMode(this));
         state.playerView.setPlayer(state.player);
         state.captionOverlay = new CaptionOverlay(state.playerView);
-        state.player.addListener(new Player.Listener() {
-            @Override
-            public void onPlayerError(PlaybackException error) {
-                setStatus("Player: " + error.getErrorCodeName() + " - " + error.getMessage());
-            }
-        });
+        state.player.addListener(playerListener);
 
         // Tuner unplugged: stop cleanly. (Plugging in is handled through onNewIntent / the launch intent.)
         IntentFilter detach = new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);

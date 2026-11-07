@@ -17,6 +17,7 @@ import com.pbcnx.opendtvmod.analyzer.UsbProbeActivity;
 import com.pbcnx.opendtvmod.ui.Dims;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -26,6 +27,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +39,16 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import com.pbcnx.opendtvmod.diag.DiagnosticsCollector;
+import com.pbcnx.opendtvmod.diag.DiagnosticsDump;
 
 
 /**
@@ -109,6 +120,8 @@ public class DeveloperOptionsActivity extends AppCompatActivity {
                 return this::openAppFolder;
             case DeveloperActions.BUILD_INFO:
                 return this::showBuildInfo;
+            case DeveloperActions.DUMP_DIAGNOSTICS:
+                return this::exportDiagnostics;
             default:
                 Runnable registered = dev().handler(id);
                 if (registered == null) return null;
@@ -308,6 +321,70 @@ public class DeveloperOptionsActivity extends AppCompatActivity {
         content.findViewById(R.id.build_info_close).setOnClickListener(v -> dialog.dismiss());
         dialog.show();
         if (!hasTouchscreen()) content.findViewById(R.id.build_info_copy).requestFocus();
+    }
+
+    // ------------------------------------------------------------------ diagnostics export
+
+    /**
+     * The one-press bug report: two opt-in checkboxes, one small text file, nothing uploaded.
+     * This is deliberately not a share sheet - sending it stays a separate, deliberate act.
+     */
+    private void exportDiagnostics() {
+        View content = getLayoutInflater().inflate(R.layout.dialog_export_diagnostics, null);
+        CheckBox deviceModel = content.findViewById(R.id.export_include_device);
+        CheckBox channelData = content.findViewById(R.id.export_include_channels);
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+                .setTitle("Export diagnostics")
+                .setView(content)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Export", (d, which) ->
+                        writeDiagnostics(deviceModel.isChecked(), channelData.isChecked()))
+                .show();
+        // On the set nothing is focused when a dialog opens; start on the first opt-in, still off.
+        if (!hasTouchscreen()) {
+            CheckBox first = dialog.findViewById(R.id.export_include_device);
+            if (first != null) first.requestFocus();
+        }
+    }
+
+    /**
+     * Builds the text first, then writes exactly that string: the file is the redactor's output,
+     * not a second rendering of the same facts. The write happens off the UI thread because it
+     * touches external storage; the toast is the only UI.
+     */
+    private void writeDiagnostics(final boolean includeDeviceModel, final boolean includeChannelData) {
+        final String text = DiagnosticsDump.build(
+                DiagnosticsCollector.collect(this, includeDeviceModel, includeChannelData));
+        final Context appContext = getApplicationContext();
+        new Thread(() -> {
+            File base = appContext.getExternalFilesDir(null);
+            if (base == null) base = appContext.getFilesDir();
+            File dir = new File(base, "diagnostics");
+            String stamp = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(new Date());
+            File out = new File(dir, "opendtv-diagnostics-" + stamp + ".txt");
+            for (int i = 2; out.exists() && i < 100; i++) {
+                out = new File(dir, "opendtv-diagnostics-" + stamp + "-" + i + ".txt");
+            }
+            try {
+                if (!dir.isDirectory() && !dir.mkdirs()) {
+                    throw new IOException("cannot create " + dir);
+                }
+                FileOutputStream stream = new FileOutputStream(out);
+                try {
+                    stream.write(text.getBytes(StandardCharsets.UTF_8));
+                } finally {
+                    stream.close();
+                }
+            } catch (IOException e) {
+                final String reason = e.getMessage() == null ? e.toString() : e.getMessage();
+                runOnUiThread(() -> Toast.makeText(DeveloperOptionsActivity.this,
+                        "Could not write diagnostics: " + reason, Toast.LENGTH_LONG).show());
+                return;
+            }
+            final File written = out;
+            runOnUiThread(() -> Toast.makeText(DeveloperOptionsActivity.this,
+                    "Saved " + written.getAbsolutePath(), Toast.LENGTH_LONG).show());
+        }, "diag-export").start();
     }
 
     private boolean hasTouchscreen() {
