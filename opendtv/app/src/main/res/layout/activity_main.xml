@@ -23,7 +23,15 @@
         app:subtitleTextAppearance="@style/TextAppearance.OpenDtv.ToolbarSubtitle"
         app:popupTheme="@style/ThemeOverlay.Material3.Dark" />
 
-    <!-- TOP: fixed 16:9 video area (the video itself is letter/pillar-boxed inside, never stretched) -->
+    <!-- TOP: the video card. Its shape is now the mode's (DisplayModes.resolve), not a fixed 16:9:
+         Stretch/Zoom and Force 16:9 give 16:9; Force 4:3, and a 4:3 Automatic stream, give an exact
+         4:3 card; other Automatic ratios sit between the two. Media3 sizes the frame off the width
+         (resize_mode=fixed_width) and the PlayerView fits the content inside it.
+         ACCEPTED LOOK (UI, 2026-11-07): let the card grow for 4:3 instead of capping it. On the
+         bench phone (1220x2712 @480dpi) that is 686px -> 915px, +33 % of the card and +8.4 % of the
+         screen; the channel list keeps the rest of the column (weight=1) and stays the scrollable
+         surface it was. A cap would letterbox a 4:3 stream on a 4:3 screen, which is the one place
+         it must not, so the brief's "max height with letterbox" option is deliberately not taken. -->
     <androidx.media3.ui.AspectRatioFrameLayout
         android:id="@+id/player_frame"
         android:layout_width="match_parent"

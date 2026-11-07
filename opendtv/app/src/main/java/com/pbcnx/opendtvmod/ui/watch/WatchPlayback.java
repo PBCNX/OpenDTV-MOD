@@ -63,6 +63,8 @@ public final class WatchPlayback {
         void resetCaptions();
         void bindCaptionSink();
         void applyAudioLanguagePref();
+        /** Aspect geometry for Automatic depends on the video size, which is known only now. */
+        void refreshAspectMode();
         void updateContentAdapter();
         void showInfoBanner();
         void hideTuningCard();
@@ -101,6 +103,9 @@ public final class WatchPlayback {
                 }
             }
             pickBestAudioTrack(tracks);
+            // Automatic follows the playing video's aspect, and the tracks callback is the first
+            // point where that size exists. Other modes are unaffected (they resolve without it).
+            host.refreshAspectMode();
         }
 
         @Override

@@ -68,7 +68,7 @@ public final class DevRows {
         // diagnostics under TOOLS because it reports state rather than changing it.
         rows.add(new Row(DeveloperActions.DUMP_DIAGNOSTICS, "Export diagnostics",
                 "One redacted text file · nothing is uploaded",
-                R.drawable.ic_code));
+                R.drawable.ic_file_download));
         // Diagnostics live under TOOLS, not under STATE: they report, they do not change anything.
         rows.add(new Row(DeveloperActions.BML_DIAGNOSTICS, "BML diagnostics",
                 "The live BML page's state, as JSON",

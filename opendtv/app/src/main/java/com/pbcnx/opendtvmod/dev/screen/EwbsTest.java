@@ -46,7 +46,7 @@ public final class EwbsTest {
             Toast.makeText(owner, "Tune a channel first", Toast.LENGTH_SHORT).show();
             return;
         }
-        new MaterialAlertDialogBuilder(owner)
+        final androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(owner)
                 .setTitle("Test EWBS alert")
                 .setItems(LABELS, (dlg, which) -> {
                     if (which == 0) {
@@ -54,12 +54,13 @@ public final class EwbsTest {
                         toast(owner, "Test alert cleared");
                     } else {
                         demux.setTestEwbs(CODES[which], true);
-                        toast(owner, "Test alert · " + EwbsAreaTable.name(CODES[which]));
+                        toast(owner, "Test alert Â· " + EwbsAreaTable.name(CODES[which]));
                     }
                     if (after != null) after.run();
                 })
                 .setNegativeButton("Close", null)
-                .show();
+                .create();
+        dialog.show();
     }
 
     /** The watch screen draws the banner off-screen; make the confirmation readable there too. */
@@ -69,3 +70,4 @@ public final class EwbsTest {
         t.show();
     }
 }
+

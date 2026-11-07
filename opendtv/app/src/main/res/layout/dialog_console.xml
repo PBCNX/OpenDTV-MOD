@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One monospaced diagnostic panel (caption probe, BML diagnostics): the text scrolls, the two
+     pills are the only buttons. Same presentation as Build info so the Developers screen has one
+     dialog family; the platform AlertDialog this used to build had a button bar without the app's
+     focus plate, which the remote could reach but not see.
+     The window wraps the content: DevConsole.show() measures the text and sets the scroll height,
+     so a short answer gets a short dialog instead of a tall empty one with a floating scrollbar. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="4dp">
+
+    <ScrollView
+        android:id="@+id/console_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fadeScrollbars="true"
+        android:focusable="false"
+        android:scrollbarStyle="insideInset"
+        android:scrollbars="vertical">
+
+        <TextView
+            android:id="@+id/console_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:lineSpacingExtra="3dp"
+            android:nextFocusDown="@+id/console_copy"
+            android:textColor="?attr/colorOnSurface"
+            android:textIsSelectable="true"
+            android:textSize="12sp" />
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:paddingTop="14dp">
+
+        <TextView
+            android:id="@+id/console_copy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_empty_action"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.08"
+            android:paddingStart="22dp"
+            android:paddingTop="9dp"
+            android:paddingEnd="22dp"
+            android:paddingBottom="9dp"
+            android:text="COPY"
+            android:textColor="@color/odtv_accent"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/console_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/bg_empty_action"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.08"
+            android:paddingStart="22dp"
+            android:paddingTop="9dp"
+            android:paddingEnd="22dp"
+            android:paddingBottom="9dp"
+            android:text="CLOSE"
+            android:textColor="@color/odtv_accent"
+            android:textSize="13sp" />
+    </LinearLayout>
+</LinearLayout>

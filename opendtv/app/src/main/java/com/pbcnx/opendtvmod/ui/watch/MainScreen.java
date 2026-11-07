@@ -69,6 +69,9 @@ public interface MainScreen extends ScreenSeam {
     /** Writes and applies the aspect mode; the caller dismisses the dialog afterwards. */
     void setAspectMode(int mode);
 
+    /** Re-applies the stored mode after the video size became known (Automatic follows it). */
+    void refreshAspectMode();
+
 
     @NonNull Player audioPlayer();
 

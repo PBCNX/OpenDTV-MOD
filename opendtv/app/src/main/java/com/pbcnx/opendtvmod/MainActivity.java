@@ -303,9 +303,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override public void firmwareImagesChanged() { if (currentTab == MainScreen.TAB_SETTINGS) updateContentAdapter(); }
 
-    @Override public int aspectMode() { return getSharedPreferences(PREFS, MODE_PRIVATE).getInt(PREF_ASPECT, 0); }
+    @Override public int aspectMode() {
+        return DisplayModes.aspectMode(
+                getSharedPreferences(PREFS, MODE_PRIVATE).getInt(PREF_ASPECT, DisplayModes.ASPECT_AUTO));
+    }
 
     @Override public void setAspectMode(int mode) { applyAspectMode(mode, false); }
+
+    @Override public void refreshAspectMode() { applyAspectMode(aspectMode(), false); }
 
     @Override public Player audioPlayer() { return player; }
 
@@ -356,7 +361,7 @@ public class MainActivity extends AppCompatActivity
      */
     /** Bench hook: open the Developers screen through the real door, so its rows can be tested. */
     static final String PREFS = App.PREFS;
-    static final String PREF_ASPECT = "aspect_mode";
+    static final String PREF_ASPECT = DisplayModes.PREF_ASPECT;
     static final String PREF_EWBS_LOCATION = "ewbs_location";
 
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -837,6 +842,9 @@ public class MainActivity extends AppCompatActivity
         if (playerView != null) playerView.setPlayer(null);   // release the old surface before the views go
         bindLayout();
         showCurrentChannel();
+        // Geometry follows the orientation (portrait card vs landscape screen): apply it to the
+        // fresh player frame, then report the current video size if a channel is already playing.
+        applyAspectMode(aspectMode(), false);
         if (card != null) card.run();
         // The chevron is a fresh view too: its side, icon and margin were only applied when the
         // panel toggled, so a rotation left it stale (owner: "< stuck in landscape").
@@ -1097,15 +1105,18 @@ public class MainActivity extends AppCompatActivity
     private void bindPlayerSurface() {
         hideSystemBars();
 
+        // The frame ratio and resize mode come from DisplayModes.applyAspectMode below; this only
+        // keeps a sensible 16:9 geometry for the first layout pass before the pref is applied.
         AspectRatioFrameLayout frame = findViewById(R.id.player_frame);
         if (frame != null) {
-            frame.setAspectRatio(16f / 9f);   // fixed 16:9 display area in portrait
+            frame.setAspectRatio(16f / 9f);
         }
 
         playerView.setUseController(false);
         playerView.setKeepContentOnPlayerReset(false);
-        // Default: fill the whole 16:9 area (4:3 channels are stretched). Change it in the Settings tab.
-        applyAspectMode(getSharedPreferences(PREFS, MODE_PRIVATE).getInt(PREF_ASPECT, 0), false);
+        // The frame geometry is orientation-dependent for Stretch/Zoom (portrait fills the card,
+        // landscape fills the screen), so it is re-applied on every rotation, after bindLayout.
+        applyAspectMode(aspectMode(), false);
         playerView.setOnClickListener(v -> {
             if (bml.isVisible()) return;
             boolean landscape = (layoutKey & 1) != 0;
@@ -2114,19 +2125,53 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /** Last tuned channel if it is still in the list, otherwise the first one. */
+    /**
+     * The frame shape and the in-frame scaling are two separate decisions (DisplayModes.resolve):
+     * Automatic follows the content, Stretch/Zoom fill the available area, and the Force modes pin
+     * the frame. Portrait fills the video card; landscape fills the screen unless a Force mode is on,
+     * in which case the layout gives it a centred box.
+     */
     private void applyAspectMode(int mode, boolean announce) {
-    int rm;
-    String name;
         mode = DisplayModes.aspectMode(mode);
-        switch (mode) {
-            case DisplayModes.ASPECT_FIT: rm = AspectRatioFrameLayout.RESIZE_MODE_FIT; name = "Fit (original ratio)"; break;
-            case DisplayModes.ASPECT_ZOOM: rm = AspectRatioFrameLayout.RESIZE_MODE_ZOOM; name = "Zoom (crop to 16:9)"; break;
-            default: rm = AspectRatioFrameLayout.RESIZE_MODE_FILL; name = "Stretch (full 16:9)";
+        boolean landscape = getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE;
+        DisplayModes.FrameGeometry geometry = DisplayModes.resolve(mode, contentAspect(), landscape);
+        AspectRatioFrameLayout frame = findViewById(R.id.player_frame);
+        if (frame != null) {
+            frame.setAspectRatio(geometry.frameRatio);
+        }
+        int rm;
+        switch (geometry.resizeMode) {
+            case DisplayModes.RESIZE_FIT:
+                rm = AspectRatioFrameLayout.RESIZE_MODE_FIT;
+                break;
+            case DisplayModes.RESIZE_ZOOM:
+                rm = AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
+                break;
+            default:
+                rm = AspectRatioFrameLayout.RESIZE_MODE_FILL;
+                break;
         }
         playerView.setResizeMode(rm);
         getSharedPreferences(PREFS, MODE_PRIVATE).edit().putInt(PREF_ASPECT, mode).apply();
-        if (announce) Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+        if (announce) Toast.makeText(this, DisplayModes.aspectName(mode), Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * The playing video's DISPLAY aspect; 16:9 when nothing is playing yet. ISDB-T streams are often
+     * anamorphic (720x480 coded, 16:9 or 4:3 displayed), so the pixel aspect ratio has to be applied
+     * or Automatic would box a 16:9 channel at 3:2.
+     */
+    private float contentAspect() {
+        if (playerView != null && playerView.getPlayer() instanceof androidx.media3.exoplayer.ExoPlayer) {
+            androidx.media3.common.Format video =
+                    ((androidx.media3.exoplayer.ExoPlayer) playerView.getPlayer()).getVideoFormat();
+            if (video != null) {
+                return DisplayModes.displayAspect(video.width, video.height,
+                        video.pixelWidthHeightRatio);
+            }
+        }
+        return 16f / 9f;
     }
 
     @Override

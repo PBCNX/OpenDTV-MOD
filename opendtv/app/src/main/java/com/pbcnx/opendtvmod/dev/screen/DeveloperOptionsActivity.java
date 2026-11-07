@@ -68,6 +68,30 @@ public class DeveloperOptionsActivity extends AppCompatActivity {
 
     private LinearLayout list;
 
+    /** The row a dialog was opened from, so focus can land back on it when the dialog closes. */
+    private View focusedRowBeforeDialog;
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (list == null) return;
+        if (!hasFocus) {
+            // The row that opened a dialog keeps its focused drawable while the activity window is
+            // unfocused, and a second ring painted on the list behind the scrim read as two
+            // selections on the set. Block the list's descendants and clear that focus, so nothing
+            // in this window looks focused while a dialog owns the screen.
+            View focused = getCurrentFocus();
+            if (focused != null) focusedRowBeforeDialog = focused;
+            list.setDescendantFocusability(android.view.ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+            if (focused != null) focused.clearFocus();
+        } else {
+            list.setDescendantFocusability(android.view.ViewGroup.FOCUS_AFTER_DESCENDANTS);
+            final View restore = focusedRowBeforeDialog;
+            focusedRowBeforeDialog = null;
+            if (restore != null) restore.post(restore::requestFocus);
+        }
+    }
+
     /** The developer surface's process state (door, handlers, demux hand-off). */
     private DeveloperSurface dev() {
         return App.developer(this);
@@ -237,7 +261,8 @@ public class DeveloperOptionsActivity extends AppCompatActivity {
                 .setMessage(row.confirmMessage)
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton(row.confirmVerb, (d, which) -> action.run())
-                .show();
+                .create();
+        dialog.show();
         // On the set nothing is focused when a dialog opens, so OK does nothing until the D-pad
         // moves. Start on Cancel: visible, and the safe answer for a row that deletes state.
         if (!hasTouchscreen()) {
@@ -245,6 +270,7 @@ public class DeveloperOptionsActivity extends AppCompatActivity {
             if (cancel != null) cancel.requestFocus();
         }
     }
+
 
     // ------------------------------------------------------------------ doors
 
@@ -288,7 +314,7 @@ public class DeveloperOptionsActivity extends AppCompatActivity {
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "No file picker here · the folder is " + dir, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No file picker here Â· the folder is " + dir, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -333,13 +359,19 @@ public class DeveloperOptionsActivity extends AppCompatActivity {
         View content = getLayoutInflater().inflate(R.layout.dialog_export_diagnostics, null);
         CheckBox deviceModel = content.findViewById(R.id.export_include_device);
         CheckBox channelData = content.findViewById(R.id.export_include_channels);
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+        // The actions are the layout's own pills, not the dialog's button bar: the bar had no focus
+        // plate on the set (Build info had the same fix) and made the export dialog look like a
+        // different app from the screen that opens it.
+        final AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setTitle("Export diagnostics")
                 .setView(content)
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("Export", (d, which) ->
-                        writeDiagnostics(deviceModel.isChecked(), channelData.isChecked()))
-                .show();
+                .create();
+        content.findViewById(R.id.export_cancel).setOnClickListener(v -> dialog.dismiss());
+        content.findViewById(R.id.export_confirm).setOnClickListener(v -> {
+            dialog.dismiss();
+            writeDiagnostics(deviceModel.isChecked(), channelData.isChecked());
+        });
+        dialog.show();
         // On the set nothing is focused when a dialog opens; start on the first opt-in, still off.
         if (!hasTouchscreen()) {
             CheckBox first = dialog.findViewById(R.id.export_include_device);
@@ -443,3 +475,4 @@ public class DeveloperOptionsActivity extends AppCompatActivity {
 
 
 }
+

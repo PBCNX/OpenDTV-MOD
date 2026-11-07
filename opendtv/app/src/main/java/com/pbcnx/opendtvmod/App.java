@@ -22,6 +22,9 @@ public class App extends Application {
         // The one-time decoder-prefs migration runs before any player or session reads a mode:
         // it used to sit inside PlayerFactory.build, after the modes had already been resolved.
         com.pbcnx.opendtvmod.player.DecoderPrefs.migrate(this);
+        // The three-mode aspect preference of 0.2.x becomes the owner's five modes; done once here,
+        // before any screen reads aspectMode(), so no view sees a mixed-domain value.
+        com.pbcnx.opendtvmod.tuner.DisplayModes.migrate(this);
         DIAGNOSTICS.reset();
         // The process owns the channel list too: a TV-input process can start with no activity, so
         // hydration cannot be the watch screen's job.

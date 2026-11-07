@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Focus plate for a checkbox row that is otherwise an ordinary checkbox: nothing is drawn until
+     the row is focused with a remote or pressed, so the export dialog does not look like a column
+     of empty input fields (the always-on plate did). -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/odtv_surface_high" />
+            <corners android:radius="@dimen/odtv_row_radius" />
+            <stroke
+                android:width="2dp"
+                android:color="@color/odtv_focus" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/odtv_surface_high" />
+            <corners android:radius="@dimen/odtv_row_radius" />
+            <stroke
+                android:width="1dp"
+                android:color="@color/odtv_on_surface" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+</selector>

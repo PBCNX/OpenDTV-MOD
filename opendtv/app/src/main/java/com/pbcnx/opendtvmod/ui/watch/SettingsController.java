@@ -158,11 +158,7 @@ public final class SettingsController {
     }
 
     private static String aspectModeName(int mode) {
-        switch (DisplayModes.aspectMode(mode)) {
-            case DisplayModes.ASPECT_FIT: return "Fit (original ratio)";
-            case DisplayModes.ASPECT_ZOOM: return "Zoom (crop to 16:9)";
-            default: return "Stretch (full 16:9)";
-        }
+        return DisplayModes.aspectName(mode);
     }
 
     private static String captionStyleName(int style) {

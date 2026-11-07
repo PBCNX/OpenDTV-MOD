@@ -6,29 +6,48 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <!-- LAYER 0: FULL SCREEN Live TV Video Player -->
-    <androidx.media3.ui.PlayerView
-        android:id="@+id/player_view"
+    <!-- LAYER 0: the video tower. Video, the ARIB data page and the tuning card share one frame,
+         because they share one rectangle on screen.
+           Stretch / Zoom  MainActivity sets frame ratio 0, so the frame is the whole window (as
+                           before) and the content fills/crops inside it.
+           Automatic / Force 4:3 / Force 16:9  MainActivity sets a ratio and Media3's FIT sizing
+                           shrinks this frame to the largest box of that shape that fits; the root
+                           FrameLayout centres it, and the black around the box is the root's own
+                           background. A 4:3 box on a 20:9 phone is 1440x1080 of 2400x1080, centred.
+         The PlayerView's own resize mode then fits the content inside the frame. -->
+    <androidx.media3.ui.AspectRatioFrameLayout
+        android:id="@+id/player_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:background="#000000"
-        app:resize_mode="fill"
-        app:show_buffering="never"
-        app:shutter_background_color="#000000"
-        app:use_controller="false" />
+        app:resize_mode="fit">
 
-    <!-- LAYER 0.5: ARIB data broadcast (BML) page. Empty until DATA is pressed; transparent, over the video. -->
-    <FrameLayout
-        android:id="@+id/bml_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/player_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000000"
+            app:resize_mode="fill"
+            app:show_buffering="never"
+            app:shutter_background_color="#000000"
+            app:use_controller="false" />
 
-    <!-- Tuning / no-signal card; passive, never takes a tap -->
-    <com.pbcnx.opendtvmod.ui.watch.TuningCard
-        android:id="@+id/tuning_overlay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        <!-- ARIB data broadcast (BML) page, transparent over the video. Empty until DATA is
+             pressed. Inside the frame, so a forced box carries the page with it. -->
+        <FrameLayout
+            android:id="@+id/bml_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Tuning / no-signal card; passive, never takes a tap. Centres on the frame, so on a
+             forced box it centres on the video rather than on the window. -->
+        <com.pbcnx.opendtvmod.ui.watch.TuningCard
+            android:id="@+id/tuning_overlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </androidx.media3.ui.AspectRatioFrameLayout>
 
     <!-- LAYER 1: Wide & Centered Bottom Channel Info Banner / HUD Overlay -->
     <LinearLayout
