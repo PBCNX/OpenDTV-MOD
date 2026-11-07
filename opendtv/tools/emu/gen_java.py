@@ -41,7 +41,7 @@ def jarr(name,lst):
     s='    static final String[] %s = {\n'%name
     s+=''.join('        "%s",\n'%x for x in lst)
     return s+'    };\n'
-out=['package ph.opendtv.source;','',
+out=['package com.pbcnx.opendtvmod.source;','',
 '/** GENERATED from the vendor libpt275aDrv.so run under emulation (see tools/emu). Do not edit by hand.',
 ' * Op syntax: Wp:addr:hex = write; Mp:addr:mask:val = read-modify-write ((r&mask)|val); Vp = fw-version query;',
 ' * Pp:addr = poll until reg==0. p = 0 (LINK) or 8 (OFDM). Index = LINK 0xd800 low nibble (clock). */',

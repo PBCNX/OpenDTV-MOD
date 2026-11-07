@@ -122,7 +122,12 @@ android {
         debug {
             // This block is evaluated against the BuildType, not the project, so the base id is read
             // from defaultConfig.
-            if (android.defaultConfig.applicationId == "com.pbcnx.opendtvmod") applicationIdSuffix ".ph"
+            if (android.defaultConfig.applicationId == "com.pbcnx.opendtvmod") {
+                applicationIdSuffix ".ph"
+                // The name says .ph too, so a bench screenshot cannot be mistaken for a release one;
+                // the release keeps a clean MAJOR.MINOR.PATCH and the JP line keeps its -jp.
+                versionNameSuffix "-ph"
+            }
         }
         // Minified: this is the artefact testers get, and R8 is the difference between the beta and
         // the bench build. The rules in proguard-rules.pro cover the three things a string cannot

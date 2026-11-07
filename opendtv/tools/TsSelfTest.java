@@ -477,9 +477,9 @@ public class TsSelfTest {
         final byte[] fileBytes = buildStream(10, false, false);
         final TsDemux fd = new TsDemux();
         final java.util.concurrent.CountDownLatch ended = new java.util.concurrent.CountDownLatch(1);
-        ph.opendtv.source.FileTsSource fsrc = new ph.opendtv.source.FileTsSource("test",
+        com.pbcnx.opendtvmod.source.FileTsSource fsrc = new com.pbcnx.opendtvmod.source.FileTsSource("test",
                 () -> new java.io.ByteArrayInputStream(fileBytes), 0, false);
-        fsrc.start(new ph.opendtv.source.TsSource.Listener() {
+        fsrc.start(new com.pbcnx.opendtvmod.source.TsSource.Listener() {
             public void onData(byte[] buf, int off, int len) { fd.feed(buf, off, len); }
             public void onError(String m) { System.out.println("source error: " + m); ended.countDown(); }
             public void onEnd() { ended.countDown(); }

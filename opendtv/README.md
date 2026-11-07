@@ -94,26 +94,26 @@ kept only as a record of the pure-parser self test.
 ## Where screens and their files live
 
 A screen is placed with the package that owns its logic, not with the activity that happens to
-start it. Full-application screens that own the watch surface live in ph.opendtv (MainActivity);
-a diagnostic or bench surface lives with its package (ph.opendtv.analyzer.AnalyzerActivity,
-ph.opendtv.dev.DeveloperOptionsActivity next to the dev classes it drives). Activities are
+start it. Full-application screens that own the watch surface live in com.pbcnx.opendtvmod (MainActivity);
+a diagnostic or bench surface lives with its package (com.pbcnx.opendtvmod.analyzer.AnalyzerActivity,
+com.pbcnx.opendtvmod.dev.DeveloperOptionsActivity next to the dev classes it drives). Activities are
 registered in the manifest by their real package, and the debug manifest carries the bench-only
 screens so a release build cannot launch them.
 
 ## Layout of the code
 
 ```
-ph.opendtv           MainActivity, WatchPlayback, LicensesActivity
-ph.opendtv.dev       DeveloperOptionsActivity and the hidden-screen state
-ph.opendtv.analyzer  AnalyzerActivity, UsbProbeActivity (endpoint diagnostic), panels and state
-ph.opendtv.tuner     TunerHub, ChannelStore/ChannelFile/ChannelEntry, MuxSweep/MuxWait/ServiceWait,
+com.pbcnx.opendtvmod           MainActivity, WatchPlayback, LicensesActivity
+com.pbcnx.opendtvmod.dev       DeveloperOptionsActivity and the hidden-screen state
+com.pbcnx.opendtvmod.analyzer  AnalyzerActivity, UsbProbeActivity (endpoint diagnostic), panels and state
+com.pbcnx.opendtvmod.tuner     TunerHub, ChannelStore/ChannelFile/ChannelEntry, MuxSweep/MuxWait/ServiceWait,
                      DisplayModes/MhzLabel
-ph.opendtv.ts        TsDemux, ServiceInfo/StreamInfo, PSI/SI, EIT, EWBS, TsUtil; ts.pipe
+com.pbcnx.opendtvmod.ts        TsDemux, ServiceInfo/StreamInfo, PSI/SI, EIT, EWBS, TsUtil; ts.pipe
                      (ServiceFilter, TsPipe), ts.caption, ts.carousel (Carousel*, MimeParts), ts.extractor
-ph.opendtv.source    TsSource, FileTsSource, the tuner sources (clean-room 9175/9308, SmsRio, dib0700)
+com.pbcnx.opendtvmod.source    TsSource, FileTsSource, the tuner sources (clean-room 9175/9308, SmsRio, dib0700)
 ph.pbcnx             vendored driver cores behind those sources (it9175, it9308, smsrio, dib0700)
-ph.opendtv.player    PlayerFactory, TsPipeDataSource, DecoderPrefs (Media3)
-ph.opendtv.ui        Shared widgets; ui.watch: MainScreen, dialogs, SettingsController, scan and
+com.pbcnx.opendtvmod.player    PlayerFactory, TsPipeDataSource, DecoderPrefs (Media3)
+com.pbcnx.opendtvmod.ui        Shared widgets; ui.watch: MainScreen, dialogs, SettingsController, scan and
                      playback controllers, cards, caption views, recorder
 ```
 
@@ -128,7 +128,7 @@ Setup on the TV box:
    choose **OpenDTV ISDB-T** and run **Quick scan** or **Full scan**. Found services are written to the TV provider.
 3. Watch from Live Channels; zapping inside one multiplex does not retune the dongle.
 
-Code (`ph.opendtv.tv` is the TV-input surface; the hub it uses lives in `ph.opendtv.tuner`):
+Code (`com.pbcnx.opendtvmod.tv` is the TV-input surface; the hub it uses lives in `com.pbcnx.opendtvmod.tuner`):
 ```
 OpenDtvInputService  TvInputService entry point
 TunerSession         one viewing session: tune -> wait PAT/PMT -> ServiceFilter -> TsPipe -> ExoPlayer -> TV surface,

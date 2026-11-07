@@ -353,13 +353,22 @@ public class DeveloperOptionsActivity extends AppCompatActivity {
      * touches external storage; the toast is the only UI.
      */
     private void writeDiagnostics(final boolean includeDeviceModel, final boolean includeChannelData) {
+        // Same folder the recordings live in (OpenDTV/), not Android/data: a user has to be able to
+        // find the file with any file manager and attach it to a report (owner, 2026-11-07). The
+        // storage gate is the one the recorder uses; the retry runnable continues after the grant.
+        if (!com.pbcnx.opendtvmod.ui.StorageAccess.ensure(this,
+                () -> writeDiagnostics(includeDeviceModel, includeChannelData))) {
+            return;
+        }
         final String text = DiagnosticsDump.build(
                 DiagnosticsCollector.collect(this, includeDeviceModel, includeChannelData));
-        final Context appContext = getApplicationContext();
+        final File appDir = com.pbcnx.opendtvmod.ui.StorageAccess.appDir(this);
+        if (appDir == null) {
+            Toast.makeText(this, "Could not open the app folder", Toast.LENGTH_LONG).show();
+            return;
+        }
         new Thread(() -> {
-            File base = appContext.getExternalFilesDir(null);
-            if (base == null) base = appContext.getFilesDir();
-            File dir = new File(base, "diagnostics");
+            File dir = new File(appDir, "diagnostics");
             String stamp = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(new Date());
             File out = new File(dir, "opendtv-diagnostics-" + stamp + ".txt");
             for (int i = 2; out.exists() && i < 100; i++) {
@@ -383,7 +392,7 @@ public class DeveloperOptionsActivity extends AppCompatActivity {
             }
             final File written = out;
             runOnUiThread(() -> Toast.makeText(DeveloperOptionsActivity.this,
-                    "Saved " + written.getAbsolutePath(), Toast.LENGTH_LONG).show());
+                    "Saved OpenDTV/diagnostics/" + written.getName(), Toast.LENGTH_LONG).show());
         }, "diag-export").start();
     }
 

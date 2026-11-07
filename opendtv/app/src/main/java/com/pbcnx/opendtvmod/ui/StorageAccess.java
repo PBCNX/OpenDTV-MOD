@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
 /**
@@ -23,6 +24,11 @@ import androidx.core.app.ActivityCompat;
  * gate either returns true (go ahead) or explains itself and returns false, so every caller reads the
  * same way. The activity that owns the request retries the action in
  * {@code onRequestPermissionsResult} when {@link #REQUEST_CODE} comes back granted.
+ *
+ * <p>Ported from contributor PR #7 (briantofu, ODTV-128). On Android 11+ the gate opens the app's
+ * own All files access switch, falls back to the app list where no per-app page exists, and on TV
+ * boxes with neither screen records to {@code Movies/OpenDTV/} instead: Android 11+ lets an app
+ * write its own files there without a grant.
  */
 public final class StorageAccess {
 
@@ -33,6 +39,9 @@ public final class StorageAccess {
 
     /** The action to continue once the user grants access; one pending action at a time. */
     @Nullable private static Runnable pending;
+
+    /** Set once this device proves it has no All files access screen: the Movies/ fallback. */
+    private static boolean noAllFilesScreen;
 
     private StorageAccess() {
     }
@@ -45,12 +54,15 @@ public final class StorageAccess {
         }
         pending = retry;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            try {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                intent.setData(Uri.parse("package:" + activity.getPackageName()));
-                activity.startActivity(intent);
-            } catch (Exception e) {
-                Log.w(TAG, "no all-files access screen on this device", e);
+            if (openAllFilesScreen(activity) == RecStoragePlan.Screen.NONE) {
+                // No screen can grant All files access on this device (some TV boxes). Android 11+
+                // allows an app's own files under Movies/, so record there without a grant.
+                noAllFilesScreen = true;
+                pending = null;
+                Log.w(TAG, "no All files access screen on this device; recordings go to Movies/OpenDTV");
+                Toast.makeText(activity, "No storage-access screen on this device \u00B7 recordings go to Movies/OpenDTV",
+                        Toast.LENGTH_LONG).show();
+                return true;
             }
             Toast.makeText(activity, "Allow storage access in Android settings so recordings can be saved.", Toast.LENGTH_LONG).show();
         } else {
@@ -63,9 +75,40 @@ public final class StorageAccess {
         return false;
     }
 
+    /**
+     * Opens the best All files access screen the device has: the app's own switch first, then the
+     * app list. The list intent gets no package - with one, no screen matches it and nothing opens,
+     * which is the 0.2.0 bug this port fixes. Returns which screen opened, or NONE if neither did.
+     */
+    @RequiresApi(Build.VERSION_CODES.R)
+    private static RecStoragePlan.Screen openAllFilesScreen(Activity activity) {
+        boolean appPage = tryStart(activity, new Intent(
+                Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                Uri.parse("package:" + activity.getPackageName())),
+                "no per-app All files access screen on this device");
+        boolean appList = !appPage && tryStart(activity,
+                new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION),
+                "no All files access screen on this device");
+        return RecStoragePlan.screen(appPage, appList);
+    }
+
+    /** True when that settings screen opened; an intent no activity matches throws and is caught. */
+    private static boolean tryStart(Activity activity, Intent intent, String missing) {
+        try {
+            activity.startActivity(intent);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, missing, e);
+            return false;
+        }
+    }
+
     /** True when the app may write its recordings folder right now. */
     private static boolean allowed(Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) return Environment.isExternalStorageManager();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // No grant is needed for the Movies/ folder: the way out on devices with no screen.
+            return Environment.isExternalStorageManager() || noAllFilesScreen;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) return true;   // app-specific external dir, no permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -77,14 +120,23 @@ public final class StorageAccess {
     /**
      * The app's user-visible folder. On API 29 the shared-storage path is not writable without SAF,
      * so the folder lives in the app-specific external dir instead; Android 11+ uses the shared
-     * OpenDTV folder behind the All-files grant.
+     * OpenDTV folder behind the All-files grant, or Movies/OpenDTV where no screen can grant it.
      */
     public static File appDir(Activity activity) {
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-            File base = activity.getExternalFilesDir(null);
-            return new File(base == null ? activity.getFilesDir() : base, "OpenDTV");
+        int sdk = Build.VERSION.SDK_INT;
+        boolean granted = sdk >= Build.VERSION_CODES.R && Environment.isExternalStorageManager();
+        boolean noScreen = sdk >= Build.VERSION_CODES.R && noAllFilesScreen;
+        switch (RecStoragePlan.folder(sdk, granted, noScreen)) {
+            case APP_OPENDTV: {
+                File base = activity.getExternalFilesDir(null);
+                return new File(base == null ? activity.getFilesDir() : base, "OpenDTV");
+            }
+            case MOVIES_OPENDTV:
+                return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "OpenDTV");
+            case SHARED_OPENDTV:
+            default:
+                return new File(Environment.getExternalStorageDirectory(), "OpenDTV");
         }
-        return new File(Environment.getExternalStorageDirectory(), "OpenDTV");
     }
 
     /** The recordings folder under {@link #appDir}. */

@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:lineSpacingExtra="3dp"
-        android:text="Both are off by default. The app's folder and the file name are shown after saving."
+        android:text="Both are off by default. The file is saved in OpenDTV/diagnostics, where the recordings live."
         android:textColor="@color/odtv_on_surface_variant"
         android:textSize="12sp" />
 </LinearLayout>

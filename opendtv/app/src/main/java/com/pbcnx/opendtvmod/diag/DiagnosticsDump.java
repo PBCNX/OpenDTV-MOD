@@ -148,7 +148,7 @@ public final class DiagnosticsDump {
             key(b, "video", in.decoderVideoSoftware ? "software" : "hardware");
             key(b, "audio", in.decoderAudioSoftware ? "software" : "hardware");
         } else {
-            key(b, "start", "hardware first, software when no frame");
+            key(b, "start", "hardware first, software when no frame or on a decoder error");
         }
         key(b, "learned muxes", learnedMuxes(in));
 

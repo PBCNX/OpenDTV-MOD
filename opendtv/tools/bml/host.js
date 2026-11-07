@@ -19,7 +19,7 @@
  * Contract with Java - the only two names that cross the WebView boundary:
  *   window.OpenDtvBml = { start(serviceId), push(base64Ts), key(code, down), tap(code), codes }
  *   AndroidBml        = { log(msg), onLoad(w, h), onVideo(l, t, r, b, invisible), onState(json) }
- *                       (injected by ph.opendtv.bml.BmlController; this file only calls it)
+ *                       (injected by com.pbcnx.opendtvmod.bml.BmlController; this file only calls it)
  *
  * Engine: web-bml 3.0.1, vendored under vendor/web-bml and pinned in engine.lock.json (public: github.com/PBCNX/web-bml-PHL).
  * Build:  node tools/bml/build.mjs   ->  app/src/main/assets/bml/bml.js
