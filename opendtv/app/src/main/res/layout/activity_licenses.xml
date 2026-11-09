@@ -14,7 +14,7 @@
         android:layout_height="?attr/actionBarSize"
         app:navigationContentDescription="Back"
         app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="Open source licenses" />
+        app:title="@string/settings_licenses" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

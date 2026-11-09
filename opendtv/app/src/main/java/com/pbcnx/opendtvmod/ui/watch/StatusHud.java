@@ -105,13 +105,13 @@ public final class StatusHud {
         switch (WatchSignalText.of(d.live, d.tunerPresent, d.signal != null,
                 d.signal != null && d.signal.locked)) {
             case PLAYING:
-                signal.setText("Playing");
+                signal.setText(R.string.watch_playing);
                 break;
             case NO_TUNER:
                 signal.setText(WatchSignalText.NO_TUNER);
                 break;
             case TUNING:
-                signal.setText("Tuning...");
+                signal.setText(R.string.hud_tuning);
                 break;
             default:
                 signal.setText("S " + signalPercent(d.signal.strengthPercent)
@@ -119,9 +119,9 @@ public final class StatusHud {
                 break;
         }
 
-        setChip(chipData, d.data, R.color.odtv_ok, "Data broadcast");
-        setChip(chipCc, d.caption, R.color.odtv_ok, "Closed captions");
-        setChip(chipLock, d.encrypted, R.color.odtv_warning, "Encrypted");
+        setChip(chipData, d.data, R.color.odtv_ok, activity.getString(R.string.cd_data_broadcast));
+        setChip(chipCc, d.caption, R.color.odtv_ok, activity.getString(R.string.cd_closed_captions));
+        setChip(chipLock, d.encrypted, R.color.odtv_warning, activity.getString(R.string.cd_encrypted));
         setAlertChip(d.emergency);
     }
 
@@ -134,7 +134,8 @@ public final class StatusHud {
         if (chipEwbs == null) return;
         chipEwbs.setSelected(active);
         chipEwbs.setAlpha(active ? 1f : 0.28f);
-        chipEwbs.setContentDescription("Emergency broadcast" + (active ? " active" : " inactive"));
+        chipEwbs.setContentDescription(activity.getString(active ? R.string.cd_chip_active : R.string.cd_chip_inactive,
+                activity.getString(R.string.cd_emergency_broadcast)));
     }
 
     /** NIT name and SDT provider share one marquee line, so they never fight for width. */
@@ -142,8 +143,8 @@ public final class StatusHud {
         if (tvNetworkName == null) return;
         String nit = demux != null ? demux.getNetworkName() : "";
         String provider = service != null ? service.provider : "";
-        String line = "NIT : " + (nit.isEmpty() ? "-" : nit)
-                + "   -   Provider : " + (provider.isEmpty() ? "-" : provider);
+        String line = activity.getString(R.string.hud_network_line, nit.isEmpty() ? "-" : nit,
+                provider.isEmpty() ? "-" : provider);
         if (!line.contentEquals(tvNetworkName.getText())) {
             tvNetworkName.setText(line);
         }
@@ -156,7 +157,8 @@ public final class StatusHud {
                 active ? activeColorRes : R.color.odtv_on_surface_variant);
         chip.setTextColor(color);
         chip.setAlpha(active ? 1f : 0.28f);
-        chip.setContentDescription(description + (active ? " active" : " inactive"));
+        chip.setContentDescription(activity.getString(active ? R.string.cd_chip_active : R.string.cd_chip_inactive,
+                description));
     }
 
     private static String signalPercent(int value) {

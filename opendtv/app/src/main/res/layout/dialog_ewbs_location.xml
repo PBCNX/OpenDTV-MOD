@@ -20,7 +20,7 @@
             style="@style/Widget.OpenDtv.DialogAction"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Use current location" />
+            android:text="@string/ewbs_use_current_location" />
 
         <View
             android:id="@+id/ewbs_rule"

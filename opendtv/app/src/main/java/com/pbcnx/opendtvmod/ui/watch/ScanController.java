@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.pbcnx.opendtvmod.R;
 import com.pbcnx.opendtvmod.tuner.ChannelEntry;
 import com.pbcnx.opendtvmod.tuner.ChannelStore;
 import com.pbcnx.opendtvmod.tuner.MhzLabel;
@@ -148,24 +149,23 @@ public final class ScanController {
     public void confirmFullScan() {
         // Same order as the manual scan: no dongle, no question (ODTV-51).
         if (!host.hub().isTunerPresent()) {
-            Toast.makeText(host.activity(), "No tuner detected · plug the dongle into the OTG port, then start the scan again.",
+            Toast.makeText(host.activity(), R.string.toast_no_tuner_scan,
                     Toast.LENGTH_LONG).show();
             return;
         }
         ChannelStore channels = host.scanStore();
         int count = channels.channelCount();
-        String message = "Scans UHF 14 - 51. "
-                + (count > 0 ? "Merge keeps the " + count + (count == 1 ? " saved channel" : " saved channels")
-                        + " and adds or updates what this scan finds. Replace drops the saved list first."
-                        : "It can take a few minutes.");
+        String message = count > 0
+                ? host.activity().getResources().getQuantityString(R.plurals.scan_full_message_merge, count, count)
+                : host.activity().getString(R.string.scan_full_message);
         new MaterialAlertDialogBuilder(host.activity())
-                .setTitle("Auto Channel Scan")
+                .setTitle(R.string.settings_auto_scan)
                 .setMessage(message)
-                .setPositiveButton("Merge", (d, w) -> startFullScan(true))
-                .setNegativeButton("Replace", (d, w) -> startFullScan(false))
+                .setPositiveButton(R.string.scan_merge, (d, w) -> startFullScan(true))
+                .setNegativeButton(R.string.scan_replace, (d, w) -> startFullScan(false))
                 // Neutral draws left of negative in this theme, so the row reads
                 // Cancel - Replace - Merge and the destructive choice is never the primary one.
-                .setNeutralButton("Cancel", null)
+                .setNeutralButton(R.string.cancel, null)
                 .show();
     }
 
@@ -176,7 +176,7 @@ public final class ScanController {
             return;
         }
         if (!host.hub().isTunerPresent()) {
-            Toast.makeText(host.activity(), "No tuner detected · plug the dongle into the OTG port, then start the scan again.",
+            Toast.makeText(host.activity(), R.string.toast_no_tuner_scan,
                     Toast.LENGTH_LONG).show();
             return;
         }
@@ -199,7 +199,7 @@ public final class ScanController {
                 scanState.finish();
                 dismissSheet();
                 host.ui().post(() -> {
-                    toast("Scan stopped");
+                    toast(host.activity().getString(R.string.toast_scan_stopped));
                     host.channelsChanged();
                 });
                 return;
@@ -224,8 +224,8 @@ public final class ScanController {
                 if (host.scanStore().channelCount() == 0 && host.hub().failure() != null) {
                     toast(host.hub().failure());
                 } else {
-                    toast("Scan complete - " + channelCount(host.scanStore().channelCount())
-                            + (merge ? " in the list (merged)" : ""));
+                    toast(host.activity().getString(merge ? R.string.toast_scan_complete_merged : R.string.toast_scan_complete,
+                            channelCount(host.scanStore().channelCount())));
                 }
                 host.channelsChanged();
                 ChannelEntry start = host.scanStore().pickStart(host.scanPrefs());
@@ -249,8 +249,9 @@ public final class ScanController {
                 scanState.finish();
                 dismissSheet();
                 String why = host.hub().failure();
-                toast(scanState.cancelRequested() ? "Scan stopped" : "Could not lock " + MhzLabel.mhz(khz)
-                        + (why == null ? "" : " - " + why));
+                toast(scanState.cancelRequested() ? host.activity().getString(R.string.toast_scan_stopped)
+                        : why == null ? host.activity().getString(R.string.toast_could_not_lock, MhzLabel.mhz(khz))
+                        : host.activity().getString(R.string.toast_could_not_lock_why, MhzLabel.mhz(khz), why));
                 return;
             }
             host.scanStore().replaceFrequency(khz, found);
@@ -258,7 +259,8 @@ public final class ScanController {
             scanState.finish();
             dismissSheet();
             host.ui().post(() -> {
-                toast("Scan complete - " + channelCount(found.size()) + " at " + MhzLabel.mhz(khz));
+                toast(host.activity().getString(R.string.toast_scan_complete_at, channelCount(found.size()),
+                        MhzLabel.mhz(khz)));
                 host.channelsChanged();
                 ChannelEntry start = found.isEmpty() ? host.currentChannel() : found.get(0);
                 if (!found.isEmpty()) host.setCurrentChannel(found.get(0));
@@ -273,7 +275,7 @@ public final class ScanController {
         if (!hub.ensurePermission(60_000)) {
             scanState.finish();
             dismissSheet();
-            toast("USB permission needed");
+            toast(host.activity().getString(R.string.toast_usb_permission));
             return false;
         }
         hub.acquire(host.owner());
@@ -307,7 +309,7 @@ public final class ScanController {
     public void showManualSheet() {
         TunerHub hub = host.hub();
         if (!hub.isTunerPresent()) {
-            Toast.makeText(host.activity(), "No tuner detected · plug the dongle into the OTG port, then start the scan again.",
+            Toast.makeText(host.activity(), R.string.toast_no_tuner_scan,
                     Toast.LENGTH_LONG).show();
             return;
         }
@@ -321,14 +323,14 @@ public final class ScanController {
         movedOff = false;
         scanStartedFromSheet = false;
         if (sheet == null) sheet = new ScanDialog(host.activity(), listener);
-        sheet.showManual(khz, freqs, "Pick a UHF channel, watch the lock, then scan it");
+        sheet.showManual(khz, freqs, host.activity().getString(R.string.scan_manual_subtitle));
         startMeter();
     }
 
     private void showSheet(final int max) {
         host.ui().post(() -> {
             if (sheet == null) sheet = new ScanDialog(host.activity(), listener);
-            sheet.showBand("UHF 14 - 51 · " + max + " frequencies", max);
+            sheet.showBand(host.activity().getResources().getQuantityString(R.plurals.scan_band_subtitle, max, max), max);
         });
     }
 
@@ -396,7 +398,7 @@ public final class ScanController {
         return sb.toString();
     }
 
-    private static String channelCount(int n) {
-        return n + (n == 1 ? " channel" : " channels");
+    private String channelCount(int n) {
+        return host.activity().getResources().getQuantityString(R.plurals.channel_count, n, n);
     }
 }

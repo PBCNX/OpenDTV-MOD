@@ -1,5 +1,6 @@
 package com.pbcnx.opendtvmod.ui.watch;
 
+import com.pbcnx.opendtvmod.R;
 import com.pbcnx.opendtvmod.player.DecoderPrefs;
 import com.pbcnx.opendtvmod.tuner.MhzLabel;
 import com.pbcnx.opendtvmod.tuner.MuxSweep;
@@ -251,7 +252,8 @@ public final class WatchPlayback {
                 Log.w(TAG, "play sid=" + entry.service.serviceId + " name=" + entry.service.name
                         + " -> NO LOCK at " + entry.khz);
                 host.ui().post(() -> Toast.makeText(host.activity(),
-                        "Could not lock " + MhzLabel.mhz(entry.khz), Toast.LENGTH_SHORT).show());
+                        host.activity().getString(R.string.toast_could_not_lock, MhzLabel.mhz(entry.khz)),
+                        Toast.LENGTH_SHORT).show());
                 return;
             }
             if (generation != host.playGen().get()) return;
@@ -265,7 +267,7 @@ public final class WatchPlayback {
                 if (generation == host.playGen().get()) {
                     if (tune) {
                         host.ui().post(() -> Toast.makeText(host.activity(),
-                                "Channel not found on this frequency", Toast.LENGTH_SHORT).show());
+                                R.string.toast_channel_not_found, Toast.LENGTH_SHORT).show());
                     } else {
                         host.ui().post(this::showSourceNoFrame);
                     }
@@ -302,7 +304,7 @@ public final class WatchPlayback {
             ServiceFilter previous = liveFilter;
             if (previous != null && previous.isRecording()) {
                 previous.stopRecord();
-                Toast.makeText(host.activity(), "Recording stopped - channel changed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(host.activity(), R.string.toast_recording_channel_changed, Toast.LENGTH_SHORT).show();
             }
             liveFilter = new ServiceFilter(host.pipe(), d.getTsId(), live);
             host.recorder().updateTally();
@@ -471,8 +473,8 @@ public final class WatchPlayback {
             DecoderPrefs.setVideoSoftware(host.activity(), true);
         }
         Toast.makeText(host.activity(), khz > 0
-                ? "Video stalled · software video from now on for this channel"
-                : "Video stalled · switched video to software decoding", Toast.LENGTH_LONG).show();
+                ? R.string.toast_video_stalled_channel
+                : R.string.toast_video_stalled, Toast.LENGTH_LONG).show();
         host.recreate();
     }
 

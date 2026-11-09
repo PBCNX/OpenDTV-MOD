@@ -93,7 +93,7 @@
             android:minWidth="96dp"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
-            android:text="OK"
+            android:text="@string/ok"
             android:textAllCaps="false"
             android:textColor="@color/odtv_on_accent"
             android:textSize="14sp" />

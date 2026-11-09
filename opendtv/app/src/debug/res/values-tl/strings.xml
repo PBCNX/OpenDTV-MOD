@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The bench build's scan label in Tagalog. main/res/values-tl translates the release name, and a
+     language folder wins over src/debug/res/values, so without this the bench install would lose
+     its ".ph" in Tagalog. app_name is not translated, so the debug values/ copy still applies. -->
+<resources>
+    <string name="app_name_scanner">Pag-scan ng channel ng OpenDTV-MOD.ph</string>
+</resources>

@@ -1,5 +1,6 @@
 package com.pbcnx.opendtvmod.ui.watch;
 
+import com.pbcnx.opendtvmod.R;
 import com.pbcnx.opendtvmod.ts.pipe.ServiceFilter;
 
 import com.pbcnx.opendtvmod.ui.ChannelAdapter;
@@ -97,7 +98,7 @@ public final class ChannelRecorder {
         }
         if (failureReported) return;
         failureReported = true;
-        Toast.makeText(activity, "Recording failed: " + failure, Toast.LENGTH_LONG).show();
+        Toast.makeText(activity, activity.getString(R.string.toast_recording_failed_why, failure), Toast.LENGTH_LONG).show();
     }
 
     /** Recording is the writer's state, not a flag of our own. */
@@ -109,7 +110,7 @@ public final class ChannelRecorder {
     public void toggle() {
         ServiceFilter sink = liveSink.get();
         if (sink == null) {
-            Toast.makeText(activity, "Tune a channel first", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, R.string.toast_tune_first, Toast.LENGTH_SHORT).show();
             return;
         }
         if (!sink.isRecording()) {
@@ -130,19 +131,19 @@ public final class ChannelRecorder {
                 sink.startRecord(file);
                 failureReported = false;
                 Toast.makeText(activity, service != null
-                        ? "Recording " + ChannelAdapter.displayName(service)
-                        : "Recording", Toast.LENGTH_SHORT).show();
+                        ? activity.getString(R.string.toast_recording_channel, ChannelAdapter.displayName(service))
+                        : activity.getString(R.string.toast_recording), Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 Log.e(TAG, "Failed to start recording", e);
-                Toast.makeText(activity, "Could not start recording", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, R.string.toast_recording_failed, Toast.LENGTH_SHORT).show();
             }
         } else {
             boolean wrote = sink.stopRecord();
             java.io.IOException failure = sink.recordError();
             Toast.makeText(activity,
-                    failure != null ? "Recording failed: " + failure
-                            : wrote ? "Recording stopped · OpenDTV/Record"
-                            : "Nothing recorded · this service sent no stream",
+                    failure != null ? activity.getString(R.string.toast_recording_failed_why, failure)
+                            : wrote ? activity.getString(R.string.toast_recording_stopped)
+                            : activity.getString(R.string.toast_nothing_recorded),
                     Toast.LENGTH_SHORT).show();
         }
         updateTally();
@@ -158,7 +159,7 @@ public final class ChannelRecorder {
         if (on) ui.postDelayed(recordTick, 1000);
         if (btnRecord == null) return;
         btnRecord.setSelected(on);
-        btnRecord.setContentDescription(on ? "Stop recording" : "Record channel");
+        btnRecord.setContentDescription(activity.getString(on ? R.string.cd_stop_recording : R.string.cd_record_channel));
         if (on) {
             startPulse();
         } else {

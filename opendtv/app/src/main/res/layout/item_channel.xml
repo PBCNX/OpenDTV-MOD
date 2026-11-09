@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
                 android:layout_marginStart="8dp"
-                android:text="NOW"
+                android:text="@string/channel_now_badge"
                 android:textColor="@color/odtv_accent"
                 android:visibility="gone" />
         </LinearLayout>

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import com.pbcnx.opendtvmod.R;
 
 /**
  * The one external-storage gate for the whole app: recordings write to {@code OpenDTV/} on the shared
@@ -60,17 +61,16 @@ public final class StorageAccess {
                 noAllFilesScreen = true;
                 pending = null;
                 Log.w(TAG, "no All files access screen on this device; recordings go to Movies/OpenDTV");
-                Toast.makeText(activity, "No storage-access screen on this device \u00B7 recordings go to Movies/OpenDTV",
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, R.string.toast_no_storage_screen, Toast.LENGTH_LONG).show();
                 return true;
             }
-            Toast.makeText(activity, "Allow storage access in Android settings so recordings can be saved.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, R.string.toast_allow_storage_settings, Toast.LENGTH_LONG).show();
         } else {
             ActivityCompat.requestPermissions(activity, new String[] {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.READ_EXTERNAL_STORAGE
             }, REQUEST_CODE);
-            Toast.makeText(activity, "Allow storage access in Android settings so recordings can be saved.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, R.string.toast_allow_storage_settings, Toast.LENGTH_LONG).show();
         }
         return false;
     }

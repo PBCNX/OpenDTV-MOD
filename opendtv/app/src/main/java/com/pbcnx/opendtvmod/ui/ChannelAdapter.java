@@ -103,8 +103,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ViewHold
         holder.tvVirtual.setText(channel.displayNumber());
         holder.tvVirtual.setAlpha(realNumber ? 1f : 0.6f);
         holder.tvVirtual.setContentDescription(realNumber ? null
-                : "Approximate number " + channel.displayNumber()
-                + ": this multiplex broadcasts no channel number");
+                : context.getString(R.string.cd_approximate_number, channel.displayNumber()));
         String displayName = displayName(channel);
         holder.tvChannelName.setText(displayName);
         holder.tvNow.setVisibility(isActive ? View.VISIBLE : View.GONE);
